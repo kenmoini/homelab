@@ -17,7 +17,7 @@ There are two CaaS deployments defined `dns-core-1` and `dns-core-2` to provide 
 
 ### DNS Ad Blocking with PiHole
 
-PiHole provides an easy DNS-based network ad-blocker and a great dashboard.  In my lab it's used as the primary DNS servers and then forwards to my DNS Core servers.
+PiHole provides an easy DNS-based network ad-blocker and a great dashboard.  In my lab it's used as the final upstream DNS servers and then forwards to Cloudflare's DNS.
 
 There are two CaaS deployments defined as `dns-pihole-1` and `dns-pihole-2` to provide Ad blocking DNS servers at the IP addresses `192.168.42.{11,12}`
 

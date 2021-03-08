@@ -17,7 +17,7 @@ CEV3="ADMIN_EMAIL=ken@kenmoini.com"
 CEV4="VIRTUAL_HOST=dns-pihole-2"
 CEV5="ServerIP=192.168.42.12"
 CEV6="ServerIPv6=fdf4:e2e0:df12:a100::12"
-CEV7="PIHOLE_DNS_=192.168.42.9;192.168.42.10"
+CEV7="PIHOLE_DNS_=1.1.1.1;1.0.0.1"
 CEV8="TEMPERATUREUNIT=f"
 
 CONTAINER_ENVS="-e ${CEV1} -e ${CEV2} -e ${CEV3} -e ${CEV4} -e ${CEV5} -e ${CEV6} -e ${CEV7} -e ${CEV8}"

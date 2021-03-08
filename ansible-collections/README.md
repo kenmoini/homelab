@@ -23,3 +23,19 @@ ansible-vault encrypt vars/secrets.yml
 ```
 
 This encrypted variable file can now be stored in a Git repo safely (as long as no one knows the password to decrypt it that is...)
+
+## Cheat Sheet
+
+#### Deploy DNS Core CaaS
+
+```bash
+ansible-playbook --ask-pass --ask-become-pass -i inventory deploy-caas-dns-core-1.yml
+ansible-playbook --ask-pass --ask-become-pass -i inventory deploy-caas-dns-core-2.yml
+```
+
+#### Deploy PiHole DNS CaaS
+
+```bash
+ansible-playbook --ask-pass --ask-become-pass -i inventory -e "piholeWebPassword=yourPassword" deploy-caas-dns-pihole-1.yml
+ansible-playbook --ask-pass --ask-become-pass -i inventory -e "piholeWebPassword=yourPassword" deploy-caas-dns-pihole-2.yml
+```
