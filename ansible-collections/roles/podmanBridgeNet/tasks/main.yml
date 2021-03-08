@@ -1,0 +1,6 @@
+---
+# tasks file for podmanBridgeNet
+- name: Template over Container Bridge
+  template:
+    src: bridge-network.conflist.j2
+    dest: "/etc/cni/net.d/{{ bridgeName }}.conflist"

@@ -1,0 +1,42 @@
+{
+  "cniVersion": "0.4.0",
+  "name": "{{ bridgeName }}",
+  "plugins": [
+      {
+        "type": "bridge",
+        "bridge": "{{ bridgeDevice }}",
+        "ipam": {
+            "type": "host-local",
+            "ranges": [
+                [
+                    {
+                        "subnet": "{{ bridgeSubnet }}",
+                        "rangeStart": "{{ bridgeRangeStart }}",
+                        "rangeEnd": "{{ bridgeRangeEnd }}",
+                        "gateway": "{{ bridgeGateway }}"
+                    }
+                ]
+            ],
+            "routes": [
+                {"dst": "0.0.0.0/0"}
+            ]
+        }
+      },
+      {
+        "type": "portmap",
+        "capabilities": {
+            "portMappings": true
+        }
+      },
+      {
+        "type": "firewall",
+        "backend": ""
+      },
+      {
+        "type": "tuning",
+        "capabilities": {
+            "mac": true
+        }
+      }
+  ]
+}

@@ -1,0 +1,3 @@
+---
+# defaults file for baseLinuxUpdate
+reboot_after_kernel_update: false

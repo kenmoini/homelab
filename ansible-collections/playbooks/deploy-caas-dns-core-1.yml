@@ -1,0 +1,38 @@
+---
+- name: Deploy the dns-core-1 Container-as-a-Service
+  hosts: all
+  vars:
+    caas_name: dns-core-1
+    raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
+  tasks:
+
+    - name: Update system
+      include_role:
+        - name: baseLinuxUpdate
+          vars:
+            reboot_after_kernel_update: false
+
+    - name: Install Podman
+      include_role:
+        - name: podmanInstall
+
+    - name: Create Container Network Bridge
+      include_role:
+        - name: podmanBridgeNet
+
+    - name: Create Service Containers Directory
+      file:
+        path: /opt/service-containers
+        state: directory
+
+    - name: Create dns-core-1 Directories
+      file:
+        path: "{{ item }}"
+        state: directory
+      with_items:
+        - "/opt/service-containers/{{ caas_name }}"
+        - "/opt/service-containers/{{ caas_name }}/config"
+        - "/opt/service-containers/{{ caas_name }}/volumes"
+        - "/opt/service-containers/{{ caas_name }}/volumes/etc-conf"
+
+    - name: Download service file

@@ -1,0 +1,13 @@
+---
+# defaults file for podmanBridgeNet
+# the logical name of your container bridge
+bridgeName: lanBridge
+
+# the physical device name of your bridge
+bridgeDevice: containerLANbr0
+
+# the bridged network details can overlap with full subnet, DHCP is passed to the gateway
+bridgeSubnet: 192.168.42.0/24
+bridgeGateway: 192.168.42.1
+bridgeRangeStart: 192.168.42.2
+bridgeRangeEnd: 192.168.42.245
