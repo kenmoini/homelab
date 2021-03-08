@@ -84,3 +84,7 @@ Make the file look something like this, substituting for ***bridge*** (your brid
    ]
 }
 ```
+
+## Lifecycle
+
+Naturally there are a series of steps to take to deploy any of these CaaS items.  That's why in the root of this repository in the `ansible-collections/playbooks` directory you can find a number of Playbooks prefixed with `deploy-caas-` to make quick work of deploying these services.

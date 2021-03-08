@@ -6,7 +6,7 @@
     service_containers_dir: /opt/service-containers
     raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
 
-    webPassword: notMyDefaultPassword
+    piholeWebPassword: notMyDefaultPassword
     timezone: "America/New_York"
     containerNumber: 2
   tasks:
