@@ -3,6 +3,7 @@
   hosts: all
   vars:
     caas_name: dns-core-1
+    service_containers_dir: /opt/service-containers
     raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
   tasks:
 
@@ -21,12 +22,12 @@
         - name: podmanBridgeNet
 
     - name: Create Service Containers Directory
-      file:
-        path: /opt/service-containers
+      ansible.builtin.file:
+        path: "{{ service_containers_dir }}"
         state: directory
 
-    - name: Create dns-core-1 Directories
-      file:
+    - name: Create CaaS Directories
+      ansible.builtin.file:
         path: "{{ item }}"
         state: directory
       with_items:
@@ -35,4 +36,27 @@
         - "/opt/service-containers/{{ caas_name }}/volumes"
         - "/opt/service-containers/{{ caas_name }}/volumes/etc-conf"
 
-    - name: Download service file
+    - name: Download CaaS deployment files
+      get_url:
+        url: "{{ raw_repo_base }}/containers-as-a-service/{{ item }}"
+        dest: "/opt/service-containers/{{ item }}"
+      with_items:
+        - dns-core-1/config/service_start.sh
+        - dns-core-1/config/service_stop.sh
+        - dns-core-1/config/service_vars.sh
+        - dns-core-1/volumes/etc-conf/zones.yml
+
+    - name: Download CaaS service
+      get_url:
+        url: "{{ raw_repo_base }}/containers-as-a-service/dns-core-1/dns-core-1.service"
+        dest: "/etc/systemd/system/dns-core-1.service"
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Start CaaS
+      ansible.builtin.service:
+        name: "{{ caas_name }}"
+        state: started
+        enabled: yes
