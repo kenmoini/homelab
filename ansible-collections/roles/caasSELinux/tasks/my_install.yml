@@ -1,0 +1,11 @@
+---
+- name: Copy over my-install patch files
+  copy:
+    src: "files/{{ item }}"
+    dest: "/opt/{{ item }}"
+  with_items:
+    - selinux_patches/my-install.pp
+    - selinux_patches/my-install.te
+
+- name: Apply my-install patch
+  command: semodule -i /opt/selinux_patches/my-install.pp

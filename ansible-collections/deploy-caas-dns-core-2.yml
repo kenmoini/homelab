@@ -23,6 +23,10 @@
       include_role:
         name: podmanBridgeNet
 
+    - name: Set SELinux Contexts for Container-as-a-Service
+      include_role:
+        name: caasSELinux
+
     - name: Create Service Containers Directory
       ansible.builtin.file:
         path: "{{ service_containers_dir }}"
@@ -78,5 +82,5 @@
     - name: Start CaaS
       ansible.builtin.service:
         name: "{{ caas_name }}"
-        state: started
+        state: restarted
         enabled: yes

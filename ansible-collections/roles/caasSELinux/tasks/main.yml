@@ -1,0 +1,16 @@
+---
+# tasks file for caasSELinux
+- name: Allow sandbox containers to use all capabilities
+  seboolean:
+    name: virt_sandbox_use_all_caps
+    state: yes
+    persistent: yes
+
+- name: Allow confined virtual guests to manage nfs files
+  seboolean:
+    name: virt_use_nfs
+    state: yes
+    persistent: yes
+
+- name: Include my_install policy (idk)
+  include_tasks: my_install.yml

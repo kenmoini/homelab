@@ -1,0 +1,13 @@
+
+module my-install 1.0;
+
+require {
+	type container_t;
+	type usr_t;
+	class dir { add_name remove_name setattr write };
+	class file { create setattr unlink write };
+}
+
+#============= container_t ==============
+allow container_t usr_t:dir { add_name remove_name setattr write };
+allow container_t usr_t:file { create setattr unlink write };

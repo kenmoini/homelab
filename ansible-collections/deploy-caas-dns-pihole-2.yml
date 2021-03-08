@@ -11,6 +11,7 @@
     piholeWebPassword: notMyDefaultPassword
     timezone: "America/New_York"
     containerNumber: 2
+    clearVolumes: false
   tasks:
 
     - name: Update system
@@ -27,12 +28,25 @@
       include_role:
         name: podmanBridgeNet
 
+    - name: Set SELinux Contexts for Container-as-a-Service
+      include_role:
+        name: caasSELinux
+
     - name: Create Service Containers Directory
       ansible.builtin.file:
         path: "{{ service_containers_dir }}"
         state: directory
         owner: root
         group: root
+        
+    - name: Clear volume paths
+      file:
+        state: absent
+        path: "{{ item }}"
+      with_items:
+        - "/opt/service-containers/{{ caas_name }}/volumes/etc-pihole/"
+        - "/opt/service-containers/{{ caas_name }}/volumes/etc-dnsmasq.d/"
+      when: clearVolumes|bool
 
     - name: Create CaaS Directories
       ansible.builtin.file:
@@ -56,14 +70,14 @@
       with_items:
         - "{{ caas_name }}/config/service_start.sh"
         - "{{ caas_name }}/config/service_stop.sh"
-        - "{{ caas_name }}/config/service_vars.sh"
 
     - name: Template over container vars
       template:
-        src: caas-dns-pihole-container_vars.j2
-        dest: "/opt/service-containers/{{ caas_name }}/config/container_vars"
+        src: caas-dns-pihole-service_vars.sh.j2
+        dest: "/opt/service-containers/{{ caas_name }}/config/service_vars.sh"
         owner: root
         group: root
+        mode: 0755
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:
@@ -89,5 +103,5 @@
     - name: Start CaaS
       ansible.builtin.service:
         name: "{{ caas_name }}"
-        state: started
+        state: restarted
         enabled: yes
