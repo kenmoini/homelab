@@ -1,25 +1,31 @@
 ---
-- name: Deploy the dns-core-1 Container-as-a-Service
+- name: Deploy the dns-pihole-1 Container-as-a-Service
   hosts: all
+  gather_facts: yes
+  become: yes
   vars:
-    caas_name: dns-core-1
+    caas_name: dns-pihole-1
     service_containers_dir: /opt/service-containers
     raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
+
+    piholeWebPassword: notMyDefaultPassword
+    timezone: "America/New_York"
+    containerNumber: 1
   tasks:
 
     - name: Update system
       include_role:
-        - name: baseLinuxUpdate
-          vars:
-            reboot_after_kernel_update: false
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
 
     - name: Install Podman
       include_role:
-        - name: podmanInstall
+        name: podmanInstall
 
     - name: Create Container Network Bridge
       include_role:
-        - name: podmanBridgeNet
+        name: podmanBridgeNet
 
     - name: Create Service Containers Directory
       ansible.builtin.file:
@@ -38,7 +44,8 @@
         - "/opt/service-containers/{{ caas_name }}"
         - "/opt/service-containers/{{ caas_name }}/config"
         - "/opt/service-containers/{{ caas_name }}/volumes"
-        - "/opt/service-containers/{{ caas_name }}/volumes/etc-conf"
+        - "/opt/service-containers/{{ caas_name }}/volumes/etc-pihole"
+        - "/opt/service-containers/{{ caas_name }}/volumes/etc-dnsmasq.d"
 
     - name: Download CaaS deployment files
       get_url:
@@ -50,7 +57,13 @@
         - "{{ caas_name }}/config/service_start.sh"
         - "{{ caas_name }}/config/service_stop.sh"
         - "{{ caas_name }}/config/service_vars.sh"
-        - "{{ caas_name }}/volumes/etc-conf/zones.yml"
+
+    - name: Template over container vars
+      template:
+        src: caas-dns-pihole-container_vars.j2
+        dest: "/opt/service-containers/{{ caas_name }}/config/container_vars"
+        owner: root
+        group: root
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:

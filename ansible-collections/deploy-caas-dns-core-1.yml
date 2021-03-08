@@ -1,25 +1,27 @@
 ---
-- name: Deploy the dns-core-2 Container-as-a-Service
+- name: Deploy the dns-core-1 Container-as-a-Service
   hosts: all
+  gather_facts: yes
+  become: yes
   vars:
-    caas_name: dns-core-2
+    caas_name: dns-core-1
     service_containers_dir: /opt/service-containers
     raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
   tasks:
 
     - name: Update system
       include_role:
-        - name: baseLinuxUpdate
-          vars:
-            reboot_after_kernel_update: false
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
 
     - name: Install Podman
       include_role:
-        - name: podmanInstall
+        name: podmanInstall
 
     - name: Create Container Network Bridge
       include_role:
-        - name: podmanBridgeNet
+        name: podmanBridgeNet
 
     - name: Create Service Containers Directory
       ansible.builtin.file:
