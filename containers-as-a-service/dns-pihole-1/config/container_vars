@@ -1,0 +1,10 @@
+WEBPASSWORD="somePassword"
+TZ="America/New_York"
+
+ADMIN_EMAIL="ken@kenmoini.com"
+VIRTUAL_HOST="dns-pihole-1"
+ServerIP="192.168.42.11"
+ServerIPv6="fdf4:e2e0:df12:a100::11"
+
+PIHOLE_DNS_="192.168.42.9;192.168.42.10"
+TEMPERATUREUNIT="f"

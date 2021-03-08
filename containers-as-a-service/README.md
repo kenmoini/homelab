@@ -6,11 +6,20 @@ In the scope of this repository collection, these CaaS resources are stored in t
 
 ## Defined Container Services
 
+- DNS Core
+- PiHole Ad Blocker DNS Servers
+
 ### DNS Core Services via GoZones
 
 GoZones takes DNS Zones defined as YAML and converts it into BIND compliant configuration and zone files.  There's a container that will process the conversion and then launch a BIND daemon all-in-one.
 
 There are two CaaS deployments defined `dns-core-1` and `dns-core-2` to provide two DNS Servers at the IP addresses `192.168.42.{9,10}`
+
+### DNS Ad Blocking with PiHole
+
+PiHole provides an easy DNS-based network ad-blocker and a great dashboard.  In my lab it's used as the primary DNS servers and then forwards to my DNS Core servers.
+
+There are two CaaS deployments defined as `dns-pihole-1` and `dns-pihole-2` to provide Ad blocking DNS servers at the IP addresses `192.168.42.{11,12}`
 
 ## Initial Setup
 
