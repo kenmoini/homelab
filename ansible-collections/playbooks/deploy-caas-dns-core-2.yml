@@ -1,8 +1,8 @@
 ---
-- name: Deploy the dns-core-1 Container-as-a-Service
+- name: Deploy the dns-core-2 Container-as-a-Service
   hosts: all
   vars:
-    caas_name: dns-core-1
+    caas_name: dns-core-2
     service_containers_dir: /opt/service-containers
     raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
   tasks:
