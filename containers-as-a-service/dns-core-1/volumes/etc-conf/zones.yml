@@ -1,0 +1,263 @@
+zones:
+  - name: kemo.labs
+    subnet: 192.168.42.0/24
+    subnet_v6: fdf4:e2e0:df12:a100::/64
+    network: internal
+    primary_dns_server: dns-core-1.kemo.labs
+    ttl: 3600
+    records:
+      NS:
+        - name: dns-core-1
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+        - name: dns-core-2
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+      A:
+        - name: unifi
+          ttl: 6400
+          value: 192.168.42.1
+        - name: us-16xg
+          ttl: 6400
+          value: 192.168.42.2
+        - name: us-48-pro
+          ttl: 6400
+          value: 192.168.42.3
+        - name: ap-ac-pro-1
+          ttl: 6400
+          value: 192.168.42.4
+        - name: RBR850
+          ttl: 6400
+          value: 192.168.42.5
+        - name: RBS850
+          ttl: 6400
+          value: 192.168.42.6
+
+        - name: dns-core-1
+          ttl: 6400
+          value: 192.168.42.9
+        - name: dns-core-2
+          ttl: 6400
+          value: 192.168.42.10
+        - name: dns-pihole-1
+          ttl: 6400
+          value: 192.168.42.11
+        - name: dns-pihole-2
+          ttl: 6400
+          value: 192.168.42.12
+        - name: idm-1
+          ttl: 6400
+          value: 192.168.42.13
+        - name: idm-2
+          ttl: 6400
+          value: 192.168.42.14
+        - name: win-dc-1
+          ttl: 6400
+          value: 192.168.42.15
+        - name: win-dc-2
+          ttl: 6400
+          value: 192.168.42.16
+        - name: ca
+          ttl: 6400
+          value: 192.168.42.17
+        - name: sso
+          ttl: 6400
+          value: 192.168.42.18
+        - name: vpn
+          ttl: 6400
+          value: 192.168.42.19
+
+        - name: plex
+          ttl: 6400
+          value: 192.168.42.20
+        - name: sonarr
+          ttl: 6400
+          value: 192.168.42.22
+        - name: radarr
+          ttl: 6400
+          value: 192.168.42.23
+        - name: deluge
+          ttl: 6400
+          value: 192.168.42.24
+
+        - name: vcenter
+          ttl: 6400
+          value: 192.168.42.30
+
+        - name: raza
+          ttl: 6400
+          value: 192.168.42.40
+        - name: winnas-pc
+          ttl: 6400
+          value: 192.168.42.45
+        - name: suki
+          ttl: 6400
+          value: 192.168.42.46
+
+        - name: are
+          ttl: 6400
+          value: 192.168.42.50
+        - name: tee
+          ttl: 6400
+          value: 192.168.42.57
+        - name: jay
+          ttl: 6400
+          value: 192.168.42.64
+
+      AAAA:
+        - name: unifi
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::0
+        - name: us-16xg
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::2
+        - name: us-48-pro
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::3
+        - name: ap-ac-pro-1
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::4
+        - name: RBR850
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::5
+        - name: RBS850
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::6
+
+        - name: vcenter
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::30
+
+        - name: raza
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::40
+        - name: winnas-pc
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::45
+        - name: suki
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::46
+        - name: are
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::50
+        - name: tee
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::57
+        - name: jay
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::64
+# Static IPv6 in Containers dont work yet
+#        - name: dns-core-1
+#          ttl: 86400
+#          value: fdf4:e2e0:df12:a100::11
+#        - name: dns-core-2
+#          ttl: 86400
+#          value: fdf4:e2e0:df12:a100::12
+
+      CNAME:
+        - name: ns1
+          ttl: 6400
+          value: dns-core-1.kemo.labs.
+        - name: ns2
+          ttl: 6400
+          value: dns-core-2.kemo.labs.
+        - name: idm
+          ttl: 3600
+          value: idm-1.kemo.labs.
+
+      SRV:
+        - name: _kerberos._udp
+          value: idm.kemo.labs
+          port: 88
+          priority: 0
+          ttl: 6400
+          weight: 100
+        - name: _kerberos._tcp
+          value: idm.kemo.labs
+          port: 88
+          priority: 0
+          ttl: 6400
+          weight: 100
+
+        - name: _kerberos-master._udp
+          value: idm.kemo.labs
+          port: 88
+          priority: 0
+          ttl: 6400
+          weight: 100
+        - name: _kerberos-master._tcp
+          value: idm.kemo.labs
+          port: 88
+          priority: 0
+          ttl: 6400
+          weight: 100
+
+        - name: _kpasswd._udp
+          value: idm.kemo.labs
+          port: 464
+          priority: 0
+          ttl: 6400
+          weight: 100
+        - name: _kpasswd._tcp
+          value: idm.kemo.labs
+          port: 464
+          priority: 0
+          ttl: 6400
+          weight: 100
+
+        - name: _ldap._tcp
+          value: idm.kemo.labs
+          port: 389
+          priority: 0
+          ttl: 6400
+          weight: 100
+        - name: _ldaps._tcp
+          value: idm.kemo.labs
+          port: 636
+          priority: 0
+          ttl: 6400
+          weight: 100
+
+        - name: _ntp._udp
+          value: idm.kemo.labs
+          port: 123
+          priority: 0
+          ttl: 6400
+          weight: 100
+
+      TXT:
+        - name: _kerberos
+          ttl: 6400
+          value: "KEMO.LABS"
+
+  - name: mgmt.kemo.labs
+    subnet: 192.168.46.0/24
+    subnet_v6: fdf4:e2e0:df12:a146::/64
+    network: internal
+    primary_dns_server: dns-core-1.kemo.labs
+    ttl: 3600
+    records:
+      NS:
+        - name: dns-core-1
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+        - name: dns-core-2
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+      A:
+        - name: raza
+          ttl: 6400
+          value: 192.168.46.40
+        - name: are
+          ttl: 6400
+          value: 192.168.46.50
+        - name: tee
+          ttl: 6400
+          value: 192.168.46.57
+        - name: jay
+          ttl: 6400
+          value: 192.168.46.64
