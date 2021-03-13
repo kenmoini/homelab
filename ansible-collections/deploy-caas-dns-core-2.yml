@@ -7,6 +7,7 @@
     caas_name: dns-core-2
     service_containers_dir: /opt/service-containers
     raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
+    selinux_cheat_codes: false
   tasks:
 
     - name: Update system
@@ -26,6 +27,7 @@
     - name: Set SELinux Contexts for Container-as-a-Service
       include_role:
         name: caasSELinux
+      when: selinux_cheat_codes|bool
 
     - name: Create Service Containers Directory
       ansible.builtin.file:

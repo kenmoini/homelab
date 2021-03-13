@@ -12,6 +12,7 @@
     timezone: "America/New_York"
     containerNumber: 2
     clearVolumes: false
+    selinux_cheat_codes: false
   tasks:
 
     - name: Update system
@@ -31,6 +32,7 @@
     - name: Set SELinux Contexts for Container-as-a-Service
       include_role:
         name: caasSELinux
+      when: selinux_cheat_codes|bool
 
     - name: Create Service Containers Directory
       ansible.builtin.file:
@@ -38,6 +40,12 @@
         state: directory
         owner: root
         group: root
+
+    - name: Stop running container
+      ansible.builtin.service:
+        name: "{{ caas_name }}"
+        state: stopped
+      when: clearVolumes|bool
         
     - name: Clear volume paths
       file:

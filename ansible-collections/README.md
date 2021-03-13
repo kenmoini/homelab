@@ -36,6 +36,6 @@ ansible-playbook --ask-pass --ask-become-pass -i inventory deploy-caas-dns-core-
 #### Deploy PiHole DNS CaaS
 
 ```bash
-ansible-playbook --ask-pass --ask-become-pass -i inventory -e "piholeWebPassword=yourPassword" deploy-caas-dns-pihole-1.yml
-ansible-playbook --ask-pass --ask-become-pass -i inventory -e "piholeWebPassword=yourPassword" deploy-caas-dns-pihole-2.yml
+ansible-playbook --ask-pass --ask-become-pass -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolumes=true" deploy-caas-dns-pihole-1.yml
+ansible-playbook --ask-pass --ask-become-pass -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolumes=true" deploy-caas-dns-pihole-2.yml
 ```
