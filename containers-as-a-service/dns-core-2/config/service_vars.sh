@@ -7,3 +7,5 @@ CONTAINER_PORT="53"
 
 VOLUME_MOUNT_ONE="/opt/service-containers/${CONTAINER_NAME}/volumes/etc-conf:/etc/go-zones/"
 CONTAINER_SOURCE="quay.io/kenmoini/go-zones:file-to-bind"
+
+RESOURCE_LIMITS="-m 512m"

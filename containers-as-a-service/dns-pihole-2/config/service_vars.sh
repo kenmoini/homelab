@@ -11,6 +11,8 @@ VOLUME_MOUNT_TWO="/opt/service-containers/${CONTAINER_NAME}/volumes/etc-dnsmasq.
 
 CONTAINER_SOURCE="pihole/pihole:latest"
 
+RESOURCE_LIMITS="-m 1g"
+
 CEV1="WEBPASSWORD=somePassword"
 CEV2="TZ=America/New_York"
 CEV3="ADMIN_EMAIL=ken@kenmoini.com"

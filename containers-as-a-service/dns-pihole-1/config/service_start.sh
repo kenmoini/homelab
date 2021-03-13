@@ -22,4 +22,5 @@ echo "Starting container ${CONTAINER_NAME}..."
   -v $VOLUME_MOUNT_ONE \
   -v $VOLUME_MOUNT_TWO \
   $CONTAINER_ENVS \
+  ${RESOURCE_LIMITS} \
   $CONTAINER_SOURCE
