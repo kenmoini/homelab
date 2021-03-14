@@ -106,6 +106,19 @@ zones:
           ttl: 6400
           value: 192.168.42.64
 
+        - name: api.raza.ocp
+          ttl: 6400
+          value: 192.168.42.71
+        - name: api-int.raza.ocp
+          ttl: 6400
+          value: 192.168.42.71
+        - name: apps.raza.ocp
+          ttl: 6400
+          value: 192.168.42.72
+        - name: "*.apps.raza.ocp"
+          ttl: 6400
+          value: 192.168.42.72
+
       AAAA:
         - name: unifi
           ttl: 6400
