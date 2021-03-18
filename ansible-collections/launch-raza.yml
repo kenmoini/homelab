@@ -1,0 +1,30 @@
+---
+- name: Launch the Raza
+  hosts: razaLocal
+  become: yes
+
+  tasks:
+    - name: Set SELinux to Permissive mode
+      ansible.posix.selinux:
+        state: permissive
+
+    - name: Update system
+      dnf:
+        name: "*"
+        state: latest
+
+    - name: Reboot
+      reboot:
+        reboot_timeout: 3600
+
+    - name: Deploy DNS Core 1
+      include_tasks: deploy-caas-dns-core-1.yml
+
+    - name: Deploy DNS Core 2
+      include_tasks: deploy-caas-dns-core-2.yml
+      
+    - name: Deploy DNS Pihole 1
+      include_tasks: deploy-caas-dns-pihole-1.yml
+
+    - name: Deploy DNS Pihole 2
+      include_tasks: deploy-caas-dns-pihole-2.yml
