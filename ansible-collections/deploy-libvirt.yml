@@ -1,0 +1,21 @@
+---
+- name: Deploy Libvirt/KVM to a RHEL 8 host
+  hosts: all
+  gather_facts: yes
+  become: yes
+  
+  tasks:
+
+    - name: Update system
+      include_role:
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
+
+    - name: Install Libvirt
+      include_role:
+        name: libvirtInstall
+
+    - name: Setup Libvirt Bridge Device
+      include_role:
+        name: libvirtBridgeNet

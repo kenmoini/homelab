@@ -1,0 +1,15 @@
+---
+# tasks file for libvirtInstall
+- name: Enable libvirt module
+  shell: yum -y module install virt
+
+- name: Install Libvirt packages
+  dnf:
+    name: ['virt-install', 'virt-viewer']
+    state: latest
+
+- name: Start libvirtd
+  service:
+    name: libvirtd
+    enabled: yes
+    state: started

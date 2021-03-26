@@ -1,0 +1,51 @@
+---
+# tasks file for libvirtBridgeNet
+- name: Copy over netfilter sysctl
+  copy:
+    src: files/nf-bridge.conf
+    dest: /etc/sysctl.d/libvirt-nf-bridge.conf
+
+- name: Copy over bridge udev rule
+  copy:
+    src: files/99-bridge.rules
+    dest: /etc/udev/rules.d/99-bridge.rules
+
+- name: Check for default network
+  shell: virsh net-dumpxml default
+  register: default_net_dump
+  ignore_errors: true
+
+- name: Destroy default libvirt network device
+  shell: virsh net-destroy default
+  ignore_errors: true
+  when: default_net_dump.rc == 0
+
+- name: Undefine default libvirt network device
+  shell: virsh net-undefine default
+  ignore_errors: true
+  when: default_net_dump.rc == 0
+
+- name: Template over libvirt network device
+  template:
+    src: libvirt-bridge.xml.j2
+    dest: /opt/libvirt-bridge.xml
+
+- name: Check for bridge network
+  shell: "virsh net-dumpxml {{ bridgeName }}"
+  register: bridge_net_dump
+  ignore_errors: true
+
+- name: Define libvirt bridge device
+  shell: virsh net-define /opt/libvirt-bridge.xml
+  ignore_errors: true
+  when: bridge_net_dump.rc != 0
+
+- name: Start libvirt bridge device
+  shell: "virsh net-start {{ bridgeName }}"
+  ignore_errors: true
+  when: bridge_net_dump.rc != 0
+
+- name: Auto-Start libvirt bridge device
+  shell: "virsh net-autostart {{ bridgeName }}"
+  ignore_errors: true
+  when: bridge_net_dump.rc != 0

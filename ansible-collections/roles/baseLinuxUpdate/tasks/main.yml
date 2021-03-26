@@ -1,7 +1,7 @@
 ---
 # tasks file for kenmoini.baseLinuxUpdate
 - name: Update system
-  yum:
+  dnf:
     name: "*"
     state: latest
     update_cache: yes

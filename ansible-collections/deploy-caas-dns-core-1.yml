@@ -81,6 +81,9 @@
       ansible.builtin.systemd:
         daemon_reload: yes
 
+    - name: Pre-pull the image
+      shell: podman pull quay.io/kenmoini/go-zones:file-to-bind
+
     - name: Start CaaS
       ansible.builtin.service:
         name: "{{ caas_name }}"
