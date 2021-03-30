@@ -96,15 +96,12 @@ zones:
           ttl: 6400
           value: 192.168.42.46
 
-        - name: are
+        - name: rocinante
           ttl: 6400
           value: 192.168.42.50
-        - name: tee
+        - name: serenity
           ttl: 6400
-          value: 192.168.42.57
-        - name: jay
-          ttl: 6400
-          value: 192.168.42.64
+          value: 192.168.42.55
 
         - name: api.raza.ocp
           ttl: 6400
@@ -152,15 +149,12 @@ zones:
         - name: suki
           ttl: 6400
           value: fdf4:e2e0:df12:a100::46
-        - name: are
+        - name: rocinante
           ttl: 6400
           value: fdf4:e2e0:df12:a100::50
-        - name: tee
+        - name: serenity
           ttl: 6400
-          value: fdf4:e2e0:df12:a100::57
-        - name: jay
-          ttl: 6400
-          value: fdf4:e2e0:df12:a100::64
+          value: fdf4:e2e0:df12:a100::55
 # Static IPv6 in Containers dont work yet
 #        - name: dns-core-1
 #          ttl: 86400
@@ -265,12 +259,9 @@ zones:
         - name: raza
           ttl: 6400
           value: 192.168.46.40
-        - name: are
+        - name: rocinante
           ttl: 6400
           value: 192.168.46.50
-        - name: tee
+        - name: serenity
           ttl: 6400
-          value: 192.168.46.57
-        - name: jay
-          ttl: 6400
-          value: 192.168.46.64
+          value: 192.168.46.55
