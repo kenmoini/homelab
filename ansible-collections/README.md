@@ -43,5 +43,5 @@ ansible-playbook -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolum
 #### Deploy NFS Server CaaS
 
 ```bash
-ansible-playbook -k -i inventory deploy-caas-nfs.yml
+ansible-playbook -i inventory deploy-caas-nfs.yml
 ```
