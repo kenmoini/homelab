@@ -29,15 +29,15 @@ This encrypted variable file can now be stored in a Git repo safely (as long as 
 #### Deploy DNS Core CaaS
 
 ```bash
-ansible-playbook -k -i inventory deploy-caas-dns-core-1.yml
-ansible-playbook -k -i inventory deploy-caas-dns-core-2.yml
+ansible-playbook -i inventory deploy-caas-dns-core-1.yml
+ansible-playbook -i inventory deploy-caas-dns-core-2.yml
 ```
 
 #### Deploy PiHole DNS CaaS
 
 ```bash
-ansible-playbook -k -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolumes=true" deploy-caas-dns-pihole-1.yml
-ansible-playbook -k -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolumes=true" deploy-caas-dns-pihole-2.yml
+ansible-playbook -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolumes=true" deploy-caas-dns-pihole-1.yml
+ansible-playbook -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolumes=true" deploy-caas-dns-pihole-2.yml
 ```
 
 #### Deploy NFS Server CaaS
