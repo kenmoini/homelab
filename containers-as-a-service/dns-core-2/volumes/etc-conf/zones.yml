@@ -116,6 +116,19 @@ zones:
           ttl: 6400
           value: 192.168.42.72
 
+        - name: api.vmw.ocp
+          ttl: 6400
+          value: 192.168.42.74
+        - name: api-int.vmw.ocp
+          ttl: 6400
+          value: 192.168.42.74
+        - name: apps.vmw.ocp
+          ttl: 6400
+          value: 192.168.42.75
+        - name: "*.apps.vmw.ocp"
+          ttl: 6400
+          value: 192.168.42.75
+
       AAAA:
         - name: unifi
           ttl: 6400
