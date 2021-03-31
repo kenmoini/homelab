@@ -1,0 +1,4 @@
+/nfs/ocp                *(rw,root_squash)
+/nfs/ocpreg             *(rw,root_squash)
+/nfs/vmware             *(rw,root_squash)
+/nfs/dropbox            *(rw,root_squash)

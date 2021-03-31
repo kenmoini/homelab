@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-TimeoutStartSec=5
+TimeoutStartSec=15
 ExecStop=/opt/service-containers/dns-core-1/config/service_stop.sh
 ExecStart=/opt/service-containers/dns-core-1/config/service_start.sh
 

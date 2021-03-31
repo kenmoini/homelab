@@ -1,0 +1,91 @@
+---
+- name: Deploy the NFS Server Container-as-a-Service
+  hosts: all
+  gather_facts: yes
+  become: yes
+  vars:
+    caas_name: caas-nfs
+    service_containers_dir: /opt/service-containers
+    raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
+    selinux_cheat_codes: false
+  tasks:
+
+    - name: Update system
+      include_role:
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
+
+    - name: Install Podman
+      include_role:
+        name: podmanInstall
+
+    - name: Create Container Network Bridge
+      include_role:
+        name: podmanBridgeNet
+
+    - name: Set SELinux Contexts for Container-as-a-Service
+      include_role:
+        name: caasSELinux
+      when: selinux_cheat_codes|bool
+
+    - name: Create Service Containers Directory
+      ansible.builtin.file:
+        path: "{{ service_containers_dir }}"
+        state: directory
+        owner: root
+        group: root
+
+    - name: Create CaaS Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+      with_items:
+        - "/opt/service-containers/{{ caas_name }}"
+        - "/opt/service-containers/{{ caas_name }}/config"
+        - "/opt/service-containers/{{ caas_name }}/volumes"
+        - "/opt/service-containers/{{ caas_name }}/volumes/etc-conf"
+
+    - name: Download CaaS deployment files
+      get_url:
+        url: "{{ raw_repo_base }}/containers-as-a-service/{{ item }}"
+        dest: "/opt/service-containers/{{ item }}"
+        owner: root
+        group: root
+      with_items:
+        - "{{ caas_name }}/config/service_start.sh"
+        - "{{ caas_name }}/config/service_stop.sh"
+        - "{{ caas_name }}/config/service_vars.sh"
+        - "{{ caas_name }}/volumes/etc-conf/exports"
+
+    - name: Set executable bit on service bash files
+      ansible.builtin.file:
+        path: "/opt/service-containers/{{ item }}"
+        mode: 0755
+      with_items:
+        - "{{ caas_name }}/config/service_start.sh"
+        - "{{ caas_name }}/config/service_stop.sh"
+        - "{{ caas_name }}/config/service_vars.sh"
+
+    - name: Download CaaS service
+      get_url:
+        url: "{{ raw_repo_base }}/containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
+        dest: "/etc/systemd/system/{{ caas_name }}.service"
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Pre-pull the image
+      shell: podman pull quay.io/kenmoini/nfs-ubi:latest
+
+    - name: Start CaaS
+      ansible.builtin.service:
+        name: "{{ caas_name }}"
+        state: restarted
+        enabled: yes
