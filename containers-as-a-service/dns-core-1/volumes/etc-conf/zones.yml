@@ -85,6 +85,13 @@ zones:
         - name: vcenter
           ttl: 6400
           value: 192.168.42.30
+        - name: rhvm
+          ttl: 6400
+          value: 192.168.42.30
+
+        - name: diet-nfs
+          ttl: 6400
+          value: 192.168.42.31
 
         - name: raza
           ttl: 6400
