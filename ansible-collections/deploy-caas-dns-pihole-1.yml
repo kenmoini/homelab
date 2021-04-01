@@ -6,7 +6,6 @@
   vars:
     caas_name: dns-pihole-1
     service_containers_dir: /opt/service-containers
-    raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
 
     piholeWebPassword: notMyDefaultPassword
     timezone: "America/New_York"
@@ -70,8 +69,8 @@
         - "/opt/service-containers/{{ caas_name }}/volumes/etc-dnsmasq.d"
 
     - name: Download CaaS deployment files
-      get_url:
-        url: "{{ raw_repo_base }}/containers-as-a-service/{{ item }}"
+      copy:
+        src: "../containers-as-a-service/{{ item }}"
         dest: "/opt/service-containers/{{ item }}"
         owner: root
         group: root
@@ -97,8 +96,8 @@
         - "{{ caas_name }}/config/service_vars.sh"
 
     - name: Download CaaS service
-      get_url:
-        url: "{{ raw_repo_base }}/containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
+      copy:
+        src: "../containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
         dest: "/etc/systemd/system/{{ caas_name }}.service"
         owner: root
         group: root
