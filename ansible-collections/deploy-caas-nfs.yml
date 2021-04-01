@@ -6,7 +6,6 @@
   vars:
     caas_name: caas-nfs
     service_containers_dir: /opt/service-containers
-    raw_repo_base: https://raw.githubusercontent.com/kenmoini/homelab/main
     selinux_cheat_codes: false
   tasks:
 
@@ -48,9 +47,23 @@
         - "/opt/service-containers/{{ caas_name }}/volumes"
         - "/opt/service-containers/{{ caas_name }}/volumes/etc-conf"
 
+    - name: Create NFS Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: 0777
+      with_items:
+        - "/mnt/nvme_7TB/nfs"
+        - "/mnt/nvme_7TB/nfs/ocp"
+        - "/mnt/nvme_7TB/nfs/ocpreg"
+        - "/mnt/nvme_7TB/nfs/vms"
+        - "/mnt/nvme_7TB/nfs/dropbox"
+
     - name: Download CaaS deployment files
-      get_url:
-        url: "{{ raw_repo_base }}/containers-as-a-service/{{ item }}"
+      copy:
+        src: "../containers-as-a-service/{{ item }}"
         dest: "/opt/service-containers/{{ item }}"
         owner: root
         group: root
@@ -70,8 +83,8 @@
         - "{{ caas_name }}/config/service_vars.sh"
 
     - name: Download CaaS service
-      get_url:
-        url: "{{ raw_repo_base }}/containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
+      copy:
+        src: "../containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
         dest: "/etc/systemd/system/{{ caas_name }}.service"
         owner: root
         group: root
