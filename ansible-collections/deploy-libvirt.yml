@@ -1,6 +1,6 @@
 ---
 - name: Deploy Libvirt/KVM to a RHEL 8 host
-  hosts: all
+  hosts: libvirtHost
   gather_facts: yes
   become: yes
   

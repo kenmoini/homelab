@@ -3,3 +3,4 @@
 /nfs/vms                *(rw,root_squash)
 /nfs/vmgr               *(rw,root_squash)
 /nfs/dropbox            *(rw,root_squash)
+/nfs/nrs                *(rw,no_root_squash)

@@ -1,2 +1,5 @@
 [containerHost]
 raza ansible_host=192.168.42.40 ansible_ssh_user=kemo ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[libvirtHost]
+serenity ansible_host=192.168.42.55 ansible_ssh_user=kemo ansible_ssh_common_args='-o StrictHostKeyChecking=no'
