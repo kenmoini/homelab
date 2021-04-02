@@ -1,6 +1,6 @@
 ---
 - name: Deploy the dns-pihole-1 Container-as-a-Service
-  hosts: all
+  hosts: containerHost
   gather_facts: yes
   become: yes
   vars:

@@ -1,6 +1,6 @@
 ---
 - name: Deploy Libvirt/KVM to a RHEL 8 host
-  hosts: libvirtHost
+  hosts: libvirtHosts
   gather_facts: yes
   become: yes
   
@@ -15,6 +15,9 @@
     - name: Install Libvirt
       include_role:
         name: libvirtInstall
+      vars:
+        enable_nested_virt: true
+        enable_unsafe_interrupts: true
 
     - name: Setup Libvirt Bridge Device
       include_role:

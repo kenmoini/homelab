@@ -136,6 +136,19 @@ zones:
           ttl: 6400
           value: 192.168.42.75
 
+        - name: api.core-ocp
+          ttl: 6400
+          value: 192.168.42.76
+        - name: api-int.core-ocp
+          ttl: 6400
+          value: 192.168.42.76
+        - name: apps.core-ocp
+          ttl: 6400
+          value: 192.168.42.77
+        - name: "*.apps.core-ocp"
+          ttl: 6400
+          value: 192.168.42.77
+
       AAAA:
         - name: unifi
           ttl: 6400

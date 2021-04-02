@@ -1,2 +1,4 @@
 ---
 # defaults file for libvirtInstall
+enable_nested_virt: false
+enable_unsafe_interrupts: false

@@ -60,7 +60,8 @@
         - "/mnt/nvme_7TB/nfs/ocpreg"
         - "/mnt/nvme_7TB/nfs/vms"
         - "/mnt/nvme_7TB/nfs/vmgr"
-        - "/mnt/nvme_7TB/nfs/nrs"
+        - "/mnt/nvme_7TB/nfs/isos"
+        - "/mnt/nvme_7TB/nfs/nrs_dropbox"
         - "/mnt/nvme_7TB/nfs/dropbox"
 
     - name: Download CaaS deployment files

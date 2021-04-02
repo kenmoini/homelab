@@ -8,6 +8,47 @@
     name: ['virt-install', 'virt-viewer']
     state: latest
 
+- name: Gather CPU Type
+  shell: "cat /proc/cpuinfo | grep '^vendor_id' | head -n 1 | cut -d : -f 2 | awk '{$1=$1};1'"
+  register: cpuType
+
+- name: Unload the kvm kernel module - Intel
+  shell: modprobe -r kvm_intel
+  when: enable_nested_virt|bool and cpuType.stdout == "GenuineIntel"
+
+- name: Reload the kvm kernel module with Nested Virtualization - Intel
+  shell: modprobe kvm_intel nested=1
+  when: enable_nested_virt|bool and cpuType.stdout == "GenuineIntel"
+
+- name: Make the nested virt permanent - Intel
+  copy:
+    dest: /etc/modprobe.d/kvm.conf
+    content: |
+      options kvm_intel nested=1
+  when: enable_nested_virt|bool and cpuType.stdout == "GenuineIntel"
+
+- name: Unload the kvm kernel module - AMD
+  shell: modprobe -r kvm_amd
+  when: enable_nested_virt|bool and cpuType.stdout == "AuthenticAMD"
+
+- name: Reload the kvm kernel module - AMD
+  shell: modprobe kvm_amd nested=1
+  when: enable_nested_virt|bool and cpuType.stdout == "AuthenticAMD"
+
+- name: Make the nested virt permanent - AMD
+  copy:
+    dest: /etc/modprobe.d/kvm.conf
+    content: |
+      options kvm_amd nested=1
+  when: enable_nested_virt|bool and cpuType.stdout == "AuthenticAMD"
+
+- name: Enable unsafe interrupts
+  copy:
+    dest: /etc/modprobe.d/unsafe-interrupts.conf
+    content: |
+      options vfio_iommu_type1 allow_unsafe_interrupts=1
+  when: enable_unsafe_interrupts|bool
+
 - name: Start libvirtd
   service:
     name: libvirtd
