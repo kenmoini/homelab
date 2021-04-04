@@ -1,0 +1,2 @@
+NFS_SERVER="192.168.42.31"
+NFS_PATH="/nfs/ocpreg"
