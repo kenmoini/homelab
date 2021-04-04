@@ -42,10 +42,10 @@
         owner: root
         group: root
       with_items:
-        - "/opt/service-containers/{{ caas_name }}"
-        - "/opt/service-containers/{{ caas_name }}/config"
-        - "/opt/service-containers/{{ caas_name }}/volumes"
-        - "/opt/service-containers/{{ caas_name }}/volumes/etc-conf"
+        - "{{ service_containers_dir }}/{{ caas_name }}"
+        - "{{ service_containers_dir }}/{{ caas_name }}/config"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-conf"
 
     - name: Create NFS Directories
       ansible.builtin.file:
@@ -67,7 +67,7 @@
     - name: Download CaaS deployment files
       copy:
         src: "../containers-as-a-service/{{ item }}"
-        dest: "/opt/service-containers/{{ item }}"
+        dest: "{{ service_containers_dir }}/{{ item }}"
         owner: root
         group: root
       with_items:
@@ -78,7 +78,7 @@
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:
-        path: "/opt/service-containers/{{ item }}"
+        path: "{{ service_containers_dir }}/{{ item }}"
         mode: 0755
       with_items:
         - "{{ caas_name }}/config/service_start.sh"
@@ -98,7 +98,7 @@
         daemon_reload: yes
 
     - name: Pre-pull the image
-      shell: podman pull quay.io/kenmoini/nfs-ubi:latest
+      shell: podman pull erichough/nfs-server
 
     - name: Start CaaS
       ansible.builtin.service:

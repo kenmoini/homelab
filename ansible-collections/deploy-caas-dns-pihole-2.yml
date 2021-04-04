@@ -51,8 +51,8 @@
         state: absent
         path: "{{ item }}"
       with_items:
-        - "/opt/service-containers/{{ caas_name }}/volumes/etc-pihole/"
-        - "/opt/service-containers/{{ caas_name }}/volumes/etc-dnsmasq.d/"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-pihole/"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-dnsmasq.d/"
       when: clearVolumes|bool
 
     - name: Create CaaS Directories
@@ -62,16 +62,16 @@
         owner: root
         group: root
       with_items:
-        - "/opt/service-containers/{{ caas_name }}"
-        - "/opt/service-containers/{{ caas_name }}/config"
-        - "/opt/service-containers/{{ caas_name }}/volumes"
-        - "/opt/service-containers/{{ caas_name }}/volumes/etc-pihole"
-        - "/opt/service-containers/{{ caas_name }}/volumes/etc-dnsmasq.d"
+        - "{{ service_containers_dir }}/{{ caas_name }}"
+        - "{{ service_containers_dir }}/{{ caas_name }}/config"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-pihole"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-dnsmasq.d"
 
     - name: Download CaaS deployment files
       copy:
         src: "../containers-as-a-service/{{ item }}"
-        dest: "/opt/service-containers/{{ item }}"
+        dest: "{{ service_containers_dir }}/{{ item }}"
         owner: root
         group: root
       with_items:
@@ -81,14 +81,14 @@
     - name: Template over container vars
       template:
         src: caas-dns-pihole-service_vars.sh.j2
-        dest: "/opt/service-containers/{{ caas_name }}/config/service_vars.sh"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/config/service_vars.sh"
         owner: root
         group: root
         mode: 0755
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:
-        path: "/opt/service-containers/{{ item }}"
+        path: "{{ service_containers_dir }}/{{ item }}"
         mode: 0755
       with_items:
         - "{{ caas_name }}/config/service_start.sh"
