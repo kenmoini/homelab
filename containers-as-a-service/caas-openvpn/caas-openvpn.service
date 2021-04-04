@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenVPN Server Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+ExecStop=/opt/service-containers/caas-openvpn/config/service_stop.sh
+ExecStart=/opt/service-containers/caas-openvpn/config/service_start.sh
+
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
