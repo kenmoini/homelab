@@ -38,13 +38,13 @@ if [[ $VIRT_HOST == "serenity" ]]; then
   nohup virt-install -v --mac="${MAC_PREFIX}20" --name=${VIRT_HOST}-ocp-cp-2 --vcpus ${CP_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-cp-2.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
   # App Node #1 - Normal
-  nohup virt-install -v --mac="${MAC_PREFIX}50" --name=${VIRT_HOST}-ocp-app-1 --vcpus ${AN_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-1.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
+  nohup virt-install -v --mac="${MAC_PREFIX}40" --name=${VIRT_HOST}-ocp-app-1 --vcpus ${AN_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-1.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
   # App Node #2 - Quadro RTX 4000
-  nohup virt-install -v --mac="${MAC_PREFIX}60" --name=${VIRT_HOST}-ocp-app-2-quadro --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-2.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" ${SERENITY_QUADRO_DEV} --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
+  nohup virt-install -v --mac="${MAC_PREFIX}50" --name=${VIRT_HOST}-ocp-app-2-quadro --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-2.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" ${SERENITY_QUADRO_DEV} --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
   # App Node #3 - M40
-  nohup virt-install -v --mac="${MAC_PREFIX}70" --name=${VIRT_HOST}-ocp-app-3-m40 --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-3.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" ${SERENITY_M40_DEV} --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
+  nohup virt-install -v --mac="${MAC_PREFIX}60" --name=${VIRT_HOST}-ocp-app-3-m40 --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-3.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" ${SERENITY_M40_DEV} --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
 fi
 
@@ -53,16 +53,13 @@ if [[ $VIRT_HOST == "rocinante" ]]; then
   # Control Plane #3
   nohup virt-install -v --mac="${MAC_PREFIX}30" --name=${VIRT_HOST}-ocp-cp-3 --vcpus ${CP_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-cp-3.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
-  # Control Plane #4
-  nohup virt-install -v --mac="${MAC_PREFIX}40" --name=${VIRT_HOST}-ocp-cp-4 --vcpus ${CP_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-cp-4.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
-  sleep 3
   # App Node #4 - Normal
-  nohup virt-install -v --mac="${MAC_PREFIX}80" --name=${VIRT_HOST}-ocp-app-4 --vcpus ${AN_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-4.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
+  nohup virt-install -v --mac="${MAC_PREFIX}70" --name=${VIRT_HOST}-ocp-app-4 --vcpus ${AN_VCPUS} --memory=${CP_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-4.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
   # App Node #5 - Normal
-  nohup virt-install -v --mac="${MAC_PREFIX}90" --name=${VIRT_HOST}-ocp-app-5 --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-5.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
+  nohup virt-install -v --mac="${MAC_PREFIX}80" --name=${VIRT_HOST}-ocp-app-5 --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-5.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
   # App Node #6 - M40
-  nohup virt-install -v --mac="${MAC_PREFIX}99" --name=${VIRT_HOST}-ocp-app-6-m40 --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-6.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" ${ROCINANTE_M40_DEV} --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
+  nohup virt-install -v --mac="${MAC_PREFIX}90" --name=${VIRT_HOST}-ocp-app-6-m40 --vcpus ${AN_VCPUS} --memory=${AN_RAM} --cdrom=${OCP_AI_ISO_PATH} --disk size=120,path=${VM_PATH}/${VIRT_HOST}-ocp-app-6.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --events "on_reboot=restart" ${ROCINANTE_M40_DEV} --graphics spice,listen=${ROCINANTE_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE} &>>$LOGF &
   sleep 3
 fi
