@@ -15,7 +15,7 @@ if [[ -f "$FILE_CHECK" ]]; then
 fi
 
 echo "Starting container ${CONTAINER_NAME}..."
-/usr/bin/podman run --privileged \
+/usr/bin/podman run --cap-add SYS_ADMIN \
  -d --name "${CONTAINER_NAME}" \
  --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" \
  $CONTAINER_PORTS \

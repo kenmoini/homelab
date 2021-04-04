@@ -9,6 +9,6 @@ CONTAINER_PORTS="-p 2049/tcp -p 111/tcp -p 32765/tcp -p 32767/tcp -p 2049/udp -p
 EXPORTS_CFG_VOLUME_MOUNT="/opt/service-containers/${CONTAINER_NAME}/volumes/etc-conf/exports:/etc/exports"
 NFS_BASE_VOLUME_MOUNT="/mnt/nvme_7TB/nfs:/nfs"
 
-CONTAINER_SOURCE="quay.io/kenmoini/nfs-ubi:latest"
+CONTAINER_SOURCE="erichough/nfs-server"
 
 RESOURCE_LIMITS="-m 512m"
