@@ -27,8 +27,8 @@ setenforce 0
 systemctl enable --now firewalld
 
 # Set firewalld 
-firewall-cmd add-service freeipa-ldap freeipa-ldaps dns ntp ssh https http --permanent
-firewall-cmd add-port 8080/tcp --permanent
+firewall-cmd --add-service=freeipa-ldap --add-service=freeipa-ldaps --add-service=dns --add-service=ntp --add-service=ssh --add-service=https --add-service=http --permanent
+firewall-cmd --add-port=8080/tcp --permanent
 firewall-cmd --reload
 
 # Install RH IDM
