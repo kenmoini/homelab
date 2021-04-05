@@ -29,6 +29,7 @@ systemctl enable --now firewalld
 # Set firewalld 
 firewall-cmd add-service freeipa-ldap freeipa-ldaps dns ntp ssh https http --permanent
 firewall-cmd add-port 8080/tcp --permanent
+firewall-cmd --reload
 
 # Install RH IDM
 dnf install -y bind \
@@ -60,4 +61,4 @@ dnf install -y bind \
   "@Development tools"
 
 # Run IPA Installer if no config exists 
-ipa-server-install --unattended --realm=$IDM_REALM --domain=$IDM_DOMAIN --ds-password=$IDM_DS_PASSWORD --admin-password=$IDM_ADMIN_PASSWORD --hostname=$SERVER_HOSTNAME --no-ntp --mkhomedir
+ipa-server-install --unattended --realm=$IDM_REALM --domain=$IDM_DOMAIN --ds-password=$IDM_DS_PASSWORD --admin-password=$IDM_ADMIN_PASSWORD --hostname=$SERVER_HOSTNAME --mkhomedir
