@@ -5,6 +5,8 @@ SERVER_IP="192.168.42.13"
 
 IDM_REALM="KEMO.LABS"
 IDM_DOMAIN="kemo.labs"
+IDM_DS_PASSWORD="s3cur3P455"
+IDM_ADMIN_PASSWORD="s3cur3P455"
 
 
 # System must be subscribed already
@@ -56,3 +58,6 @@ dnf install -y bind \
   python3-argcomplete \
   python3-argh \
   "@Development tools"
+
+# Run IPA Installer if no config exists 
+ipa-server-install --unattended --realm=$IDM_REALM --domain=$IDM_DOMAIN --ds-password=$IDM_DS_PASSWORD --admin-password=$IDM_ADMIN_PASSWORD --hostname=$SERVER_HOSTNAME --no-ntp --mkhomedir
