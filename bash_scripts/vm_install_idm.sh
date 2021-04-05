@@ -10,4 +10,4 @@ VCPUS="sockets=1,cores=1,threads=1"
 
 RAM="4096"
 
-virt-install -v --name=idm --vcpus ${VCPUS} --memory=${RAM} --cdrom=${ISO_PATH} --disk size=25,path=${VM_PATH}/idm.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --graphics spice,listen=${SERENITY_LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE}
+virt-install -v --name=idm --vcpus ${VCPUS} --memory=${RAM} --cdrom=${ISO_PATH} --disk size=25,path=${VM_PATH}/idm.qcow2,cache=none --os-variant=rhel8.3 --autostart --noautoconsole --graphics spice,listen=${LIBVIRT_HOST},tlsport=,defaultMode='insecure' --network bridge=${BRIDGE_IFACE}

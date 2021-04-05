@@ -1,0 +1,20 @@
+apiVersion: nfd.openshift.io/v1
+kind: NodeFeatureDiscovery
+metadata:
+  name: nfd-master-server
+  namespace: openshift-operators
+spec:
+  operand:
+    image: 'registry.redhat.io/openshift4/ose-node-feature-discovery:v4.7.0'
+    imagePullPolicy: Always
+    namespace: node-feature-discovery-operator
+  workerConfig:
+    configData: |
+      sources:
+        pci:
+          deviceLabelFields:
+            - "vendor"
+          deviceClassWhitelist:
+            - "0200"
+            - "03"
+            - "12"
