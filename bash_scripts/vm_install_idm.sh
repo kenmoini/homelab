@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LIBVIRT_HOST="192.168.42.40"
-BRIDGE_IFACE="lanBridge"
+BRIDGE_IFACE="containerLANbr0"
 
 ISO_PATH="/mnt/nvme_7TB/nfs/isos/rhel8.3.iso"
 VM_PATH="/mnt/nvme_7TB/nfs/vms/raza"
