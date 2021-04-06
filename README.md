@@ -17,3 +17,31 @@ In the `containers-as-a-service` directory you can find resources that define di
 Often times it's useful to use an automation platform like Ansible to handle system and service configuration as fast and as repeatable as possible.  
 
 In the `ansible-collections` directory you can find a series of collections to help bootstrap an Ansible Tower server with the collections, to other collections that will configure systems for workloads such as Red Hat Satellite, and OpenShift.
+
+## Bash Scripts
+
+The trusted methods of automation: Bash.
+
+There are some scripts for:
+
+- Setting up an OpenShift Assisted Installer cluster across a few nodes with PCI devices passed through via Libvirt/KVM
+- Creating a standard VM via Libvirt, set for Red Hat Identity Management
+- Unattended Install & Configuring of RH IDM on RHEL 8.3
+
+## OpenShift Quickstarts
+
+If there's one thing that is deployed more often than my Homelab infrastructure it's OpenShift clusters - sometimes go through a few a day!
+
+In order to make bootstrapping a vanilla OpenShift and deploying workloads easier there are a few scripts and manifests provided to do the following:
+
+### Initializing a Cluster
+
+- Styling the OpenShift login in red Matrix-style dripping text
+- NFS Backing for the Internal Registry
+- NFS StorageClass with Dynamic Provisioner
+- Red Hat Subscription Manager Cluster entitlement to use normal RHEL repos in UBI containers
+- NFD+GPU Operator deployment
+
+### Example Workloads
+
+WIP

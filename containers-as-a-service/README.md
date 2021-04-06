@@ -8,6 +8,8 @@ In the scope of this repository collection, these CaaS resources are stored in t
 
 - DNS Core
 - PiHole Ad Blocker DNS Servers
+- NFS v3+v4 Server
+- OpenVPN Server
 
 ### DNS Core Services via GoZones
 
