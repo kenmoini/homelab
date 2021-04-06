@@ -22,3 +22,6 @@ echo "Waiting 15 seconds while Operator installs..."
 sleep 20
 
 oc apply -f deploy/gpu_instance.yaml
+
+# Add Monitoring to Nvidia DCGM
+oc label ns/gpu-operator-resources openshift.io/cluster-monitoring=true

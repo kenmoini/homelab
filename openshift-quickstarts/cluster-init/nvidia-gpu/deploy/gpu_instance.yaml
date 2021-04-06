@@ -3,6 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: gpu-cluster-policy
 spec:
+  # https://ngc.nvidia.com/catalog/containers/nvidia:k8s:dcgm-exporter/tags
   dcgmExporter:
     nodeSelector: {}
     imagePullSecrets: []
@@ -10,10 +11,12 @@ spec:
     affinity: {}
     podSecurityContext: {}
     repository: nvcr.io/nvidia/k8s
+    imagePullPolicy: Always
     securityContext: {}
-    version: 'sha256:ced606933cd2210768ee8488b624c64ac0bdce6f05d9c4b4210e251370a14ff8'
+    version: 'sha256:15b4b8b9468f1c39bb00747dfeb767959edef4de22bec0f5aba8035f7b5a63f5'
     image: dcgm-exporter
     tolerations: []
+  # https://ngc.nvidia.com/catalog/containers/nvidia:k8s-device-plugin/tags
   devicePlugin:
     nodeSelector: {}
     imagePullSecrets: []
@@ -21,16 +24,23 @@ spec:
     affinity: {}
     podSecurityContext: {}
     repository: nvcr.io/nvidia
+    imagePullPolicy: Always
+    env:
+      - name: NVIDIA_DRIVER_CAPABILITIES
+        value: all
+      - name: NVIDIA_VISIBLE_DEVICES
+        value: all
     securityContext: {}
-    version: 'sha256:ea353fe57628f4d3c3e1cda126455d02f2277e3ee92fa9da441d409d76b2ac92'
+    version: 'sha256:85def0197f388e5e336b1ab0dbec350816c40108a58af946baa1315f4c96ee05'
     image: k8s-device-plugin
     tolerations: []
     args:
       - '--mig-strategy=single'
       - '--pass-device-specs=true'
-      - '--fail-on-init-error=true'
+      - '--fail-on-init-error=false'
       - '--device-list-strategy=envvar'
       - '--nvidia-driver-root=/run/nvidia/driver'
+  # https://ngc.nvidia.com/catalog/containers/nvidia:driver/tags
   driver:
     licensingConfig:
       configMapName: ''
@@ -40,13 +50,15 @@ spec:
     affinity: {}
     podSecurityContext: {}
     repository: nvcr.io/nvidia
+    imagePullPolicy: Always
     securityContext: {}
     repoConfig:
       configMapName: ''
       destinationDir: ''
-    version: 'sha256:017d2e2a1bc410e9d2ac116683fc49a6f28e935cadee86e712cc147ea0239469'
+    version: 'sha256:324e9dc265dec320207206aa94226b0c8735fd93ce19b36a415478c95826d934'
     image: driver
     tolerations: []
+  # https://ngc.nvidia.com/catalog/containers/nvidia:gpu-feature-discovery/tags
   gfd:
     nodeSelector: {}
     imagePullSecrets: []
@@ -54,6 +66,7 @@ spec:
     affinity: {}
     podSecurityContext: {}
     repository: nvcr.io/nvidia
+    imagePullPolicy: Always
     securityContext: {}
     version: 'sha256:bfc39d23568458dfd50c0c5323b6d42bdcd038c420fb2a2becd513a3ed3be27f'
     image: gpu-feature-discovery
@@ -68,6 +81,7 @@ spec:
       repository: nvcr.io/nvidia/k8s
       version: 'sha256:2a30fe7e23067bc2c3f8f62a6867702a016af2b80b9f6ce861f3fea4dfd85bc2'
     deployGFD: true
+  # https://ngc.nvidia.com/catalog/containers/nvidia:k8s:container-toolkit/tags
   toolkit:
     nodeSelector: {}
     imagePullSecrets: []
@@ -75,6 +89,7 @@ spec:
     affinity: {}
     podSecurityContext: {}
     repository: nvcr.io/nvidia/k8s
+    imagePullPolicy: Always
     securityContext: {}
     version: 'sha256:c91875db54ad5d2a2ed396c8fd15cc666411ff35c58c634680946371d32507ae'
     image: container-toolkit
