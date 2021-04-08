@@ -1,0 +1,37 @@
+---
+- name: Deploy Podman and a bridged network interface
+  hosts: containerHost
+  gather_facts: yes
+  become: yes
+  vars:
+    selinux_cheat_codes: false
+  tasks:
+
+    - name: Update system
+      include_role:
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
+
+    - name: Install Podman
+      include_role:
+        name: podmanInstall
+
+    - name: Create Container Network Bridge
+      include_role:
+        name: podmanBridgeNet
+      vars:
+        # the logical name of your container bridge
+        bridgeName: lanBridge
+        # the physical device name of your bridge device
+        bridgeDevice: bridge0
+        # the bridged network details can overlap with full subnet, DHCP is passed to the gateway - below is configured for kemo.labs
+        bridgeSubnet: 192.168.42.0/24
+        bridgeGateway: 192.168.42.1
+        bridgeRangeStart: 192.168.42.2
+        bridgeRangeEnd: 192.168.42.245
+
+    - name: Set SELinux Contexts for Container-as-a-Service
+      include_role:
+        name: caasSELinux
+      when: selinux_cheat_codes|bool
