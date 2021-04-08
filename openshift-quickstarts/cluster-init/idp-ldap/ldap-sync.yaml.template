@@ -1,0 +1,29 @@
+kind: LDAPSyncConfig
+apiVersion: v1
+url: ldaps://idm.kemo.labs:636
+insecure: false
+groupUIDNameMapping:
+  "cn=labadmins,cn=groups,cn=accounts,dc=kemo,dc=labs": labadmins
+  "cn=admins,cn=groups,cn=accounts,dc=kemo,dc=labs": admins
+bindDN: uid=admin,cn=users,cn=accounts,dc=kemo,dc=labs
+bindPassword: SOME_SECURE_PASSWORD
+ca: cert.pem
+rfc2307:
+  groupsQuery:
+    baseDN: "cn=groups,cn=accounts,dc=kemo,dc=labs"
+    scope: sub
+    derefAliases: never
+    pageSize: 0
+    filter: (|(cn=labadmins)(cn=admins))
+  groupUIDAttribute: dn 
+  groupNameAttributes: [ cn ] 
+  groupMembershipAttributes: [ member ]
+  usersQuery:
+    baseDN: "cn=users,cn=accounts,dc=kemo,dc=labs"
+    scope: sub
+    derefAliases: never
+    pageSize: 0
+  userUIDAttribute: dn
+  userNameAttributes: [ uid ]
+  tolerateMemberNotFoundErrors: true
+  tolerateMemberOutOfScopeErrors: true

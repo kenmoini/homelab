@@ -1,0 +1,31 @@
+apiVersion: config.openshift.io/v1
+kind: OAuth
+metadata:
+  annotations:
+    release.openshift.io/create-only: 'true'
+  creationTimestamp: '2020-10-19T02:48:58Z'
+  generation: 6
+  name: cluster
+spec:
+  identityProviders:
+    - ldap:
+        attributes:
+          email:
+            - mail
+          id:
+            - dn
+          name:
+            - cn
+          preferredUsername:
+            - uid
+        bindDN: 'uid=admin,cn=users,cn=accounts,dc=kemo,dc=labs'
+        bindPassword:
+          name: labdap-bind-password
+        ca:
+          name: labdap-ca
+        insecure: false
+        url: >-
+          ldaps://idm.kemo.labs:636/cn=users,cn=accounts,dc=kemo,dc=labs?uid?sub?(uid=*)
+      mappingMethod: claim
+      name: LabDAP
+      type: LDAP
