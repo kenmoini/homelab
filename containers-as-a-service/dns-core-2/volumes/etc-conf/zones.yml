@@ -203,59 +203,59 @@ zones:
 
       SRV:
         - name: _kerberos._udp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 88
           priority: 0
           ttl: 6400
           weight: 100
         - name: _kerberos._tcp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 88
           priority: 0
           ttl: 6400
           weight: 100
 
         - name: _kerberos-master._udp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 88
           priority: 0
           ttl: 6400
           weight: 100
         - name: _kerberos-master._tcp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 88
           priority: 0
           ttl: 6400
           weight: 100
 
         - name: _kpasswd._udp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 464
           priority: 0
           ttl: 6400
           weight: 100
         - name: _kpasswd._tcp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 464
           priority: 0
           ttl: 6400
           weight: 100
 
         - name: _ldap._tcp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 389
           priority: 0
           ttl: 6400
           weight: 100
         - name: _ldaps._tcp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 636
           priority: 0
           ttl: 6400
           weight: 100
 
         - name: _ntp._udp
-          value: idm.kemo.labs
+          value: idm.kemo.labs.
           port: 123
           priority: 0
           ttl: 6400
