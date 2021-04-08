@@ -78,6 +78,9 @@ zones:
         - name: deluge
           ttl: 6400
           value: 192.168.42.24
+        - name: '@'
+          ttl: 6400
+          value: 192.168.42.29
 
         - name: vcenter
           ttl: 6400

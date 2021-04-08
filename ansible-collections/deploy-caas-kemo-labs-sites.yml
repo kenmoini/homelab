@@ -1,16 +1,11 @@
 ---
-- name: Deploy the dns-pihole-2 Container-as-a-Service
+- name: Deploy the Kemo Labs Sites Container-as-a-Service
   hosts: containerHost
   gather_facts: yes
   become: yes
   vars:
-    caas_name: dns-pihole-2
+    caas_name: kemo-labs-sites
     service_containers_dir: /opt/service-containers
-
-    piholeWebPassword: notMyDefaultPassword
-    timezone: "America/New_York"
-    containerNumber: 2
-    clearVolumes: false
     selinux_cheat_codes: false
     update_system: false
     install_podman: false
@@ -46,21 +41,6 @@
         owner: root
         group: root
 
-    - name: Stop running container
-      ansible.builtin.service:
-        name: "{{ caas_name }}"
-        state: stopped
-      when: clearVolumes|bool
-        
-    - name: Clear volume paths
-      file:
-        state: absent
-        path: "{{ item }}"
-      with_items:
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-pihole/"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-dnsmasq.d/"
-      when: clearVolumes|bool
-
     - name: Create CaaS Directories
       ansible.builtin.file:
         path: "{{ item }}"
@@ -71,8 +51,7 @@
         - "{{ service_containers_dir }}/{{ caas_name }}"
         - "{{ service_containers_dir }}/{{ caas_name }}/config"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-pihole"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-dnsmasq.d"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-conf"
 
     - name: Download CaaS deployment files
       copy:
@@ -83,14 +62,7 @@
       with_items:
         - "{{ caas_name }}/config/service_start.sh"
         - "{{ caas_name }}/config/service_stop.sh"
-
-    - name: Template over container vars
-      template:
-        src: caas-dns-pihole-service_vars.sh.j2
-        dest: "{{ service_containers_dir }}/{{ caas_name }}/config/service_vars.sh"
-        owner: root
-        group: root
-        mode: 0755
+        - "{{ caas_name }}/config/service_vars.sh"
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:
@@ -114,7 +86,7 @@
         daemon_reload: yes
 
     - name: Pre-pull the image
-      shell: podman pull pihole/pihole:latest
+      shell: podman pull quay.io/kenmoini/kemo.labs
 
     - name: Start CaaS
       ansible.builtin.service:

@@ -7,6 +7,9 @@
     caas_name: caas-nfs
     service_containers_dir: /opt/service-containers
     selinux_cheat_codes: false
+    update_system: false
+    install_podman: false
+    create_podman_bridge: false
   tasks:
 
     - name: Update system
@@ -14,14 +17,17 @@
         name: baseLinuxUpdate
       vars:
         reboot_after_kernel_update: false
+      when: update_system|bool
 
     - name: Install Podman
       include_role:
         name: podmanInstall
+      when: install_podman|bool
 
     - name: Create Container Network Bridge
       include_role:
         name: podmanBridgeNet
+      when: create_podman_bridge|bool
 
     - name: Set SELinux Contexts for Container-as-a-Service
       include_role:
