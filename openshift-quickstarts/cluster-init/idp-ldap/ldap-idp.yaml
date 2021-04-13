@@ -20,9 +20,9 @@ spec:
             - uid
         bindDN: 'uid=admin,cn=users,cn=accounts,dc=kemo,dc=labs'
         bindPassword:
-          name: labdap-bind-password
+          name: ldap-bind-password
         ca:
-          name: labdap-ca
+          name: ldap-ca
         insecure: false
         url: >-
           ldaps://idm.kemo.labs:636/cn=users,cn=accounts,dc=kemo,dc=labs?uid?sub?(uid=*)
