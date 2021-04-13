@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cluster-entitled-build-pod
+spec:
+  nodeSelector:
+    kubernetes.io/hostname: app-1
+  containers:
+    - name: cluster-entitled-build
+      image: registry.access.redhat.com/ubi8:latest
+      command: [ "/bin/sh", "-c", "dnf search kernel-devel --showduplicates" ]
+  restartPolicy: Never
