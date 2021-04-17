@@ -4,21 +4,21 @@
 resource "libvirt_volume" "serenity_k8s_cp_1" {
   provider = libvirt.serenity
   name     = "serenity-k8s-cp-1"
-  pool     = "default"
+  pool     = "serenity"
   format   = "qcow2"
   size     = 65536
 }
 resource "libvirt_volume" "rocinante_k8s_cp_2" {
   provider = libvirt.rocinante
   name     = "rocinante-k8s-cp-2"
-  pool     = "default"
+  pool     = "rocinante"
   format   = "qcow2"
   size     = 65536
 }
 resource "libvirt_volume" "serenity_k8s_cp_3" {
   provider = libvirt.serenity
   name     = "serenity-k8s-cp-3"
-  pool     = "default"
+  pool     = "serenity"
   format   = "qcow2"
   size     = 65536
 }
