@@ -11,6 +11,7 @@ dnf install golang make "@Development Tools" libvirt-devel -y
 git clone https://github.com/dmacvicar/terraform-provider-libvirt
 cd terraform-provider-libvirt
 
+git fetch --tags
 git checkout v$VERSION_TAG
 
 mkdir -p ~/.local/share/terraform/plugins/registry.terraform.io/dmacvicar/libvirt/$VERSION_TAG/linux_amd64
