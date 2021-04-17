@@ -20,4 +20,5 @@ echo "Starting container ${CONTAINER_NAME}..."
  --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" \
  $CONTAINER_PORTS \
  ${RESOURCE_LIMITS} \
+ ${VOLUME_MOUNTS} \
  ${CONTAINER_SOURCE}

@@ -9,3 +9,5 @@ CONTAINER_PORTS="-p 80/tcp -p 443/tcp"
 CONTAINER_SOURCE="quay.io/kenmoini/kemo.labs"
 
 RESOURCE_LIMITS="-m 512m"
+
+VOLUME_MOUNTS="-v /mnt/nvme_7TB/nfs/dropbox:/opt/app-root/src/dropbox"
