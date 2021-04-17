@@ -48,6 +48,18 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
     listen_address = var.serenity_host_ip
     autoport    = true
   }
+
+  # This file is usually present as part of the ovmf firmware package in many
+  # Linux distributions.
+  firmware = "/usr/share/OVMF/OVMF_CODE.secboot.fd"
+
+  nvram {
+    # This is the file which will back the UEFI NVRAM content.
+    file = "/var/lib/libvirt/qemu/nvram/k8s_cp_1_VARS.fd"
+
+    # This file needs to be provided by the user.
+    template = "/usr/share/OVMF/OVMF_VARS.secboot.fd"
+  }
 }
 
 resource "libvirt_domain" "rocinante_k8s_cp_2" {
