@@ -6,6 +6,7 @@ resource "libvirt_volume" "serenity_k8s_cp_1" {
   name     = "serenity-k8s-cp-1"
   pool     = "serenity-1"
   format   = "qcow2"
+  source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
   size     = 65536
 }
 resource "libvirt_volume" "rocinante_k8s_cp_2" {
@@ -13,6 +14,7 @@ resource "libvirt_volume" "rocinante_k8s_cp_2" {
   name     = "rocinante-k8s-cp-2"
   pool     = "rocinante"
   format   = "qcow2"
+  source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
   size     = 65536
 }
 resource "libvirt_volume" "serenity_k8s_cp_3" {
@@ -20,6 +22,7 @@ resource "libvirt_volume" "serenity_k8s_cp_3" {
   name     = "serenity-k8s-cp-3"
   pool     = "serenity-1"
   format   = "qcow2"
+  source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
   size     = 65536
 }
 
@@ -34,6 +37,21 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
   }
 
   cloudinit = libvirt_cloudinit_disk.k8s_cp_1_user_data_commoninit.id
+
+  # IMPORTANT: this is a known bug on cloud images, since they expect a console
+  # we need to pass it
+  # https://bugs.launchpad.net/cloud-images/+bug/1573095
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+
+  console {
+    type        = "pty"
+    target_type = "virtio"
+    target_port = "1"
+  }
 
   #graphics {
   #  type        = "spice"
@@ -67,6 +85,21 @@ resource "libvirt_domain" "rocinante_k8s_cp_2" {
 
   cloudinit = libvirt_cloudinit_disk.k8s_cp_2_user_data_commoninit.id
 
+  # IMPORTANT: this is a known bug on cloud images, since they expect a console
+  # we need to pass it
+  # https://bugs.launchpad.net/cloud-images/+bug/1573095
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+
+  console {
+    type        = "pty"
+    target_type = "virtio"
+    target_port = "1"
+  }
+
   #graphics {
   #  type        = "spice"
   #  listen_type = "address"
@@ -98,6 +131,21 @@ resource "libvirt_domain" "serenity_k8s_cp_3" {
   }
 
   cloudinit = libvirt_cloudinit_disk.k8s_cp_3_user_data_commoninit.id
+
+  # IMPORTANT: this is a known bug on cloud images, since they expect a console
+  # we need to pass it
+  # https://bugs.launchpad.net/cloud-images/+bug/1573095
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+
+  console {
+    type        = "pty"
+    target_type = "virtio"
+    target_port = "1"
+  }
 
   #graphics {
   #  type        = "spice"
