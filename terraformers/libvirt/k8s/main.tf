@@ -1,172 +1,20 @@
+# HA Kubernetes on Libvirt
 
+## Setup
 
+### 1. Install the LibVirt Terraform Provider
+###    There is a helper script in this repository at `bash_scripts/setup_libvirt_terraform_provider.sh`
+###    Ensure to check for the latest version - there may be an easier to use the provider in the future
+###
+### 2. Set up SSH Authorized keys
+###    Your local user (luser) will need to have an SSH key pair generated `ssh-keygen -t rsa -b 4096`
+###    Then, `ssh-copy-id -i ~/.ssh/your_key_pair root@rocinante` and for target hosts
+###
+### 3. Run the SSH Agent
+###    `eval $(ssh-agent -s)`
+###    and then
+###    `ssh-add ~/.ssh/your_key_pair`
+###    
+###    
 
-resource "libvirt_volume" "serenity_k8s_cp_1" {
-  provider = libvirt.serenity
-  name     = "serenity-k8s-cp-1"
-  pool     = var.serenity_pool_name
-  format   = "qcow2"
-  source = var.kvm_image_source
-}
-resource "libvirt_volume" "rocinante_k8s_cp_2" {
-  provider = libvirt.rocinante
-  name     = "rocinante-k8s-cp-2"
-  pool     = var.rocinante_pool_name
-  format   = "qcow2"
-  source = var.kvm_image_source
-}
-resource "libvirt_volume" "serenity_k8s_cp_3" {
-  provider = libvirt.serenity
-  name     = "serenity-k8s-cp-3"
-  pool     = var.serenity_pool_name
-  format   = "qcow2"
-  source = var.kvm_image_source
-}
-
-resource "libvirt_domain" "serenity_k8s_cp_1" {
-  provider = libvirt.serenity
-  name     = "k8s-cp-1"
-  memory   = "8192"
-  vcpu     = 4
-
-  network_interface {
-    bridge = var.vm_bridge
-    #mac    = "52:54:00:b2:2f:86"
-  }
-
-  cloudinit = libvirt_cloudinit_disk.k8s_cp_1_user_data_commoninit.id
-
-  disk {
-    volume_id = libvirt_volume.serenity_k8s_cp_1.id
-  }
-
-  boot_device {
-    dev = ["hd", "network"]
-  }
-
-  # IMPORTANT: this is a known bug on cloud images, since they expect a console
-  # we need to pass it
-  # https://bugs.launchpad.net/cloud-images/+bug/1573095
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-
-  console {
-    type        = "pty"
-    target_type = "virtio"
-    target_port = "1"
-  }
-
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    listen_address = var.serenity_host_ip
-    autoport    = true
-  }
-  #graphics {
-  #  type        = "vnc"
-  #  listen_type = "address"
-  #  autoport    = true
-  #}
-}
-
-resource "libvirt_domain" "rocinante_k8s_cp_2" {
-  provider = libvirt.rocinante
-  name     = "k8s-cp-3"
-  memory   = "8192"
-  vcpu     = 4
-
-  network_interface {
-    bridge = var.vm_bridge
-    #mac    = "52:54:00:b2:2f:86"
-  }
-
-  disk {
-    volume_id = libvirt_volume.rocinante_k8s_cp_2.id
-  }
-
-  cloudinit = libvirt_cloudinit_disk.k8s_cp_2_user_data_commoninit.id
-
-  boot_device {
-    dev = ["hd", "network"]
-  }
-
-  # IMPORTANT: this is a known bug on cloud images, since they expect a console
-  # we need to pass it
-  # https://bugs.launchpad.net/cloud-images/+bug/1573095
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-
-  console {
-    type        = "pty"
-    target_type = "virtio"
-    target_port = "1"
-  }
-
-  #graphics {
-  #  type        = "spice"
-  #  listen_type = "address"
-  #  autoport    = true
-  #}
-  graphics {
-    type        = "vnc"
-    listen_type = "address"
-    listen_address = var.rocinante_host_ip
-    autoport    = true
-  }
-}
-
-resource "libvirt_domain" "serenity_k8s_cp_3" {
-  provider = libvirt.serenity
-  name     = "k8s-cp-3"
-  memory   = "8192"
-  vcpu     = 4
-
-  network_interface {
-    bridge = var.vm_bridge
-    #mac    = "52:54:00:b2:2f:86"
-  }
-
-  disk {
-    volume_id = libvirt_volume.serenity_k8s_cp_3.id
-  }
-
-  cloudinit = libvirt_cloudinit_disk.k8s_cp_3_user_data_commoninit.id
-
-  boot_device {
-    dev = ["hd", "network"]
-  }
-
-  # IMPORTANT: this is a known bug on cloud images, since they expect a console
-  # we need to pass it
-  # https://bugs.launchpad.net/cloud-images/+bug/1573095
-  console {
-    type        = "pty"
-    target_port = "0"
-    target_type = "serial"
-  }
-
-  console {
-    type        = "pty"
-    target_type = "virtio"
-    target_port = "1"
-  }
-
-  #graphics {
-  #  type        = "spice"
-  #  listen_type = "address"
-  #  listen_address = "192.168.42.55"
-  #  autoport    = true
-  #}
-  graphics {
-    type        = "vnc"
-    listen_type = "address"
-    listen_address = var.serenity_host_ip
-    autoport    = true
-  }
-}
+#  Now you can continue to `terraform init && terraform plan`
