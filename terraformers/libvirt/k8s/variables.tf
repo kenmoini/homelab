@@ -19,3 +19,16 @@ variable "serenity_host_ip" {
   type    = string
   default = "192.168.42.55"
 }
+
+variable "raza_pool_name" {
+  type    = string
+  default = "raza"
+}
+variable "rocinante_pool_name" {
+  type    = string
+  default = "rocinante"
+}
+variable "serenity_pool_name" {
+  type    = string
+  default = "serenity-1"
+}
