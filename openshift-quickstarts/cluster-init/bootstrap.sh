@@ -12,4 +12,5 @@ cd nfs-registry
 cd nfs-storageclass
 ./run.sh && cd ..
 
-echo "Now run RHSM entitlement scripts (requires assets/input)"
+cd rh-reg-cluster-entitlement
+./run.sh && cd ..
