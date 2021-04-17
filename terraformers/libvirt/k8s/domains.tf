@@ -14,6 +14,8 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
   disk {
     volume_id = libvirt_volume.serenity_k8s_cp_1.id
   }
+  
+  autostart = true
 
   boot_device {
     dev = ["hd", "network"]
@@ -64,6 +66,8 @@ resource "libvirt_domain" "rocinante_k8s_cp_2" {
   }
 
   cloudinit = libvirt_cloudinit_disk.k8s_cp_2_user_data_commoninit.id
+  
+  autostart = true
 
   boot_device {
     dev = ["hd", "network"]
@@ -114,6 +118,8 @@ resource "libvirt_domain" "serenity_k8s_cp_3" {
   }
 
   cloudinit = libvirt_cloudinit_disk.k8s_cp_3_user_data_commoninit.id
+  
+  autostart = true
 
   boot_device {
     dev = ["hd", "network"]
