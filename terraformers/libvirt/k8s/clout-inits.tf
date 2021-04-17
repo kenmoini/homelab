@@ -14,14 +14,17 @@ data "template_file" "k8s_cp_3_user_data" {
 resource "libvirt_cloudinit_disk" "k8s_cp_1_user_data_commoninit" {
   name      = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.10-live-server-amd64.iso"
   user_data = data.template_file.k8s_cp_1_user_data.rendered
+  pool = "serenity-1"
 }
 
 resource "libvirt_cloudinit_disk" "k8s_cp_2_user_data_commoninit" {
   name      = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.10-live-server-amd64.iso"
   user_data = data.template_file.k8s_cp_2_user_data.rendered
+  pool = "rocinante"
 }
 
 resource "libvirt_cloudinit_disk" "k8s_cp_3_user_data_commoninit" {
   name      = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.10-live-server-amd64.iso"
   user_data = data.template_file.k8s_cp_3_user_data.rendered
+  pool = "serenity-1"
 }
