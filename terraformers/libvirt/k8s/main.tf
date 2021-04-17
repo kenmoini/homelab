@@ -27,12 +27,12 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
   }
 
   cloudinit = libvirt_cloudinit_disk.commoninit.id
-  
-  graphics {
-    type        = "spice"
-    listen_type = "address"
-    autoport    = true
-  }
+
+  #graphics {
+  #  type        = "spice"
+  #  listen_type = "address"
+  #  autoport    = true
+  #}
   graphics {
     type        = "vnc"
     listen_type = "address"
