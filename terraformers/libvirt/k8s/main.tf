@@ -6,21 +6,24 @@ resource "libvirt_volume" "serenity_k8s_cp_1" {
   name     = "serenity-k8s-cp-1"
   pool     = "serenity-1"
   format   = "qcow2"
-  source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
+  #source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
+  source = "https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
 }
 resource "libvirt_volume" "rocinante_k8s_cp_2" {
   provider = libvirt.rocinante
   name     = "rocinante-k8s-cp-2"
   pool     = "rocinante"
   format   = "qcow2"
-  source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
+  #source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
+  source = "https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
 }
 resource "libvirt_volume" "serenity_k8s_cp_3" {
   provider = libvirt.serenity
   name     = "serenity-k8s-cp-3"
   pool     = "serenity-1"
   format   = "qcow2"
-  source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
+  #source = "/mnt/nvme_7TB/nfs/isos/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
+  source = "https://cloud-images.ubuntu.com/releases/focal/release/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img"
 }
 
 resource "libvirt_domain" "serenity_k8s_cp_1" {
