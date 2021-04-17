@@ -53,15 +53,16 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
     target_port = "1"
   }
 
+  graphics {
+    type        = "spice"
+    listen_type = "address"
+    autoport    = true
+  }
   #graphics {
-  #  type        = "spice"
+  #  type        = "vnc"
   #  listen_type = "address"
   #  autoport    = true
   #}
-  graphics {
-    type        = "vnc"
-    listen_type = "address"
-  }
 
   network_interface {
     bridge = var.vm_bridge
