@@ -5,10 +5,10 @@ variable "serenity_volume_pool" {
 
 variable "raza_volume_pool" {
   type    = string
-  default = "serenity-1"
+  default = "raza"
 }
 
-variable "serenity_volume_pool" {
+variable "rocinante_volume_pool" {
   type    = string
-  default = "serenity-1"
+  default = "rocinante"
 }
