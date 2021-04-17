@@ -1,7 +1,7 @@
 
 variable "vm_bridge" {
   type    = string
-  default = "bridge0"
+  default = "lanBridge"
 }
 variable "kvm_image_source" {
   type    = string
