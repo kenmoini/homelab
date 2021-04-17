@@ -64,7 +64,7 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
 
 resource "libvirt_domain" "rocinante_k8s_cp_2" {
   provider = libvirt.rocinante
-  name     = "k8s-cp-3"
+  name     = "k8s-cp-2"
   memory   = "8192"
   vcpu     = 4
 
