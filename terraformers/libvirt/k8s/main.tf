@@ -56,6 +56,7 @@ resource "libvirt_domain" "serenity_k8s_cp_1" {
   graphics {
     type        = "spice"
     listen_type = "address"
+    listen_address = "192.168.42.55"
     autoport    = true
   }
   #graphics {
@@ -109,6 +110,8 @@ resource "libvirt_domain" "rocinante_k8s_cp_2" {
   graphics {
     type        = "vnc"
     listen_type = "address"
+    listen_address = "192.168.42.50"
+    autoport    = true
   }
 
   network_interface {
@@ -151,11 +154,14 @@ resource "libvirt_domain" "serenity_k8s_cp_3" {
   #graphics {
   #  type        = "spice"
   #  listen_type = "address"
+  #  listen_address = "192.168.42.55"
   #  autoport    = true
   #}
   graphics {
     type        = "vnc"
     listen_type = "address"
+    listen_address = "192.168.42.55"
+    autoport    = true
   }
 
   network_interface {
