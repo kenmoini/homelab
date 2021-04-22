@@ -5,7 +5,7 @@ VIRT_HOST="serenity"
 #VIRT_HOST="rocinante"
 #VIRT_HOST="raza"
 
-LOGF="virt.log"
+LOGF="k8s-virt.log"
 echo "" > $LOGF
 
 RAZA_LIBVIRT_HOST="192.168.42.40"
