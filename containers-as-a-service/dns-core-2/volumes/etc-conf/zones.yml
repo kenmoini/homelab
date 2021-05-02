@@ -117,6 +117,32 @@ zones:
           ttl: 6400
           value: 192.168.42.55
 
+        - name: api.build-ocp
+          ttl: 6400
+          value: 192.168.42.71
+        - name: api-int.build-ocp
+          ttl: 6400
+          value: 192.168.42.71
+        - name: apps.build-ocp
+          ttl: 6400
+          value: 192.168.42.72
+        - name: "*.apps.build-ocp"
+          ttl: 6400
+          value: 192.168.42.72
+
+        - name: api.play-ocp
+          ttl: 6400
+          value: 192.168.42.74
+        - name: api-int.play-ocp
+          ttl: 6400
+          value: 192.168.42.74
+        - name: apps.play-ocp
+          ttl: 6400
+          value: 192.168.42.75
+        - name: "*.apps.play-ocp"
+          ttl: 6400
+          value: 192.168.42.75
+
         - name: api.roci-ocp
           ttl: 6400
           value: 192.168.42.71
