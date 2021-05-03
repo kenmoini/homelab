@@ -16,7 +16,7 @@ oc apply -f deploy/nfd_sub.yaml
 echo "Installing the NVidia GPU Operator..."
 oc apply -f deploy/gpu_sub.yaml
 
-echo "Waiting 25 seconds while Operators install..."
+echo "Waiting 45 seconds while Operators install..."
 sleep 45
 
 echo "Deploying NFD Instance..."
