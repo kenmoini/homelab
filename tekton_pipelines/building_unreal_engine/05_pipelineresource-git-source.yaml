@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: ue-git-resource
+spec:
+  type: git
+  params:
+    - name: url
+      value: 'https://gitlab-gpu.kemo.labs/kemo/unreal-engine-4.25-pixel-streaming.git'
+    - name: revision
+      value: 4.25-pixel-streaming
+    - name: subdirectory
+      value: ""
+    - name: submodules
+      value: 'true'
+    - name: depth
+      value: '1'
+    - name: sslVerify
+      value: 'false'
+    - name: deleteExisting
+      value: 'true'
+    - name: verbose
+      value: 'true'

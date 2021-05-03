@@ -6,19 +6,13 @@ spec:
   workspaces:
   - name: ue-workspace
   params:
-  - name: deployment-name
-    type: string
-    description: name of the deployment to be patched
   - name: git-url
     type: string
     description: url of the git repo for the code of deployment
   - name: git-revision
     type: string
     description: revision to be used from repo of the code for deployment
-    default: "pipelines-1.4"
-  - name: IMAGE
-    type: string
-    description: image to be built from the code
+    default: "4.25-pixel-streaming"
   tasks:
   - name: fetch-repository
     taskRef:
@@ -30,9 +24,17 @@ spec:
     params:
     - name: url
       value: $(params.git-url)
-    - name: subdirectory
-      value: ""
-    - name: deleteExisting
-      value: "true"
     - name: revision
       value: $(params.git-revision)
+    - name: subdirectory
+      value: ""
+    - name: submodules
+      value: 'true'
+    - name: depth
+      value: '1'
+    - name: sslVerify
+      value: 'false'
+    - name: deleteExisting
+      value: 'true'
+    - name: verbose
+      value: 'true'

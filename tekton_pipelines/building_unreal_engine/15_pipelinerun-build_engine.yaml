@@ -1,0 +1,19 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-unreal-engine-pipelinerun
+spec:
+  pipelineRef:
+    name: build-and-deploy
+  params:
+  - name: git-url
+    value: https://gitlab-gpu.kemo.labs/kemo/unreal-engine-4.25-pixel-streaming.git
+  workspaces: 
+  - name: ue-workspace
+    volumeClaimTemplate:
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Gi
