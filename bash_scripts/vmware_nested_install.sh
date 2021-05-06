@@ -17,8 +17,8 @@ BRIDGE_IFACE="lanBridge"
 ISO_PATH="/mnt/nfs/isos/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso"
 VM_PATH="/mnt/nfs/vms/${VIRT_HOST}"
 
-CP_VCPUS="sockets=2,cores=12,threads=1"
-CP_RAM="196608"
+VCPUS="sockets=2,cores=12,threads=1"
+RAM="196608"
 
 MAC_PREFIX="54:52:00:42:03:"
 
