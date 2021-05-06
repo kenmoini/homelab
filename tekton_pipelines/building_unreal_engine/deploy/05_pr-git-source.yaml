@@ -8,7 +8,7 @@ spec:
     - name: url
       value: 'https://gitlab-gpu.kemo.labs/kemo/unreal-engine-4.25-pixel-streaming.git'
     - name: revision
-      value: 4.25-pixel-streaming
+      value: 4.25-pixelstreaming
     - name: subdirectory
       value: ""
     - name: submodules

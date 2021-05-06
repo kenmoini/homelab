@@ -1,0 +1,10 @@
+---
+apiVersion: tekton.dev/v1alpha1
+kind: PipelineResource
+metadata:
+  name: engine-build-base-image-pr
+spec:
+  type: image
+  params:
+    - name: url
+      value: registry.access.redhat.com/ubi8/ubi

@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: pull-mono-deps-task
+spec:
+  resources:
+    inputs:
+      - name: source
+        type: git
+  steps:
+    - name: pull-mono-dependencies
+      image: registry.access.redhat.com/ubi8/ubi
+      command:
+        - /workspace/source/PullDeps.sh
+      volumeMounts:
+        - name: mono-cache
+          mountPath: /tekton/home/.mono
