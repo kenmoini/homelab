@@ -14,8 +14,8 @@ SERENITY_LIBVIRT_HOST="192.168.42.55"
 
 BRIDGE_IFACE="lanBridge"
 
-ISO_PATH="/mnt/nfs/isos/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso"
-VM_PATH="/mnt/nfs/vms/${VIRT_HOST}"
+ISO_PATH="/mnt/nvme_7TB/nfs/isos/VMware-VMvisor-Installer-7.0.0-15843807.x86_64.iso"
+VM_PATH="/mnt/nvme_7TB/nfs/vms/${VIRT_HOST}"
 
 VCPUS="sockets=2,cores=12,threads=1"
 RAM="196608"
