@@ -1,0 +1,13 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: build-ue-pipeline-run
+spec:
+  pipelineRef:
+    name: build-ue-pipeline
+  resources:
+    inputs:
+      - name: ue-git-resource
+        resourceRef:
+          name: ue-git-resource

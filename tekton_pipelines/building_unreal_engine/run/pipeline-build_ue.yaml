@@ -1,0 +1,19 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: build-ue-pipeline
+spec:
+  params: []
+  resources:
+    - name: ue-git-resource
+      type: git
+  tasks:
+  - name: build-engine
+    params: []
+    resources:
+      inputs:
+        - name: ue-git-resource
+          resource: ue-git-resource
+    taskRef:
+      name: build-engine-task

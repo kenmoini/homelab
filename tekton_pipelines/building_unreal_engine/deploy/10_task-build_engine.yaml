@@ -1,0 +1,41 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-engine-task
+spec:
+  resources:
+    inputs:
+      - name: source
+        type: git
+  steps:
+    - name: setup-ue-env
+      image: registry.access.redhat.com/ubi8/ubi
+      env:
+        - name: MONO_GAC_PREFIX
+          value: /tekton/home/.mono
+      command:
+        - /workspace/source/Setup.sh
+      volumeMounts:
+        - name: mono-cache
+          mountPath: /tekton/home/.mono
+    - name: generate-project-files
+      image: registry.access.redhat.com/ubi8/ubi
+      env:
+        - name: MONO_GAC_PREFIX
+          value: /tekton/home/.mono
+      command:
+        - /workspace/source/GenerateProjectFiles.sh
+      volumeMounts:
+        - name: mono-cache
+          mountPath: /tekton/home/.mono
+    - name: make-engine
+      image: registry.access.redhat.com/ubi8/ubi
+      env:
+        - name: MONO_GAC_PREFIX
+          value: /tekton/home/.mono
+      command:
+        - cd /workspace/source/
+        - make
+      volumeMounts:
+        - name: mono-cache
+          mountPath: /tekton/home/.mono

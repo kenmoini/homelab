@@ -1,0 +1,24 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: build-engine-taskrun
+spec:
+  nodeSelector:
+    beta.kubernetes.io/os: linux
+    feature.node.kubernetes.io/pci-10de.present: 'true'
+  taskRef:
+    name: build-engine-task
+  podTemplate:
+    nodeSelector:
+      beta.kubernetes.io/os: linux
+      feature.node.kubernetes.io/pci-10de.present: 'true'
+    volumes:
+    - name: mono-cache
+      persistentVolumeClaim:
+        claimName: mono-cache-pvc
+  resources:
+    inputs:
+      - name: source
+        resourceRef:
+          name: ue-git-resource

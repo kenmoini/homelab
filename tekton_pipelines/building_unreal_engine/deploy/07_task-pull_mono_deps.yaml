@@ -10,6 +10,9 @@ spec:
   steps:
     - name: pull-mono-dependencies
       image: registry.access.redhat.com/ubi8/ubi
+      env:
+        - name: MONO_GAC_PREFIX
+          value: /tekton/home/.mono
       command:
         - /workspace/source/PullDeps.sh
       volumeMounts:
