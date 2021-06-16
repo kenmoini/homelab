@@ -117,32 +117,6 @@ zones:
           ttl: 6400
           value: 192.168.42.55
 
-        - name: api.roci-ocp
-          ttl: 6400
-          value: 192.168.42.71
-        - name: api-int.roci-ocp
-          ttl: 6400
-          value: 192.168.42.71
-        - name: apps.roci-ocp
-          ttl: 6400
-          value: 192.168.42.72
-        - name: "*.apps.roci-ocp"
-          ttl: 6400
-          value: 192.168.42.72
-
-        - name: api.serenity-ocp
-          ttl: 6400
-          value: 192.168.42.74
-        - name: api-int.serenity-ocp
-          ttl: 6400
-          value: 192.168.42.74
-        - name: apps.serenity-ocp
-          ttl: 6400
-          value: 192.168.42.75
-        - name: "*.apps.serenity-ocp"
-          ttl: 6400
-          value: 192.168.42.75
-
         - name: api.build-ocp
           ttl: 6400
           value: 192.168.42.71
