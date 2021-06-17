@@ -1,0 +1,64 @@
+########################################################################
+# file: /opt/assisted-service/onprem-environment
+########################################################################
+#This is the IP or name with the API the OCP discovery agent will callback
+SERVICE_BASE_URL=http://192.168.42.70:8090
+
+########################################################################
+# NO NEED TO UPDATE AFTER THIS, UNLESS DOING RESTRICTED NETWORK INSTALL
+########################################################################
+# Host IPs service will be listening
+#SERVICE_IPS=<Comma separated list of host IPs where the service should listed>
+
+# Required when using self-signed certifications or no certificates
+SKIP_CERT_VERIFICATION=true
+
+DEPLOY_TARGET=onprem
+DUMMY_IGNITION=false
+STORAGE=filesystem
+# NTP_DEFAULT_SERVER=
+IPV6_SUPPORT=false
+AUTH_TYPE=none
+POSTGRESQL_DATABASE=installer
+POSTGRESQL_PASSWORD=admin
+POSTGRESQL_USER=admin
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_USER=admin
+DB_PASS=admin
+DB_NAME=installer
+
+OPENSHIFT_VERSIONS={"4.6":{"display_name":"4.6.16","release_version":"4.6.16","release_image":"quay.io/openshift-release-dev/ocp-release:4.6.16-x86_64","rhcos_image":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.8/rhcos-4.6.8-x86_64-live.x86_64.iso","rhcos_rootfs":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.6/4.6.8/rhcos-live-rootfs.x86_64.img","rhcos_version":"46.82.202012051820-0","support_level":"production"},"4.7":{"display_name":"4.7.9","release_version":"4.7.9","release_image":"quay.io/openshift-release-dev/ocp-release:4.7.9-x86_64","rhcos_image":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/rhcos-4.7.7-x86_64-live.x86_64.iso","rhcos_rootfs":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/rhcos-live-rootfs.x86_64.img","rhcos_version":"47.83.202103251640-0","support_level":"production","default":true},"4.8":{"display_name":"4.8.0-fc.3","release_version":"4.8.0-fc.3","release_image":"quay.io/openshift-release-dev/ocp-release:4.8.0-fc.3-x86_64","rhcos_image":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/4.8.0-fc.3/rhcos-4.8.0-fc.3-x86_64-live.x86_64.iso","rhcos_rootfs":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/pre-release/4.8.0-fc.3/rhcos-live-rootfs.x86_64.img","rhcos_version":"48.84.202105062123-0","support_level":"beta"}}
+
+# (OLD INFO NEED TO UPDATE)
+# Uncomment the below lines for restricted network install, requires pulling by digest
+#OPENSHIFT_INSTALL_RELEASE_IMAGE=quay.io/openshift-release-dev/ocp-release@sha256:8a9e40df2a19db4cc51dc8624d54163bef6e88b7d88cc0f577652ba25466e338
+#OPENSHIFT_INSTALL_RELEASE_IMAGE_MIRROR=registry.example.com:5000/ocp4/openshift4@sha256:8a9e40df2a19db4cc51dc8624d54163bef6e88b7d88cc0f577652ba25466e338
+#CONTROLLER_IMAGE=quay.io/ocpmetal/assisted-installer-controller@sha256:180d8b8e0381e6498434b2e3e88dc4874e9235827c8d2647cabf88f4bdf50c52
+
+# Uncomment to avoid pull-secret requirement for quay.io on restricted network installs
+#PUBLIC_CONTAINER_REGISTRIES=quay.io,registry.access.redhat.com,registry.redhat.io
+
+# Format has changed for HW validation (Link: https://github.com/openshift/assisted-service/blob/master/onprem-environment#L19)
+HW_VALIDATOR_REQUIREMENTS=[{"version":"default","master":{"cpu_cores":4,"ram_mib":6144,"disk_size_gb":20,"installation_disk_speed_threshold_ms":10},"worker":{"cpu_cores":4,"ram_mib":4096,"disk_size_gb":20,"installation_disk_speed_threshold_ms":10}}]
+
+#PULL_SECRET_TOKEN=
+#PULL_SECRET=
+#AGENT_DOCKER_IMAGE=
+#IGNITION_GENERATE_IMAGE=
+#BASE_DNS_DOMAINS=
+#IMAGE_BUILDER=
+#CONNECTIVITY_CHECK_IMAGE=
+#HARDWARE_INFO_IMAGE=
+#INVENTORY_IMAGE=
+#OCM_BASE_URL=
+
+# Enabled for SNO Deployments (Link: https://github.com/openshift/assisted-service/blob/master/onprem-environment#L14)
+ENABLE_SINGLE_NODE_DNSMASQ=true
+
+#####################################################################################
+##  Experimental: Single Node deployment
+# Need to be uncommented for single node cluster
+#INSTALLER_IMAGE=quay.io/eranco74/assisted-installer:single_node_onprem
+#CONTROLLER_IMAGE=quay.io/eranco74/assisted-installer-controller:single_node_onprem
+#####################################################################################

@@ -117,6 +117,10 @@ zones:
           ttl: 6400
           value: 192.168.42.55
 
+        - name: assisted-installer
+          ttl: 6400
+          value: 192.168.42.70
+
         - name: api.build-ocp
           ttl: 6400
           value: 192.168.42.71
