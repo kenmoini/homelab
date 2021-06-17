@@ -4,7 +4,7 @@ CONTAINER_NAME="caas-assisted-installer"
 NETWORK_NAME="lanBridge"
 IP_ADDRESS="192.168.42.70"
 
-CONTAINER_PORTS="-p 8090/tcp -p 8080/tcp -p 8000/tcp"
+CONTAINER_PORTS="-p 8090/tcp -p 8080/tcp -p 8000/tcp -p 5432/tcp -p 8090/udp -p 8080/udp -p 8000/udp -p 5432/udp"
 
 RESOURCE_LIMITS="-m 4096m"
 

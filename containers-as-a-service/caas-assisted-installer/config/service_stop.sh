@@ -2,10 +2,10 @@
 
 set -x
 
-source /opt/service-containers/caas-nfs/config/service_vars.sh
+source /opt/service-containers/caas-assisted-installer/config/service_vars.sh
 
 echo "Killing container..."
-/usr/bin/podman kill $CONTAINER_NAME
+/usr/bin/podman pod kill $CONTAINER_NAME
 
 echo "Removing container..."
-/usr/bin/podman rm $CONTAINER_NAME -f -i
+/usr/bin/podman pod rm $CONTAINER_NAME -f -i

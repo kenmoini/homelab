@@ -22,7 +22,7 @@ AUTH_TYPE=none
 POSTGRESQL_DATABASE=installer
 POSTGRESQL_PASSWORD=admin
 POSTGRESQL_USER=admin
-DB_HOST=127.0.0.1
+DB_HOST=192.168.42.70
 DB_PORT=5432
 DB_USER=admin
 DB_PASS=admin
@@ -40,7 +40,8 @@ OPENSHIFT_VERSIONS={"4.6":{"display_name":"4.6.16","release_version":"4.6.16","r
 #PUBLIC_CONTAINER_REGISTRIES=quay.io,registry.access.redhat.com,registry.redhat.io
 
 # Format has changed for HW validation (Link: https://github.com/openshift/assisted-service/blob/master/onprem-environment#L19)
-HW_VALIDATOR_REQUIREMENTS=[{"version":"default","master":{"cpu_cores":4,"ram_mib":6144,"disk_size_gb":20,"installation_disk_speed_threshold_ms":10},"worker":{"cpu_cores":4,"ram_mib":4096,"disk_size_gb":20,"installation_disk_speed_threshold_ms":10}}]
+# HW_VALIDATOR_REQUIREMENTS=[{"version":"default","master":{"cpu_cores":4,"ram_mib":6144,"disk_size_gb":20,"installation_disk_speed_threshold_ms":10},"worker":{"cpu_cores":4,"ram_mib":4096,"disk_size_gb":20,"installation_disk_speed_threshold_ms":10}}]
+HW_VALIDATOR_REQUIREMENTS=[{"version":"default","master":{"cpu_cores":4,"ram_mib":8192,"disk_size_gb":40,"installation_disk_speed_threshold_ms":10},"worker":{"cpu_cores":2,"ram_mib":8192,"disk_size_gb":40,"installation_disk_speed_threshold_ms":10},"sno":{"cpu_cores":8,"ram_mib":32768,"disk_size_gb":120,"installation_disk_speed_threshold_ms":10}}]
 
 #PULL_SECRET_TOKEN=
 #PULL_SECRET=

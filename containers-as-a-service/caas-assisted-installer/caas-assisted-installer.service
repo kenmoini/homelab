@@ -1,0 +1,15 @@
+[Unit]
+Description=OpenShift Assisted Installer Server Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=120
+ExecStop=/opt/service-containers/caas-assisted-installer/config/service_stop.sh
+ExecStart=/opt/service-containers/caas-assisted-installer/config/service_start.sh
+
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
