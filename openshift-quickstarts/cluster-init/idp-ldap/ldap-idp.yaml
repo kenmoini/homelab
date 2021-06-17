@@ -27,5 +27,5 @@ spec:
         url: >-
           ldaps://idm.kemo.labs:636/cn=users,cn=accounts,dc=kemo,dc=labs?uid?sub?(uid=*)
       mappingMethod: claim
-      name: LabDAP
+      name: LabLDAP
       type: LDAP
