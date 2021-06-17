@@ -50,6 +50,7 @@
       with_items:
         - "{{ service_containers_dir }}/{{ caas_name }}"
         - "{{ service_containers_dir }}/{{ caas_name }}/config"
+        - "{{ service_containers_dir }}/{{ caas_name }}/local-store"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/opt"
 
@@ -74,6 +75,7 @@
         - "{{ caas_name }}/config/service_start.sh"
         - "{{ caas_name }}/config/service_stop.sh"
         - "{{ caas_name }}/config/service_vars.sh"
+        - "{{ caas_name }}/volumes/opt/onprem-environment"
 
     - name: Download CaaS service
       copy:
@@ -87,12 +89,13 @@
       ansible.builtin.systemd:
         daemon_reload: yes
 
-    - name: Pre-pull the image
+    - name: Pre-pull the images
       shell: "podman pull {{ item }}"
       with_items:
-        - "{{ caas_name }}/config/service_start.sh"
-        - "{{ caas_name }}/config/service_stop.sh"
-        - "{{ caas_name }}/config/service_vars.sh"
+        - "quay.io/ocpmetal/ocp-metal-ui:latest"
+        - "quay.io/ocpmetal/postgresql-12-centos7"
+        - "quay.io/ocpmetal/assisted-service:latest"
+        - "quay.io/coreos/coreos-installer:v0.9.1"
 
     - name: Start CaaS
       ansible.builtin.service:

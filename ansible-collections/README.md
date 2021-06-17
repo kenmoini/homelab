@@ -45,3 +45,9 @@ ansible-playbook -i inventory -e "piholeWebPassword=yourPassword" -e "clearVolum
 ```bash
 ansible-playbook -i inventory deploy-caas-nfs.yml
 ```
+
+#### Deploy OpenShift Assisted Installer CaaS
+
+```bash
+ansible-playbook -i inventory deploy-caas-ocp-assisted-installer.yml
+```
