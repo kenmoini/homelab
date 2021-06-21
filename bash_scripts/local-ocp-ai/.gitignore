@@ -2,3 +2,5 @@ deployment.json
 pull-secret.txt
 iso-params.json
 *.iso
+*.nfo
+nohup.out

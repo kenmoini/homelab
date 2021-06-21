@@ -3,6 +3,10 @@
 #set -x
 set -e
 
+if [ -f ".cluster.nfo" ]; then
+  CLUSTER_ID=$(cat .cluster.nfo)
+fi
+
 ASSISTED_SERVICE_IP="assisted-installer.kemo.labs"
 ASSISTED_SERVICE_PORT="8090"
 
@@ -31,13 +35,30 @@ CLUSTER_CONTROL_PLANE_CPU_CORES="4"
 CLUSTER_CONTROL_PLANE_RAM_GB="8"
 CLUSTER_CONTROL_PLANE_DISK_GB="60"
 
-# INFRASTRUCTURE_LAYER Options: (blank, no infrastructure created), libvirt
-INFRASTRUCTURE_LAYER="libvirt"
-
 CLUSTER_SSHKEY=$(cat ~/.ssh/MasterKemoKey.pub-ah | cut -d ' ' -f 1,2)
 TOKEN=""
 
 PULL_SECRET=$(cat pull-secret.txt | jq -R .)
+
+# INFRASTRUCTURE_LAYER Options: (blank, no infrastructure created), libvirt
+INFRASTRUCTURE_LAYER="libvirt"
+
+LIBVIRT_ENDPOINT="raza.kemo.labs"
+LIBVIRT_TRANSPORT_TYPE="qemu+ssh"
+LIBVIRT_USER="root"
+LIBVIRT_URI="${LIBVIRT_TRANSPORT_TYPE}://${LIBVIRT_USER}@${LIBVIRT_ENDPOINT}/system?no_verify=1&socket=/var/run/libvirt/libvirt-sock"
+LIBVIRT_NETWORK="bridge=containerLANbr0,model=virtio"
+
+#####################################################################
+# No need to edit past these lines
+#####################################################################
+
+LOG_FILE="./.local-ocp-ai.log"
+
+LIBVIRT_LIKE_OPTIONS="--memballoon none --cpu host-passthrough --autostart --noautoconsole --virt-type kvm --features kvm_hidden=on --controller type=scsi,model=virtio-scsi"
+LIBVIRT_MAC_PREFIX="54:52:00:42:69:"
+LIBVIRT_REMOTE_ISO_PATH="/mnt/nvme_7TB/nfs/isos"
+LIBVIRT_VM_PATH="/mnt/nvme_7TB/nfs/vms/raza"
 
 if [[ $CLUSTER_TYPE = "Standard" ]]; then
   CLUSTER_VERSION="4.7.9"
