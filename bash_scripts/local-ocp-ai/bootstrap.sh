@@ -3,26 +3,7 @@
 set -e
 set -x
 
-ASSISTED_SERVICE_IP="assisted-installer.kemo.labs"
-ASSISTED_SERVICE_PORT="8090"
-
-CLUSTER_VERSION="4.7.9"
-CLUSTER_IMAGE="quay.io/openshift-release-dev/ocp-release:4.7.9-x86_64"
-CLUSTER_NAME="core-ocp"
-CLUSTER_DOMAIN="kemo.labs"
-CLUSTER_NET_TYPE="Calico"
-CLUSTER_CIDR_NET="10.128.0.0/14"
-CLUSTER_CIDR_SVC="172.30.0.0/16"
-CLUSTER_HOST_PFX="24"
-CLUSTER_WORKER_HT="Enabled"
-CLUSTER_WORKER_COUNT="0"
-CLUSTER_MASTER_HT="Enabled"
-CLUSTER_MASTER_COUNT="0"
-
-CLUSTER_SSHKEY=$(cat /home/kemo/.ssh/MasterKemoKey.pub-ah | cut -d ' ' -f 1,2)
-TOKEN=""
-
-PULL_SECRET=$(cat pull-secret.txt | jq -R .)
+source ./cluster-vars.sh
 
 # Create deployment file
 cat << EOF > ./deployment.json
@@ -72,3 +53,8 @@ sleep 15
 
 # Download the ISO
 curl -L "http://$ASSISTED_SERVICE_IP:$ASSISTED_SERVICE_PORT/api/assisted-install/v1/clusters/$CLUSTER_ID/downloads/image" -o ai-liveiso-$CLUSTER_ID.iso
+
+# Provision Infrastructure
+if [[ $INFRASTRUCTURE_LAYER = "libvirt" ]]; then
+  source ./libvirt-create-vm.sh
+fi
