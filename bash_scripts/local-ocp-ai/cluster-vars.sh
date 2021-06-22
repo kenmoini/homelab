@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #set -x
-set -e
+#set -e
 
 if [ -f ".cluster.nfo" ]; then
   CLUSTER_ID=$(cat .cluster.nfo)
@@ -55,10 +55,10 @@ LIBVIRT_NETWORK="bridge=containerLANbr0,model=virtio"
 
 LOG_FILE="./.local-ocp-ai.log"
 
-LIBVIRT_LIKE_OPTIONS="--memballoon none --cpu host-passthrough --autostart --noautoconsole --virt-type kvm --features kvm_hidden=on --controller type=scsi,model=virtio-scsi"
 LIBVIRT_MAC_PREFIX="54:52:00:42:69:"
 LIBVIRT_REMOTE_ISO_PATH="/mnt/nvme_7TB/nfs/isos"
 LIBVIRT_VM_PATH="/mnt/nvme_7TB/nfs/vms/raza"
+LIBVIRT_LIKE_OPTIONS="--connect=${LIBVIRT_URI} -v --memballoon none --cpu host-passthrough --autostart --noautoconsole --virt-type kvm --features kvm_hidden=on --controller type=scsi,model=virtio-scsi --cdrom=${LIBVIRT_REMOTE_ISO_PATH}/ai-liveiso-$CLUSTER_ID.iso  --os-variant=rhel8.4 --autostart --events on_reboot=restart,on_poweroff=preserve --graphics vnc,listen=${LIBVIRT_ENDPOINT},tlsport=,defaultMode='insecure' --network ${LIBVIRT_NETWORK}"
 
 if [[ $CLUSTER_TYPE = "Standard" ]]; then
   CLUSTER_VERSION="4.7.9"
