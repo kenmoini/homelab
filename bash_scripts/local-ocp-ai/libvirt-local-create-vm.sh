@@ -26,7 +26,7 @@ if [[ $CLUSTER_TYPE = "Standard" ]]; then
       sleep 2
     fi
     echo "Creating Control Plane #$n - VM"
-    nohup virt-install ${LIBVIRT_LIKE_OPTIONS} --mac="${LIBVIRT_MAC_PREFIX}${n}0" --name=${CLUSTER_NAME}-ocp-cp-${n} --vcpus "sockets=${CLUSTER_CONTROL_PLANE_CPU_SOCKETS},cores=${CLUSTER_CONTROL_PLANE_CPU_CORES},threads=1" --memory="$(expr ${CLUSTER_CONTROL_PLANE_RAM_GB} \* 1024)" --disk "size=${CLUSTER_CONTROL_PLANE_DISK_GB},path=${LIBVIRT_VM_PATH}/${CLUSTER_NAME}-ocp-cp-${n}.qcow2,cache=none,format=qcow2" &
+    nohup sudo virt-install ${LIBVIRT_LIKE_OPTIONS} --mac="${LIBVIRT_MAC_PREFIX}${n}0" --name=${CLUSTER_NAME}-ocp-cp-${n} --vcpus "sockets=${CLUSTER_CONTROL_PLANE_CPU_SOCKETS},cores=${CLUSTER_CONTROL_PLANE_CPU_CORES},threads=1" --memory="$(expr ${CLUSTER_CONTROL_PLANE_RAM_GB} \* 1024)" --disk "size=${CLUSTER_CONTROL_PLANE_DISK_GB},path=${LIBVIRT_VM_PATH}/${CLUSTER_NAME}-ocp-cp-${n}.qcow2,cache=none,format=qcow2" &
     sleep 3
   done
 
@@ -42,7 +42,7 @@ if [[ $CLUSTER_TYPE = "Standard" ]]; then
       sleep 2
     fi
     echo "Creating Application Node #$n - VM"
-    nohup virt-install ${LIBVIRT_LIKE_OPTIONS} --mac="${LIBVIRT_MAC_PREFIX}${n}1" --name=${CLUSTER_NAME}-ocp-app-${n} --vcpus "sockets=${CLUSTER_APP_NODE_CPU_SOCKETS},cores=${CLUSTER_APP_NODE_CPU_CORES},threads=1" --memory="$(expr ${CLUSTER_APP_NODE_RAM_GB} \* 1024)" --disk "size=${CLUSTER_APP_NODE_DISK_GB},path=${LIBVIRT_VM_PATH}/${CLUSTER_NAME}-ocp-app-${n}.qcow2,cache=none,format=qcow2" &
+    nohup sudo virt-install ${LIBVIRT_LIKE_OPTIONS} --mac="${LIBVIRT_MAC_PREFIX}${n}1" --name=${CLUSTER_NAME}-ocp-app-${n} --vcpus "sockets=${CLUSTER_APP_NODE_CPU_SOCKETS},cores=${CLUSTER_APP_NODE_CPU_CORES},threads=1" --memory="$(expr ${CLUSTER_APP_NODE_RAM_GB} \* 1024)" --disk "size=${CLUSTER_APP_NODE_DISK_GB},path=${LIBVIRT_VM_PATH}/${CLUSTER_NAME}-ocp-app-${n}.qcow2,cache=none,format=qcow2" &
     sleep 3
   done
 fi
