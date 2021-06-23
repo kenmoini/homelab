@@ -22,7 +22,7 @@ cat << EOF > ./deployment.json
   "cluster_network_host_prefix": $CLUSTER_HOST_PFX,
   "service_network_cidr": "$CLUSTER_CIDR_SVC",
   "user_managed_networking": true,
-  "vip_dhcp_allocation": true,
+  "vip_dhcp_allocation": false,
   "high_availability_mode": "Full",
   "host_networks": [],
   "hosts": [],
@@ -93,8 +93,8 @@ if [[ $INFRASTRUCTURE_LAYER = "libvirt-local" ]]; then
 fi
 
 if [[ $CLUSTER_TYPE = "Standard" ]]; then
-  echo -e "\nSetting HA Cluster Host Names and Roles...\n"
-  # Sleep 30s so the infra has time to come up and check in
-  sleep 30
+  echo -e "\nSetting HA Cluster Host Names and Roles...sleeping for 60s...\n"
+  # Sleep 60s so the infra has time to come up and check in
+  sleep 60
   source ./api-set-host-info.sh
 fi
