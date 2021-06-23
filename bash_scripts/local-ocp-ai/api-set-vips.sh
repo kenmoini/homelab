@@ -5,10 +5,10 @@
 
 source ./cluster-vars.sh
 
-vipDHCPEnabled="true"
+vipDHCPEnabled="false"
 
 if [[ ! $CLUSTER_API_VIP = "auto" ]] || [[ ! $CLUSTER_MACHINE_CIDR = "auto" ]] || [[ ! $CLUSTER_LOAD_BALANCER_VIP = "auto" ]]; then
-  vipDHCPEnabled="false"
+  vipDHCPEnabled="true"
   vipAPI=$CLUSTER_API_VIP
   vipIngress=$CLUSTER_LOAD_BALANCER_VIP
   machineNetwork="$CLUSTER_MACHINE_CIDR"
@@ -26,7 +26,7 @@ cat <<EOF
 EOF
 }
 
-if [[ $vipDHCPEnabled = "false" ]]; then
+if [[ $vipDHCPEnabled = "true" ]]; then
   # Set the Hostnames and Host Roles
   echo "Setting API and Ingress VIPs..."
 
