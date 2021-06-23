@@ -46,12 +46,11 @@ while [ $LOOP_ON = "true" ]; do
     fi
   done < <(printf '%s' "${currentPoweredOffVMs}")
 
-  echo "${#VM_ARR[@]}"
   if [ '0' -eq "${#VM_ARR[@]}" ]; then
     LOOP_ON="false"
     echo "========= All Cluster VMs have been restarted!"
     exit
   fi
-  echo "========= Still waiting on: ${VM_ARR[@]}"
+  echo "========= Still waiting on ${#VM_ARR[@]} VMs: ${VM_ARR[@]}"
   sleep 10
 done
