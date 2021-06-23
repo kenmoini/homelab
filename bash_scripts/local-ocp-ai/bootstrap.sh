@@ -85,9 +85,9 @@ if [[ $INFRASTRUCTURE_LAYER = "libvirt-local" ]]; then
 fi
 
 if [[ $CLUSTER_TYPE = "Standard" ]]; then
-  echo -e "===== Setting HA Cluster Host Names and Roles...sleeping for 60s...\n"
-  # Sleep 60s so the infra has time to come up and check in
-  sleep 60
+  echo -e "===== Setting HA Cluster Host Names and Roles...sleeping for 90s...\n"
+  # Sleep 90s so the infra has time to come up and check in
+  sleep 90
   source ./api-set-host-info.sh
 fi
 
