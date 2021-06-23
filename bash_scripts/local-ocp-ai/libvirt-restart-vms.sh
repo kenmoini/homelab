@@ -22,19 +22,49 @@ done
 
 LOOP_ON="true"
 intV="0"
-VIRSH_WATCH_CMD="virsh list --state-shutoff --name"
+VIRSH_WATCH_CMD="sudo virsh list --state-shutoff --name"
+
+echo "Cluster VMs: ${VM_ARR[@]}"
 
 while [ $LOOP_ON = "true" ]; do
   currentPoweredOffVMs=$($VIRSH_WATCH_CMD)
+  #echo $currentPoweredOffVMs
+  # loop through VMs that are powered off
   while IFS="" read -r p || [ -n "$p" ]
   do
-    printf '%s and\n' "$p"
-  done <<<$currentPoweredOffVMs
+    if [[ " ${VM_ARR[@]} " =~ " ${p} " ]]; then
+      # Powered off VM matches the original list of VMs, turn it on and remove from array
+      echo "Starting VM: ${p} ..."
+      sudo virsh start $p
+      # Remove from original array
+      TMP_ARR=()
+      for val in "${VM_ARR[@]}"; do
+        [[ $val != $p ]] && TMP_ARR+=($val)
+      done
+      VM_ARR=("${TMP_ARR[@]}")
+      unset TMP_ARR
 
-  echo $intV
-  intV=$[$intV+1]
-  if [ $intV = "3" ]; then
+#      for i in "${VM_ARR[@]}"
+#      do
+#        if [[ ! $i = $p ]]; then
+#          #VM_ARR=( "${VM_ARR[@]/$p}" )
+#          for iv in "${!VM_ARR[@]}"; do
+#            if [[ ${VM_ARR[iv]} = $p ]]; then
+#              unset 'VM_ARR[iv]'
+#            fi
+#          done
+#        fi
+#      done
+    fi
+    #printf '%s and\n' "$p"
+  done < <(printf '%s' "${currentPoweredOffVMs}")
+
+  echo "${#VM_ARR[@]}"
+  if [ '0' -eq "${#VM_ARR[@]}" ]; then
     LOOP_ON="false"
+    echo "All Cluster VMs have been restarted!"
+    exit
   fi
+  echo "Still waiting on: ${VM_ARR[@]}"
   sleep 10
 done
