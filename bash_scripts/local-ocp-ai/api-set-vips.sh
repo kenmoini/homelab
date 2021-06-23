@@ -7,10 +7,11 @@ source ./cluster-vars.sh
 
 vipDHCPEnabled="true"
 
-if [[ ! $CLUSTER_API_VIP = "auto" ]] || [[ ! $CLUSTER_LOAD_BALANCER_VIP = "auto" ]]; then
+if [[ ! $CLUSTER_API_VIP = "auto" ]] || [[ ! $CLUSTER_MACHINE_CIDR = "auto" ]] || [[ ! $CLUSTER_LOAD_BALANCER_VIP = "auto" ]]; then
   vipDHCPEnabled="false"
   vipAPI=$CLUSTER_API_VIP
   vipIngress=$CLUSTER_LOAD_BALANCER_VIP
+  machineNetwork="$CLUSTER_MACHINE_CIDR"
 fi
 
 generatePatchData() {
@@ -18,7 +19,9 @@ cat <<EOF
 {
   "vip_dhcp_allocation": $vipDHCPEnabled,
   "api_vip": "$vipAPI",
-  "ingress_vip": "$vipIngress"
+  "ingress_vip": "$vipIngress",
+  "user_managed_networking": false,
+  "machine_network_cidr": "$machineNetwork"
 }
 EOF
 }
@@ -26,7 +29,7 @@ EOF
 if [[ $vipDHCPEnabled = "false" ]]; then
   # Set the Hostnames and Host Roles
   echo "Setting API and Ingress VIPs..."
-  
+
   SET_HOST_INFO_REQ=$(curl \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \

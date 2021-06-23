@@ -21,7 +21,7 @@ cat << EOF > ./deployment.json
   "cluster_network_cidr": "$CLUSTER_CIDR_NET",
   "cluster_network_host_prefix": $CLUSTER_HOST_PFX,
   "service_network_cidr": "$CLUSTER_CIDR_SVC",
-  "user_managed_networking": true,
+  "user_managed_networking": false,
   "vip_dhcp_allocation": false,
   "high_availability_mode": "Full",
   "host_networks": [],
@@ -72,14 +72,6 @@ EOF
   curl -L "http://$ASSISTED_SERVICE_IP:$ASSISTED_SERVICE_PORT/api/assisted-install/v1/clusters/$CLUSTER_ID/downloads/image" -o ai-liveiso-$CLUSTER_ID.iso
 fi
 
-# Set Cluster VIPs if needed
-if [[ ! $CLUSTER_API_VIP = "auto" ]] || [[ ! $CLUSTER_LOAD_BALANCER_VIP = "auto" ]]; then
-  echo -e "\Setting Cluster VIPs...\n"
-  sleep 3
-  source ./api-set-vips.sh
-  sleep 3
-fi
-
 # Provision Infrastructure
 if [[ $INFRASTRUCTURE_LAYER = "libvirt" ]]; then
   echo -e "\nStarting Libvirt Infrastructure deployment...\n"
@@ -97,6 +89,22 @@ if [[ $CLUSTER_TYPE = "Standard" ]]; then
   # Sleep 60s so the infra has time to come up and check in
   sleep 60
   source ./api-set-host-info.sh
+fi
+
+# Set Cluster VIPs if needed
+if [[ ! $CLUSTER_API_VIP = "auto" ]] || [[ ! $CLUSTER_LOAD_BALANCER_VIP = "auto" ]]; then
+  echo -e "Setting Cluster VIPs...\n"
+  sleep 3
+  source ./api-set-vips.sh
+  sleep 3
+fi
+
+# Start Cluster Install
+if [[ $INFRASTRUCTURE_LAYER = "libvirt-local" ]]; then
+  echo -e "\nStarting Cluster Installation...\n"
+  sleep 3
+  source ./api-ocp-start-install.sh
+  sleep 3
 fi
 
 # Restart Libvirt VMs
