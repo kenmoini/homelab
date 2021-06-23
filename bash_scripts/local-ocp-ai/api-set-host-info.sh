@@ -51,14 +51,3 @@ SET_HOST_INFO_REQ=$(curl \
   --request PATCH \
   --data "$(generatePatchData)" \
 "http://$ASSISTED_SERVICE_IP:$ASSISTED_SERVICE_PORT/api/assisted-install/v1/clusters/$CLUSTER_ID")
-
-echo "Waiting for 10 seconds..."
-sleep 10
-
-# Start the Install
-echo "Starting OpenShift Installation..."
-START_INSTALLATION_REQ=$(curl \
-  --header "Content-Type: application/json" \
-  --header "Accept: application/json" \
-  --request POST \
-"http://$ASSISTED_SERVICE_IP:$ASSISTED_SERVICE_PORT/api/assisted-install/v1/clusters/$CLUSTER_ID/actions/install")
