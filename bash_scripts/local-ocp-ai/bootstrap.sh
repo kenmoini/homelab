@@ -98,3 +98,9 @@ if [[ $CLUSTER_TYPE = "Standard" ]]; then
   sleep 60
   source ./api-set-host-info.sh
 fi
+
+# Restart Libvirt VMs
+if [[ $INFRASTRUCTURE_LAYER = "libvirt-local" ]]; then
+  echo -e "\nWatching Libvirt Local Infrastructure deployment to reboot nodes...\n"
+  source ./libvirt-restart-vms.sh
+fi
