@@ -20,8 +20,7 @@ cat <<EOF
   "vip_dhcp_allocation": $vipDHCPEnabled,
   "api_vip": "$vipAPI",
   "ingress_vip": "$vipIngress",
-  "user_managed_networking": false,
-  "machine_network_cidr": "$machineNetwork"
+  "user_managed_networking": false
 }
 EOF
 }
