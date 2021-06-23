@@ -22,7 +22,7 @@ cat << EOF > ./deployment.json
   "cluster_network_host_prefix": $CLUSTER_HOST_PFX,
   "service_network_cidr": "$CLUSTER_CIDR_SVC",
   "user_managed_networking": true,
-  "vip_dhcp_allocation": false,
+  "vip_dhcp_allocation": true,
   "high_availability_mode": "Full",
   "host_networks": [],
   "hosts": [],
@@ -72,8 +72,29 @@ EOF
   curl -L "http://$ASSISTED_SERVICE_IP:$ASSISTED_SERVICE_PORT/api/assisted-install/v1/clusters/$CLUSTER_ID/downloads/image" -o ai-liveiso-$CLUSTER_ID.iso
 fi
 
+# Set Cluster VIPs if needed
+if [[ ! $CLUSTER_API_VIP = "auto" ]] || [[ ! $CLUSTER_LOAD_BALANCER_VIP = "auto" ]]; then
+  echo -e "\Setting Cluster VIPs...\n"
+  sleep 3
+  source ./api-set-vips.sh
+  sleep 3
+fi
+
 # Provision Infrastructure
 if [[ $INFRASTRUCTURE_LAYER = "libvirt" ]]; then
   echo -e "\nStarting Libvirt Infrastructure deployment...\n"
   source ./libvirt-create-vm.sh
+fi
+
+# Provision Infrastructure
+if [[ $INFRASTRUCTURE_LAYER = "libvirt-local" ]]; then
+  echo -e "\nStarting Libvirt Local Infrastructure deployment...\n"
+  source ./libvirt-local-create-vm.sh
+fi
+
+if [[ $CLUSTER_TYPE = "Standard" ]]; then
+  echo -e "\nSetting HA Cluster Host Names and Roles...\n"
+  # Sleep 30s so the infra has time to come up and check in
+  sleep 30
+  source ./api-set-host-info.sh
 fi

@@ -19,9 +19,11 @@ CLUSTER_NET_TYPE="Default"
 CLUSTER_NAME="core-ocp"
 CLUSTER_DOMAIN="kemo.labs"
 
+CLUSTER_API_VIP="192.168.42.76" # an IP or "auto"
+CLUSTER_LOAD_BALANCER_VIP="192.168.42.77" # an IP or "auto"
 CLUSTER_CIDR_NET="10.128.0.0/14"
 CLUSTER_CIDR_SVC="172.30.0.0/16"
-CLUSTER_HOST_PFX="24"
+CLUSTER_HOST_PFX="23"
 CLUSTER_APP_NODE_HT="Enabled"
 CLUSTER_APP_NODE_COUNT="2"
 CLUSTER_APP_NODE_CPU_SOCKETS="1"
@@ -35,19 +37,28 @@ CLUSTER_CONTROL_PLANE_CPU_CORES="4"
 CLUSTER_CONTROL_PLANE_RAM_GB="8"
 CLUSTER_CONTROL_PLANE_DISK_GB="60"
 
-CLUSTER_SSHKEY=$(cat ~/.ssh/MasterKemoKey.pub-ah | cut -d ' ' -f 1,2)
+if [ ! -f "$HOME/.ssh/MasterKemoKey.pub-ah" ]; then
+  echo "SSH Key does not exist."
+  exit
+fi
+CLUSTER_SSHKEY=$(cat $HOME/.ssh/MasterKemoKey.pub-ah | cut -d ' ' -f 1,2)
 TOKEN=""
 
+if [ ! -f "./pull-secret.txt" ]; then
+  echo "pull-secret.txt does not exist."
+  exit
+fi
 PULL_SECRET=$(cat pull-secret.txt | jq -R .)
 
-# INFRASTRUCTURE_LAYER Options: (blank, no infrastructure created), libvirt
-INFRASTRUCTURE_LAYER="libvirt"
+# INFRASTRUCTURE_LAYER Options: (blank, no infrastructure created), libvirt, or libvirt-local
+INFRASTRUCTURE_LAYER="libvirt-local"
 
+################### General libvirt Options
+LIBVIRT_NETWORK="bridge=containerLANbr0,model=virtio"
+################### Remote libvirt Options
 LIBVIRT_ENDPOINT="raza.kemo.labs"
 LIBVIRT_TRANSPORT_TYPE="qemu+ssh"
 LIBVIRT_USER="root"
-LIBVIRT_URI="${LIBVIRT_TRANSPORT_TYPE}://${LIBVIRT_USER}@${LIBVIRT_ENDPOINT}/system?no_verify=1&socket=/var/run/libvirt/libvirt-sock"
-LIBVIRT_NETWORK="bridge=containerLANbr0,model=virtio"
 
 #####################################################################
 # No need to edit past these lines
@@ -68,4 +79,11 @@ fi
 if [[ $CLUSTER_TYPE = "SNO" ]]; then
   CLUSTER_VERSION="4.8.0-rc.0"
   CLUSTER_IMAGE="quay.io/openshift-release-dev/ocp-release:4.8.0-rc.0-x86_64"
+fi
+
+if [[ $INFRASTRUCTURE_LAYER = "libvirt" ]]; then
+  LIBVIRT_URI="${LIBVIRT_TRANSPORT_TYPE}://${LIBVIRT_USER}@${LIBVIRT_ENDPOINT}/system?no_verify=1&socket=/var/run/libvirt/libvirt-sock"
+fi
+if [[ $INFRASTRUCTURE_LAYER = "libvirt-local" ]]; then
+  LIBVIRT_URI="qemu:///system"
 fi
