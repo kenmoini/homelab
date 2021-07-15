@@ -1,6 +1,7 @@
 #/bin/bash
 
-export $(grep -v '^#' env | xargs)
+#export $(grep -v '^#' env | xargs)
+source ./env
 
 echo "*******************************************"
 echo "Configuring Dynamic NFS Storage Class"

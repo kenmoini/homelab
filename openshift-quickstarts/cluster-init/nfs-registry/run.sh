@@ -1,6 +1,8 @@
- #/bin/bash
+#/bin/bash
 
-oc process -f template.yaml --param-file=env | oc create -f -
+source ./env
+
+oc process -f template.yaml --param NFS_SERVER="${NFS_SERVER}" --param NFS_PATH="${NFS_PATH}" | oc create -f -
 
 sleep 10
 
