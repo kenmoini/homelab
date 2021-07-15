@@ -1,2 +1,2 @@
-NFS_SERVER="192.168.42.31"
-NFS_PATH="/nfs/ocpreg/play"
+NFS_SERVER=${NFS_SERVER:="192.168.42.31"}
+NFS_PATH=${NFS_PATH:="/nfs/ocpreg/play"}
