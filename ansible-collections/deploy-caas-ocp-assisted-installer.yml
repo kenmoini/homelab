@@ -92,10 +92,14 @@
     - name: Pre-pull the images
       shell: "podman pull {{ item }}"
       with_items:
-        - "quay.io/ocpmetal/ocp-metal-ui:stable.16.06.2021-20.39"
-        - "quay.io/ocpmetal/postgresql-12-centos7"
-        - "quay.io/ocpmetal/assisted-service:stable.16.06.2021-20.39"
+        # Tested with:
+        #- "quay.io/ocpmetal/assisted-service:stable.16.06.2021-20.39"
+        #- "quay.io/ocpmetal/ocp-metal-ui:stable.16.06.2021-20.39"
+        #- "quay.io/coreos/coreos-installer:v0.9.1"
+        - "quay.io/ocpmetal/ocp-metal-ui:stable.02.07.2021-12.17"
+        - "quay.io/ocpmetal/assisted-service:stable.02.07.2021-12.17"
         - "quay.io/coreos/coreos-installer:v0.9.1"
+        - "quay.io/ocpmetal/postgresql-12-centos7"
 
     - name: Start CaaS
       ansible.builtin.service:
