@@ -100,6 +100,13 @@ zones:
           ttl: 6400
           value: 192.168.42.32
 
+        - name: bamboo
+          ttl: 6400
+          value: 192.168.42.33
+        - name: bitbucket
+          ttl: 6400
+          value: 192.168.42.34
+
         - name: raza
           ttl: 6400
           value: 192.168.42.40
