@@ -92,9 +92,9 @@
     - name: Pre-pull the images
       shell: "podman pull {{ item }}"
       with_items:
-        - "quay.io/ocpmetal/ocp-metal-ui:latest"
+        - "quay.io/ocpmetal/ocp-metal-ui:stable.16.06.2021-20.39"
         - "quay.io/ocpmetal/postgresql-12-centos7"
-        - "quay.io/ocpmetal/assisted-service:latest"
+        - "quay.io/ocpmetal/assisted-service:stable.16.06.2021-20.39"
         - "quay.io/coreos/coreos-installer:v0.9.1"
 
     - name: Start CaaS

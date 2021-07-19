@@ -17,9 +17,9 @@ BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4
 # For 4.8.0-fc.3 SNO deployments, replace BASE_OS_IMAGE with the following URL:
 # BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/pre-release/latest-4.8/rhcos-4.8.0-fc.4-x86_64-live.x86_64.iso
 
-OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:latest
+OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.16.06.2021-20.39
 OAS_DB_IMAGE=quay.io/ocpmetal/postgresql-12-centos7
-OAS_IMAGE=quay.io/ocpmetal/assisted-service:latest
+OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.16.06.2021-20.39
 COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.9.1
 
 OAS_HOSTDIR=/opt/service-containers/caas-assisted-installer
