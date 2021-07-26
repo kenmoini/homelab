@@ -1,0 +1,11 @@
+---
+kind: Project
+apiVersion: project.openshift.io/v1
+metadata:
+  name: open-cluster-management
+  labels:
+    kubernetes.io/metadata.name: open-cluster-management
+  annotations:
+    openshift.io/description: 'Red Hat Advanced Cluster Management'
+    openshift.io/display-name: 'Red Hat Advanced Cluster Management'
+spec: {}
