@@ -124,6 +124,13 @@ zones:
           ttl: 6400
           value: 192.168.42.55
 
+        - name: quay
+          ttl: 6400
+          value: 192.168.42.69
+        - name: "*.quay"
+          ttl: 6400
+          value: 192.168.42.69
+
         - name: assisted-installer
           ttl: 6400
           value: 192.168.42.70
