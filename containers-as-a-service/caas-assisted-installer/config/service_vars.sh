@@ -21,8 +21,8 @@ BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4
 #OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.16.06.2021-20.39
 #OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.16.06.2021-20.39
 #COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.9.1
-OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.02.07.2021-12.17
-OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.02.07.2021-12.17
+OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.05.08.2021-14.59
+OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.05.08.2021-14.59
 COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.9.1
 OAS_DB_IMAGE=quay.io/ocpmetal/postgresql-12-centos7
 
