@@ -12,18 +12,12 @@ RESOURCE_LIMITS="-m 4096m"
 RHCOS_VERSION="latest"
 
 # BASE_OS_IMAGE matches current release, which is 4.7.x
-BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/${RHCOS_VERSION}/rhcos-live.x86_64.iso
-
-# For 4.8.0-fc.3 SNO deployments, replace BASE_OS_IMAGE with the following URL:
-# BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/amd64/dependencies/rhcos/pre-release/latest-4.8/rhcos-4.8.0-fc.4-x86_64-live.x86_64.iso
+BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.8/${RHCOS_VERSION}/rhcos-live.x86_64.iso
 
 # Tested with:
-#OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.16.06.2021-20.39
-#OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.16.06.2021-20.39
-#COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.9.1
-OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.05.08.2021-14.59
-OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.05.08.2021-14.59
-COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.9.1
+OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.10.08.2021-09.50
+OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.10.08.2021-09.50
+COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.10.0
 OAS_DB_IMAGE=quay.io/ocpmetal/postgresql-12-centos7
 
 OAS_HOSTDIR=/opt/service-containers/caas-assisted-installer
