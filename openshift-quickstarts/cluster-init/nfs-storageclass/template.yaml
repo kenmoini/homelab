@@ -85,7 +85,7 @@ objects:
         containers:
           - name: nfs-client-provisioner
             #image: quay.io/external_storage/nfs-client-provisioner:latest
-            image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.13
+            image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.2
             volumeMounts:
               - name: nfs-client-root
                 mountPath: /persistentvolumes

@@ -27,6 +27,7 @@ There are some scripts for:
 - Setting up an OpenShift Assisted Installer cluster across a few nodes with PCI devices passed through via Libvirt/KVM
 - Creating a standard VM via Libvirt, set for Red Hat Identity Management
 - Unattended Install & Configuring of RH IDM on RHEL 8.3
+- Quay Registry running in Podman
 
 ## OpenShift Quickstarts
 
@@ -41,6 +42,7 @@ In order to make bootstrapping a vanilla OpenShift and deploying workloads easie
 - NFS StorageClass with Dynamic Provisioner
 - Red Hat Subscription Manager Cluster entitlement to use normal RHEL repos in UBI containers
 - NFD+GPU Operator deployment
+- Red Hat Advanced Cluster Management Operator & Hub deployment
 
 ### Example Workloads
 
