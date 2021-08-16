@@ -2,8 +2,8 @@ kind: Template
 apiVersion: v1
 metadata:
   annotations:
-    tags: nfsautoprovisioner
-  name: nfsautoprovisioner
+    tags: nfs-auto-provisioner
+  name: nfs-auto-provisioner
 objects:
 - kind: Namespace
   apiVersion: v1
@@ -84,13 +84,14 @@ objects:
         serviceAccountName: nfs-client-provisioner
         containers:
           - name: nfs-client-provisioner
-            image: quay.io/external_storage/nfs-client-provisioner:latest
+            #image: quay.io/external_storage/nfs-client-provisioner:latest
+            image: gcr.io/k8s-staging-sig-storage/nfs-subdir-external-provisioner:v4.0.13
             volumeMounts:
               - name: nfs-client-root
                 mountPath: /persistentvolumes
             env:
               - name: PROVISIONER_NAME
-                value: "nfs-provisioner"
+                value: k8s-sigs.io/nfs-subdir-external-provisioner
               - name: NFS_SERVER
                 value: "${NFS_SERVER}"
               - name: NFS_PATH
@@ -102,14 +103,15 @@ objects:
               path: "${NFS_PATH}"
 - kind: StorageClass
   apiVersion: storage.k8s.io/v1
-
   metadata:
     name: managed-nfs-storage
     annotations:
       storageclass.kubernetes.io/is-default-class: "true"
-  provisioner: "nfs-provisioner"
+  provisioner: "k8s-sigs.io/nfs-subdir-external-provisioner"
   parameters:
     archiveOnDelete: "false"
+    pathPattern: "${.PVC.namespace}/${.PVC.annotations.nfs.io/storage-path}" # waits for nfs.io/storage-path annotation, if not specified will accept as empty string.
+    onDelete: delete
 parameters:
   - name: NFS_SERVER
     displayName: NFS Server IP
@@ -123,4 +125,9 @@ parameters:
     displayName: Namespace for NFS
     description: Namespace for NFS
     required: true
-    value: "nfs-autoprovisioner"
+    value: "nfs-client-provisioner"
+  - name: PROVISIONER_NAME
+    displayName: Provisioner Meta Name for NFS
+    description: Provisioner Meta Name for NFS
+    required: true
+    value: "k8s-sigs.io/nfs-subdir-external-provisioner"
