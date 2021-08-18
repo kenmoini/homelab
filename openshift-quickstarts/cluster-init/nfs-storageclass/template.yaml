@@ -112,6 +112,15 @@ objects:
     archiveOnDelete: "false"
     pathPattern: "${.PVC.namespace}/${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}" # waits for nfs.io/storage-path annotation, if not specified will accept as empty string.
     onDelete: delete
+- kind: StorageClass
+  apiVersion: storage.k8s.io/v1
+  metadata:
+    name: gp2
+  provisioner: "k8s-sigs.io/nfs-subdir-external-provisioner"
+  parameters:
+    archiveOnDelete: "false"
+    pathPattern: "${.PVC.namespace}/${.PVC.name}/${.PVC.annotations.nfs.io/storage-path}" # waits for nfs.io/storage-path annotation, if not specified will accept as empty string.
+    onDelete: delete
 parameters:
   - name: NFS_SERVER
     displayName: NFS Server IP
