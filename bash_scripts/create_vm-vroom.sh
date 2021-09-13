@@ -24,7 +24,7 @@ SUKI_RX_DEV="--hostdev=21:00.0,address.type=pci,address.multifunction=on --hostd
 LIKE_OPTIONS="-v --memballoon none --cpu host-passthrough --autostart --noautoconsole --virt-type kvm --features kvm_hidden=on --controller type=scsi,model=virtio-scsi --cdrom=${ISO_PATH} --os-variant=win7 --events on_reboot=restart --network bridge=${BRIDGE_IFACE},model=virtio"
 
 ## SUKI VMS
-if [[ $VIRT_HOST == "serenity" ]]; then
+if [[ $VIRT_HOST == "suki" ]]; then
   # Detatch Devices from host :'(
   virsh nodedev-detach pci_0000_21_00_0
   virsh nodedev-detach pci_0000_21_00_1
