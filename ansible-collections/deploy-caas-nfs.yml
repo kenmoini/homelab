@@ -1,11 +1,11 @@
 ---
 - name: Deploy the NFS Server Container-as-a-Service
-  hosts: containerHost
+  hosts: suki
   gather_facts: yes
   become: yes
   vars:
-    caas_name: caas-nfs
-    service_containers_dir: /opt/service-containers
+    caas_name: nfs
+    service_containers_dir: /mnt/fastAndLoose/caas
     selinux_cheat_codes: false
     update_system: false
     install_podman: false
@@ -61,18 +61,28 @@
         group: root
         mode: 0777
       with_items:
-        - "/mnt/nvme_7TB/nfs"
-        - "/mnt/nvme_7TB/nfs/ocp"
-        - "/mnt/nvme_7TB/nfs/ocpreg"
-        - "/mnt/nvme_7TB/nfs/vms"
-        - "/mnt/nvme_7TB/nfs/vmgr"
-        - "/mnt/nvme_7TB/nfs/isos"
-        - "/mnt/nvme_7TB/nfs/nrs_dropbox"
-        - "/mnt/nvme_7TB/nfs/dropbox"
+        - "/mnt/fastAndLoose/nfs/old/ocp"
+        - "/mnt/fastAndLoose/nfs/old/ocpreg"
+        - "/mnt/fastAndLoose/nfs/old/vms"
+        - "/mnt/fastAndLoose/nfs/old/isos"
+        - "/mnt/fastAndLoose/nfs/old/vmgr"
+        - "/mnt/fastAndLoose/nfs/old/dropbox"
+        - "/mnt/fastAndLoose/nfs/old/nrs_dropbox"
+        - "/mnt/fastAndLoose/nfs/ocp"
+        - "/mnt/fastAndLoose/nfs/grafana"
+        - "/mnt/fastAndLoose/nfs/nextcloud"
+        - "/mnt/fastAndLoose/nfs/media"
+        - "/mnt/fastAndLoose/nfs/plex"
+        - "/mnt/fastAndLoose/nfs/radarr"
+        - "/mnt/fastAndLoose/nfs/sonarr"
+        - "/mnt/fastAndLoose/nfs/isos"
+        - "/mnt/fastAndLoose/nfs/vms"
+        - "/mnt/fastAndLoose/nfs/vms/raza"
+        - "/mnt/fastAndLoose/nfs/vms/suki"
 
     - name: Download CaaS deployment files
       copy:
-        src: "../containers-as-a-service/{{ item }}"
+        src: "../containers-as-a-service/caas-{{ item }}"
         dest: "{{ service_containers_dir }}/{{ item }}"
         owner: root
         group: root
@@ -93,11 +103,27 @@
 
     - name: Download CaaS service
       copy:
-        src: "../containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
-        dest: "/etc/systemd/system/{{ caas_name }}.service"
+        src: "../containers-as-a-service/caas-{{ caas_name }}/caas-{{ caas_name }}.service"
+        dest: "/etc/systemd/system/caas-{{ caas_name }}.service"
         owner: root
         group: root
         mode: 0755
+
+    - name: Add kernel module loader for nfs
+      ansible.builtin.copy:
+        content: 'nfs'
+        dest: /etc/modules-load.d/nfs.conf
+
+    - name: Add kernel module loader for nfsd
+      ansible.builtin.copy:
+        content: 'nfsd'
+        dest: /etc/modules-load.d/nfsd.conf
+
+    - name: Run modprobe now to immediately enable
+      shell: "modprobe {{ item }}"
+      loop:
+        - nfs
+        - nfsd
 
     - name: Reload systemd
       ansible.builtin.systemd:
@@ -108,6 +134,6 @@
 
     - name: Start CaaS
       ansible.builtin.service:
-        name: "{{ caas_name }}"
+        name: "caas-{{ caas_name }}"
         state: restarted
         enabled: yes

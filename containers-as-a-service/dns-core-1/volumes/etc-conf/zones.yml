@@ -78,34 +78,25 @@ zones:
         - name: deluge
           ttl: 6400
           value: 192.168.42.24
+        - name: nextcloud
+          ttl: 6400
+          value: 192.168.42.25
+        - name: s3
+          ttl: 6400
+          value: 192.168.42.26
+        - name: grafana
+          ttl: 6400
+          value: 192.168.42.27
         - name: '@'
           ttl: 6400
           value: 192.168.42.29
 
-        - name: vcenter
-          ttl: 6400
-          value: 192.168.42.30
-        - name: rhvm
-          ttl: 6400
-          value: 192.168.42.30
-
-        - name: diet-nfs
+        - name: nfs
           ttl: 6400
           value: 192.168.42.31
-
-        - name: gitlab-gpu
+        - name: iscsi
           ttl: 6400
           value: 192.168.42.32
-        - name: "*.gitlab-gpu"
-          ttl: 6400
-          value: 192.168.42.32
-
-        - name: bamboo
-          ttl: 6400
-          value: 192.168.42.33
-        - name: bitbucket
-          ttl: 6400
-          value: 192.168.42.34
 
         - name: raza
           ttl: 6400
@@ -116,13 +107,22 @@ zones:
         - name: suki
           ttl: 6400
           value: 192.168.42.46
+        - name: vroom
+          ttl: 6400
+          value: 192.168.42.47
 
-        - name: rocinante
+        - name: ahv
           ttl: 6400
-          value: 192.168.42.50
-        - name: serenity
+          value: 192.168.42.56
+        - name: ahv-cvm
           ttl: 6400
-          value: 192.168.42.55
+          value: 192.168.42.57
+        - name: ahv-ds
+          ttl: 6400
+          value: 192.168.42.58
+        - name: ahv-cvip
+          ttl: 6400
+          value: 192.168.42.59
 
         - name: quay
           ttl: 6400
@@ -148,16 +148,16 @@ zones:
           ttl: 6400
           value: 192.168.42.72
 
-        - name: api.play-ocp
+        - name: api.ahv-ocp
           ttl: 6400
           value: 192.168.42.74
-        - name: api-int.play-ocp
+        - name: api-int.ahv-ocp
           ttl: 6400
           value: 192.168.42.74
-        - name: apps.play-ocp
+        - name: apps.ahv-ocp
           ttl: 6400
           value: 192.168.42.75
-        - name: "*.apps.play-ocp"
+        - name: "*.apps.ahv-ocp"
           ttl: 6400
           value: 192.168.42.75
 
@@ -194,10 +194,6 @@ zones:
           ttl: 6400
           value: fdf4:e2e0:df12:a100::6
 
-        - name: vcenter
-          ttl: 6400
-          value: fdf4:e2e0:df12:a100::30
-
         - name: raza
           ttl: 6400
           value: fdf4:e2e0:df12:a100::40
@@ -207,12 +203,9 @@ zones:
         - name: suki
           ttl: 6400
           value: fdf4:e2e0:df12:a100::46
-        - name: rocinante
+        - name: vroom
           ttl: 6400
-          value: fdf4:e2e0:df12:a100::50
-        - name: serenity
-          ttl: 6400
-          value: fdf4:e2e0:df12:a100::55
+          value: fdf4:e2e0:df12:a100::47
 # Static IPv6 in Containers dont work yet
 #        - name: dns-core-1
 #          ttl: 86400
@@ -314,9 +307,6 @@ zones:
         - name: raza
           ttl: 6400
           value: 192.168.46.40
-        - name: rocinante
+        - name: suki
           ttl: 6400
-          value: 192.168.46.50
-        - name: serenity
-          ttl: 6400
-          value: 192.168.46.55
+          value: 192.168.46.46
