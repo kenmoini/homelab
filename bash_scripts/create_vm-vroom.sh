@@ -12,7 +12,7 @@ SUKI_LIBVIRT_HOST="192.168.42.46"
 
 BRIDGE_IFACE="bridge0"
 
-ISO_PATH="/mnt/fastAndLoose/nfs/isos/en_windows_7_professional_with_sp1_x64_dvd_u_676939.iso"
+ISO_PATH="/mnt/fastAndLoose/nfs/isos/Windows10Pro64bit.iso"
 VM_PATH="/mnt/fastAndLoose/nfs/vms/${VIRT_HOST}"
 
 VCPUS="sockets=1,cores=4,threads=1"
