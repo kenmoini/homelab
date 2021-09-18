@@ -13,6 +13,7 @@ SUKI_LIBVIRT_HOST="192.168.42.46"
 BRIDGE_IFACE="bridge0"
 
 ISO_PATH="/mnt/fastAndLoose/nfs/isos/Windows10Pro64bit.iso"
+VIRT_IO_ISO_PATH="/mnt/fastAndLoose/nfs/isos/virtio-win.iso"
 VM_PATH="/mnt/fastAndLoose/nfs/vms/${VIRT_HOST}"
 
 VCPUS="sockets=1,cores=4,threads=1"
@@ -21,7 +22,7 @@ RAM="16386"
 MAC_PREFIX="54:52:00:42:07:"
 SUKI_RX_DEV="--hostdev=21:00.0,address.type=pci,address.multifunction=on --hostdev=21:00.1,address.type=pci,address.multifunction=on"
 
-LIKE_OPTIONS="-v --memballoon none --cpu host-passthrough --autostart --noautoconsole --virt-type kvm --features kvm_hidden=on --controller type=scsi,model=virtio-scsi --cdrom=${ISO_PATH} --os-variant=win7 --events on_reboot=restart --network bridge=${BRIDGE_IFACE},model=virtio"
+LIKE_OPTIONS="-v --memballoon none --cpu host-passthrough --autostart --noautoconsole --virt-type kvm --features kvm_hidden=on --controller type=scsi,model=virtio-scsi --cdrom=${ISO_PATH} --cdrom=${VIRT_IO_ISO_PATH} --os-variant=win10 --os-type=windows --events on_reboot=restart --network bridge=${BRIDGE_IFACE},model=virtio"
 
 ## SUKI VMS
 if [[ $VIRT_HOST == "suki" ]]; then
