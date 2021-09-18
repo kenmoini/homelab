@@ -6,6 +6,7 @@
 /nfs/old/dropbox            *(rw,root_squash)
 /nfs/old/nrs_dropbox        *(rw,no_root_squash)
 /nfs/ocp                    *(rw,root_squash,no_wdelay)
+/nfs/ocpreg                 *(rw,root_squash,no_wdelay)
 /nfs/grafana                *(rw,root_squash,no_wdelay)
 /nfs/nextcloud              *(rw,root_squash,no_wdelay)
 /nfs/media                  *(rw,root_squash,no_wdelay)
