@@ -1,11 +1,11 @@
 ---
-- name: Deploy the dns-core-2 Container-as-a-Service
-  hosts: razaLocal
+- name: Deploy the NextCloud Server Container-as-a-Service
+  hosts: suki
   gather_facts: yes
   become: yes
   vars:
-    caas_name: dns-core-2
-    service_containers_dir: /opt/service-containers
+    caas_name: nextcloud
+    service_containers_dir: /opt/caas
     selinux_cheat_codes: false
     update_system: false
     install_podman: false
@@ -51,12 +51,16 @@
         - "{{ service_containers_dir }}/{{ caas_name }}"
         - "{{ service_containers_dir }}/{{ caas_name }}/config"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/etc-conf"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/vendor-conf"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/db_data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/redis_data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/nextcloud"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/apps"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/data"
 
     - name: Download CaaS deployment files
       copy:
-        src: "../containers-as-a-service/{{ item }}"
+        src: "../containers-as-a-service/caas-{{ item }}"
         dest: "{{ service_containers_dir }}/{{ item }}"
         owner: root
         group: root
@@ -64,9 +68,6 @@
         - "{{ caas_name }}/config/service_start.sh"
         - "{{ caas_name }}/config/service_stop.sh"
         - "{{ caas_name }}/config/service_vars.sh"
-        - "{{ caas_name }}/volumes/etc-conf/zones.yml"
-        - "{{ caas_name }}/volumes/vendor-conf/named.conf"
-        - "{{ caas_name }}/volumes/vendor-conf/external_forwarders.conf"
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:
@@ -79,8 +80,8 @@
 
     - name: Download CaaS service
       copy:
-        src: "../containers-as-a-service/{{ caas_name }}/{{ caas_name }}.service"
-        dest: "/etc/systemd/system/{{ caas_name }}.service"
+        src: "../containers-as-a-service/caas-{{ caas_name }}/caas-{{ caas_name }}.service"
+        dest: "/etc/systemd/system/caas-{{ caas_name }}.service"
         owner: root
         group: root
         mode: 0755
@@ -89,11 +90,17 @@
       ansible.builtin.systemd:
         daemon_reload: yes
 
-    - name: Pre-pull the image
-      shell: podman pull quay.io/kenmoini/go-zones:file-to-bind
+    - name: Pre-pull the images
+      shell: "podman pull {{ container_item }}"
+      loop:
+        - quay.io/bitnami/redis:latest
+        - quay.io/bitnami/postgresql:latest
+        - nextcloud
+      loop_control:
+        loop_var: container_item
 
     - name: Start CaaS
       ansible.builtin.service:
-        name: "{{ caas_name }}"
+        name: "caas-{{ caas_name }}"
         state: restarted
         enabled: yes

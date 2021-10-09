@@ -1,0 +1,15 @@
+[Unit]
+Description=NextCloud Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+ExecStop=/opt/caas/nextcloud/config/service_stop.sh
+ExecStart=/opt/caas/nextcloud/config/service_start.sh
+
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

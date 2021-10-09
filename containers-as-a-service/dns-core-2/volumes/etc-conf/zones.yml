@@ -87,6 +87,9 @@ zones:
         - name: grafana
           ttl: 6400
           value: 192.168.42.27
+        - name: ingress
+          ttl: 6400
+          value: 192.168.42.28
         - name: '@'
           ttl: 6400
           value: 192.168.42.29
@@ -111,6 +114,13 @@ zones:
           ttl: 6400
           value: 192.168.42.47
 
+        - name: rocinante
+          ttl: 6400
+          value: 192.168.42.50
+        - name: vcenter
+          ttl: 6400
+          value: 192.168.42.51
+
         - name: ahv
           ttl: 6400
           value: 192.168.42.56
@@ -123,6 +133,34 @@ zones:
         - name: ahv-cvip
           ttl: 6400
           value: 192.168.42.59
+
+        - name: k8s-cp-1
+          ttl: 6400
+          value: 192.168.42.60
+        - name: k8s-cp-2
+          ttl: 6400
+          value: 192.168.42.61
+        - name: k8s-cp-3
+          ttl: 6400
+          value: 192.168.42.62
+        - name: k8s-app-1
+          ttl: 6400
+          value: 192.168.42.63
+        - name: k8s-app-2
+          ttl: 6400
+          value: 192.168.42.64
+        - name: k8s-app-3
+          ttl: 6400
+          value: 192.168.42.65
+        - name: api.k8s-lab
+          ttl: 6400
+          value: 192.168.42.66
+        - name: apps.k8s-lab
+          ttl: 6400
+          value: 192.168.42.67
+        - name: "*.apps.k8s-lab"
+          ttl: 6400
+          value: 192.168.42.67
 
         - name: quay
           ttl: 6400

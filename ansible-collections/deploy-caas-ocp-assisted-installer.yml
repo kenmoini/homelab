@@ -1,6 +1,6 @@
 ---
 - name: Deploy the OpenShift Assisted Installer Container-as-a-Service
-  hosts: containerHost
+  hosts: razaLocal
   gather_facts: yes
   become: yes
   vars:
@@ -92,8 +92,8 @@
     - name: Pre-pull the images
       shell: "podman pull {{ item }}"
       with_items:
-        - "quay.io/ocpmetal/ocp-metal-ui:stable.10.08.2021-09.50"
-        - "quay.io/ocpmetal/assisted-service:stable.10.08.2021-09.50"
+        - "quay.io/ocpmetal/ocp-metal-ui:stable.21.09.2021-07.36"
+        - "quay.io/ocpmetal/assisted-service:stable.21.09.2021-07.36"
         - "quay.io/coreos/coreos-installer:v0.10.0"
         - "quay.io/ocpmetal/postgresql-12-centos7"
 

@@ -15,8 +15,8 @@ RHCOS_VERSION="latest"
 BASE_OS_IMAGE=https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.8/${RHCOS_VERSION}/rhcos-live.x86_64.iso
 
 # Tested with:
-OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.10.08.2021-09.50
-OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.10.08.2021-09.50
+OAS_UI_IMAGE=quay.io/ocpmetal/ocp-metal-ui:stable.21.09.2021-07.36
+OAS_IMAGE=quay.io/ocpmetal/assisted-service:stable.21.09.2021-07.36
 COREOS_INSTALLER=quay.io/coreos/coreos-installer:v0.10.0
 OAS_DB_IMAGE=quay.io/ocpmetal/postgresql-12-centos7
 
