@@ -1,7 +1,7 @@
 ---
 - name: Deploy the NextCloud Server Container-as-a-Service
-  hosts: suki
-  gather_facts: yes
+  hosts: sukiRemote
+  gather_facts: no
   become: yes
   vars:
     caas_name: nextcloud
@@ -57,6 +57,16 @@
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/apps"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/data"
+        - "/mnt/primary/nfs/nextcloud/data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/etc"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/etc/apache2"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/etc/apache2/conf-enabled"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/usr"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/usr/local"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/usr/local/etc"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/usr/local/etc/php"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/usr/local/etc/php/conf.d"
 
     - name: Download CaaS deployment files
       copy:
@@ -68,6 +78,18 @@
         - "{{ caas_name }}/config/service_start.sh"
         - "{{ caas_name }}/config/service_stop.sh"
         - "{{ caas_name }}/config/service_vars.sh"
+
+    - name: Copy Caas Config files
+      copy:
+        src: "../containers-as-a-service/caas-nextcloud/volumes/config-root/{{ item }}"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/volumes/config-root/{{ item }}"
+        owner: root
+        group: root
+        mode: 0777
+      with_items:
+        - "usr/local/etc/php/conf.d/nextcloud.ini"
+        - "etc/apache2/apache2.conf"
+        - "etc/apache2/conf-enabled/security.conf"
 
     - name: Set executable bit on service bash files
       ansible.builtin.file:

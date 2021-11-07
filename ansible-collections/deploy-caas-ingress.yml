@@ -107,8 +107,8 @@
       loop_control:
         loop_var: container_item
 
-#    - name: Start CaaS
-#      ansible.builtin.service:
-#        name: "caas-{{ caas_name }}"
-#        state: restarted
-#        enabled: yes
+    - name: Start CaaS
+      ansible.builtin.service:
+        name: "caas-{{ caas_name }}"
+        state: restarted
+        enabled: yes

@@ -1,6 +1,6 @@
 ---
 - name: Deploy the NFS Server Container-as-a-Service
-  hosts: suki
+  hosts: sukiRemote
   gather_facts: yes
   become: yes
   vars:
