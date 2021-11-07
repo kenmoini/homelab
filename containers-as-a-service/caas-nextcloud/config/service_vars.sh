@@ -15,7 +15,7 @@ RESOURCE_LIMITS="-m 1024m"
 
 POD_VOLUME_ROOT="/opt/caas/${POD_NAME}"
 
-VOLUME_MOUNTS="-v ${POD_VOLUME_ROOT}/volumes/nextcloud:/var/www/html -v ${POD_VOLUME_ROOT}/volumes/apps:/var/www/html/custom_apps -v ${POD_VOLUME_ROOT}/volumes/config:/var/www/html/config -v ${POD_VOLUME_ROOT}/volumes/data:/var/www/html/data"
+VOLUME_MOUNTS="-v ${POD_VOLUME_ROOT}/volumes/config-root/etc/apache2/apache2.conf:/etc/apache2/apache2.conf -v ${POD_VOLUME_ROOT}/volumes/config-root/etc/apache2/conf-enabled/security.conf:/etc/apache2/conf-enabled/security.conf -v ${POD_VOLUME_ROOT}/volumes/config-root/usr/local/etc/php/conf.d/nextcloud.ini:/usr/local/etc/php/conf.d/nextcloud.ini -v ${POD_VOLUME_ROOT}/volumes/nextcloud:/var/www/html -v ${POD_VOLUME_ROOT}/volumes/apps:/var/www/html/custom_apps -v ${POD_VOLUME_ROOT}/volumes/config:/var/www/html/config -v /mnt/primary/nfs/nextcloud/data:/var/www/html/data"
 
 ##################### DATABASE THINGS
 DB_PORT="-p 5432:5432"

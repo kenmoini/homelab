@@ -16,6 +16,7 @@ fi
 
 echo "Starting container ${CONTAINER_NAME}..."
 /usr/bin/podman run -d --name $CONTAINER_NAME \
+  --privileged \
   --network $NETWORK_NAME \
   --ip $IP_ADDRESS \
   $CONTAINER_PORTS \

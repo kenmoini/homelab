@@ -19,6 +19,7 @@ fi
 mkdir -p ${POD_VOLUME_ROOT}/volumes/{db_data,redis_data}
 chown -R 33 ${POD_VOLUME_ROOT}/volumes/
 chown -R 1001 ${POD_VOLUME_ROOT}/volumes/{db_data,redis_data}
+chown -R 33 /mnt/primary/nfs/nextcloud/
 
 rm nohup.out
 

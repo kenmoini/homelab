@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-TimeoutStartSec=15
+TimeoutStartSec=30
 ExecStop=/opt/caas/nextcloud/config/service_stop.sh
 ExecStart=/opt/caas/nextcloud/config/service_start.sh
 
