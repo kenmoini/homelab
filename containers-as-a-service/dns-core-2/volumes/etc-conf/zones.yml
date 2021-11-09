@@ -134,31 +134,62 @@ zones:
           ttl: 6400
           value: 192.168.42.59
 
-        - name: k8s-cp-1
+#        - name: k8s-cp-1
+#          ttl: 6400
+#          value: 192.168.42.60
+#        - name: k8s-cp-2
+#          ttl: 6400
+#          value: 192.168.42.61
+#        - name: k8s-cp-3
+#          ttl: 6400
+#          value: 192.168.42.62
+#        - name: k8s-app-1
+#          ttl: 6400
+#          value: 192.168.42.63
+#        - name: k8s-app-2
+#          ttl: 6400
+#          value: 192.168.42.64
+#        - name: k8s-app-3
+#          ttl: 6400
+#          value: 192.168.42.65
+#        - name: api.k8s-lab
+#          ttl: 6400
+#          value: 192.168.42.66
+#        - name: apps.k8s-lab
+#          ttl: 6400
+#          value: 192.168.42.67
+#        - name: "*.apps.k8s-lab"
+#          ttl: 6400
+#          value: 192.168.42.67
+
+        - name: api.ocp3
           ttl: 6400
           value: 192.168.42.60
-        - name: k8s-cp-2
+        - name: api-int.ocp3
+          ttl: 6400
+          value: 192.168.42.60
+        - name: apps.ocp3
           ttl: 6400
           value: 192.168.42.61
-        - name: k8s-cp-3
+        - name: "*.apps.ocp3"
+          ttl: 6400
+          value: 192.168.42.61
+        - name: cp-1.ocp3
           ttl: 6400
           value: 192.168.42.62
-        - name: k8s-app-1
+        - name: cp-2.ocp3
           ttl: 6400
           value: 192.168.42.63
-        - name: k8s-app-2
+        - name: cp-3.ocp3
           ttl: 6400
           value: 192.168.42.64
-        - name: k8s-app-3
+        - name: app-1.ocp3
           ttl: 6400
           value: 192.168.42.65
-        - name: api.k8s-lab
+        - name: app-2.ocp3
           ttl: 6400
           value: 192.168.42.66
-        - name: apps.k8s-lab
-          ttl: 6400
-          value: 192.168.42.67
-        - name: "*.apps.k8s-lab"
+        - name: app-3.ocp3
           ttl: 6400
           value: 192.168.42.67
 
@@ -375,3 +406,13 @@ zones:
         - name: "*.apps.sno-ocp"
           ttl: 6400
           value: 192.168.42.72
+
+        - name: core-ocp.lab
+          ttl: 6400
+          value: 192.168.42.72
+        - name: api.core-ocp.lab
+          ttl: 6400
+          value: 192.168.42.72
+        - name: "*.apps.core-ocp.lab"
+          ttl: 6400
+          value: 192.168.42.73

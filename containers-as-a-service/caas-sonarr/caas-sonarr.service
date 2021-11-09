@@ -1,0 +1,15 @@
+[Unit]
+Description=Sonarr Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+ExecStop=/opt/caas/sonarr/config/service_stop.sh
+ExecStart=/opt/caas/sonarr/config/service_start.sh
+
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

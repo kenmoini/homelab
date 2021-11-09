@@ -2,9 +2,9 @@
 
 set -x
 
-source /opt/caas/plex/config/service_vars.sh
+source /opt/caas/radarr/config/service_vars.sh
 
-/opt/caas/plex/config/service_stop.sh
+/opt/caas/radarr/config/service_stop.sh
 
 sleep 3
 
@@ -17,15 +17,16 @@ fi
 echo "Starting container ${CONTAINER_NAME}..."
 /usr/bin/podman run \
     -d --name "${CONTAINER_NAME}" \
-    -h "plex" \
     --network "${NETWORK_NAME}" \
     --ip "${IP_ADDRESS}" \
     ${CONTAINER_PORTS} \
-    ${VOLUME_MOUNTS} \
     ${RESOURCE_LIMITS} \
     -e TZ="America/New_York" \
-    -e PLEX_CLAIM=$(cat /opt/caas/plex/config/claim_token) \
-    -e PLEX_UID=1420 \
-    -e PLEX_GID=1420 \
+    -e PUID=1420 \
+    -e PGID=1420 \
+    -v "/mnt/primary/nfs/media/Movies:/movies" \
+    -v /opt/caas/radarr/volumes/config:/config \
     --restart unless-stopped \
- ${CONTAINER_SOURCE}
+    -h "radarr" \
+    ${CONTAINER_SOURCE}
+  
