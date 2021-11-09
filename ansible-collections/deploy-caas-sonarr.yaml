@@ -1,10 +1,10 @@
 ---
-- name: Deploy the Plex Media Server Container-as-a-Service
+- name: Deploy the Sonarr Container-as-a-Service
   hosts: sukiRemote
   gather_facts: yes
   become: yes
   vars:
-    caas_name: plex
+    caas_name: sonarr
     service_containers_dir: /opt/caas
     selinux_cheat_codes: false
     update_system: false
@@ -67,6 +67,8 @@
       with_items:
         - "{{ service_containers_dir }}/{{ caas_name }}"
         - "{{ service_containers_dir }}/{{ caas_name }}/config"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config"
 
     - name: Download CaaS deployment files
       copy:
@@ -101,7 +103,7 @@
         daemon_reload: yes
 
     - name: Pre-pull the image
-      shell: podman pull docker.io/plexinc/pms-docker
+      shell: podman pull lscr.io/linuxserver/sonarr
 
     - name: Start CaaS
       ansible.builtin.service:
