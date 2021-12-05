@@ -1,0 +1,101 @@
+---
+- name: Deploy the nexus3 Container-as-a-Service
+  hosts: razaLocal
+  gather_facts: yes
+  become: yes
+  vars:
+    caas_name: nexus3
+    service_containers_dir: /opt/service-containers
+    selinux_cheat_codes: false
+    update_system: false
+    install_podman: false
+    create_podman_bridge: false
+  tasks:
+
+    - name: Update system
+      include_role:
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
+      when: update_system|bool
+
+    - name: Install Podman
+      include_role:
+        name: podmanInstall
+      when: install_podman|bool
+
+    - name: Create Container Network Bridge
+      include_role:
+        name: podmanBridgeNet
+      when: create_podman_bridge|bool
+
+    - name: Set SELinux Contexts for Container-as-a-Service
+      include_role:
+        name: caasSELinux
+      when: selinux_cheat_codes|bool
+
+    - name: Create Service Containers Directory
+      ansible.builtin.file:
+        path: "{{ service_containers_dir }}"
+        state: directory
+        owner: root
+        group: root
+
+    - name: Create CaaS Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+      with_items:
+        - "{{ service_containers_dir }}/{{ caas_name }}"
+        - "{{ service_containers_dir }}/{{ caas_name }}/scripts"
+
+    - name: Download CaaS deployment files
+      copy:
+        src: "../containers-as-a-service/caas-{{ item }}"
+        dest: "{{ service_containers_dir }}/{{ item }}"
+        owner: root
+        group: root
+      with_items:
+        - "{{ caas_name }}/scripts/service_start.sh"
+        - "{{ caas_name }}/scripts/service_stop.sh"
+        - "{{ caas_name }}/scripts/service_vars.sh"
+
+    - name: Set executable bit on service bash files
+      ansible.builtin.file:
+        path: "{{ service_containers_dir }}/{{ item }}"
+        mode: 0755
+      with_items:
+        - "{{ caas_name }}/scripts/service_start.sh"
+        - "{{ caas_name }}/scripts/service_stop.sh"
+        - "{{ caas_name }}/scripts/service_vars.sh"
+
+    - name: Download CaaS service
+      copy:
+        src: "../containers-as-a-service/caas-{{ caas_name }}/scripts/caas-{{ caas_name }}.service"
+        dest: "/etc/systemd/system/caas-{{ caas_name }}.service"
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Make the persistent volume dir
+      file:
+        path: "{{ service_containers_dir }}/{{ caas_name }}/nexus-data"
+        state: directory
+        owner: 200
+        group: 200
+        mode: 0700
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Pre-pull the image
+      shell: podman pull registry.connect.redhat.com/sonatype/nexus-repository-manager:latest
+
+    - name: Start CaaS
+      ansible.builtin.service:
+        name: "caas-{{ caas_name }}"
+        state: restarted
+        enabled: yes

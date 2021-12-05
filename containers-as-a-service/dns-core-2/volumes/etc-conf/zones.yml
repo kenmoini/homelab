@@ -59,6 +59,9 @@ zones:
         - name: ca
           ttl: 6400
           value: 192.168.42.17
+        - name: locksmith
+          ttl: 6400
+          value: 192.168.42.17
         - name: sso
           ttl: 6400
           value: 192.168.42.18
@@ -69,12 +72,13 @@ zones:
         - name: plex
           ttl: 6400
           value: 192.168.42.20
-        - name: sonarr
+        - name: tick-tock
+          ttl: 6400
+          value: 192.168.42.21
+        - name: nexus3
           ttl: 6400
           value: 192.168.42.22
-        - name: radarr
-          ttl: 6400
-          value: 192.168.42.23
+
         - name: deluge
           ttl: 6400
           value: 192.168.42.24
@@ -87,9 +91,26 @@ zones:
         - name: grafana
           ttl: 6400
           value: 192.168.42.27
+
         - name: ingress
           ttl: 6400
           value: 192.168.42.28
+        - name: sonarr
+          ttl: 6400
+          value: 192.168.42.28
+        - name: radarr
+          ttl: 6400
+          value: 192.168.42.28
+        - name: jackett
+          ttl: 6400
+          value: 192.168.42.28
+        - name: deluge-web
+          ttl: 6400
+          value: 192.168.42.28
+        - name: nexus
+          ttl: 6400
+          value: 192.168.42.28
+
         - name: '@'
           ttl: 6400
           value: 192.168.42.29
@@ -104,22 +125,21 @@ zones:
         - name: raza
           ttl: 6400
           value: 192.168.42.40
-        - name: winnas-pc
-          ttl: 6400
-          value: 192.168.42.45
         - name: suki
           ttl: 6400
           value: 192.168.42.46
         - name: vroom
           ttl: 6400
           value: 192.168.42.47
-
+        - name: deep-thought
+          ttl: 6400
+          value: 192.168.42.48
+        - name: endurance
+          ttl: 6400
+          value: 192.168.42.49
         - name: rocinante
           ttl: 6400
           value: 192.168.42.50
-        - name: vcenter
-          ttl: 6400
-          value: 192.168.42.51
 
         - name: ahv-rocinante
           ttl: 6400
@@ -168,12 +188,15 @@ zones:
         - name: api-int.ocp3
           ttl: 6400
           value: 192.168.42.60
+        - name: lb.ocp3
+          ttl: 6400
+          value: 192.168.42.60
         - name: apps.ocp3
           ttl: 6400
-          value: 192.168.42.61
+          value: 192.168.42.60
         - name: "*.apps.ocp3"
           ttl: 6400
-          value: 192.168.42.61
+          value: 192.168.42.60
         - name: cp-1.ocp3
           ttl: 6400
           value: 192.168.42.62
@@ -203,6 +226,19 @@ zones:
         - name: assisted-installer
           ttl: 6400
           value: 192.168.42.70
+
+#        - name: api.ai-poc
+#          ttl: 6400
+#          value: 192.168.42.72
+#        - name: api-int.ai-poc
+#          ttl: 6400
+#          value: 192.168.42.72
+#        - name: apps.ai-poc
+#          ttl: 6400
+#          value: 192.168.42.73
+#        - name: "*.apps.ai-poc"
+#          ttl: 6400
+#          value: 192.168.42.73
 
         - name: api.ahv-ocp
           ttl: 6400
@@ -253,15 +289,21 @@ zones:
         - name: raza
           ttl: 6400
           value: fdf4:e2e0:df12:a100::40
-        - name: winnas-pc
-          ttl: 6400
-          value: fdf4:e2e0:df12:a100::45
         - name: suki
           ttl: 6400
           value: fdf4:e2e0:df12:a100::46
         - name: vroom
           ttl: 6400
           value: fdf4:e2e0:df12:a100::47
+        - name: deep-thought
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::48
+        - name: endurance
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::49
+        - name: rocinante
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::50
 # Static IPv6 in Containers dont work yet
 #        - name: dns-core-1
 #          ttl: 86400
@@ -332,7 +374,7 @@ zones:
           weight: 100
 
         - name: _ntp._udp
-          value: idm.kemo.labs.
+          value: tick-tock.kemo.labs.
           port: 123
           priority: 0
           ttl: 6400
@@ -366,6 +408,9 @@ zones:
         - name: suki
           ttl: 6400
           value: 192.168.46.46
+        - name: endurance
+          ttl: 6400
+          value: 192.168.46.49
         - name: rocinante
           ttl: 6400
           value: 192.168.46.50
@@ -390,22 +435,23 @@ zones:
         - name: cloud
           ttl: 6400
           value: 192.168.42.28
-        - name: vcenter
-          ttl: 6400
-          value: 192.168.42.51
-        - name: lab-vcenter
-          ttl: 6400
-          value: 192.168.42.51
 
-        - name: sno-ocp
+        - name: can.vpn
           ttl: 6400
-          value: 192.168.42.72
-        - name: api.sno-ocp
+          value: 51.161.11.55
+        - name: can-ca.vpn
           ttl: 6400
-          value: 192.168.42.72
-        - name: "*.apps.sno-ocp"
-          ttl: 6400
-          value: 192.168.42.72
+          value: 51.161.11.55
+
+#        - name: sno-ocp
+#          ttl: 6400
+#          value: 192.168.42.72
+#        - name: api.sno-ocp
+#          ttl: 6400
+#          value: 192.168.42.72
+#        - name: "*.apps.sno-ocp"
+#          ttl: 6400
+#          value: 192.168.42.72
 
         - name: core-ocp.lab
           ttl: 6400
