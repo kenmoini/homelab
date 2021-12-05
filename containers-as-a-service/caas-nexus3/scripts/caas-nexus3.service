@@ -1,0 +1,14 @@
+[Unit]
+Description=Sonatype Nexus 3
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+Type=forking
+Restart=on-failure
+ExecStop=/opt/service-containers/nexus3/scripts/service_stop.sh
+ExecStart=/opt/service-containers/nexus3/scripts/service_start.sh
+
+[Install]
+WantedBy=multi-user.target
