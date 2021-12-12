@@ -19,4 +19,4 @@ rm nohup.out
 /root/podmanRHRLogin.sh
 
 echo "Starting container ${CONTAINER_NAME}..."
-/usr/bin/podman run -d --name "${CONTAINER_NAME}" --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" -p "${CONTAINER_PORT}" ${VOLUME_MOUNTS} ${RESOURCE_LIMITS} ${CONTAINER_IMAGE}
+/usr/bin/podman run -d --name "${CONTAINER_NAME}" --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" ${CONTAINER_PORTS} ${VOLUME_MOUNTS} ${RESOURCE_LIMITS} ${CONTAINER_IMAGE}
