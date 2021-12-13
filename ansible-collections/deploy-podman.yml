@@ -1,6 +1,6 @@
 ---
 - name: Deploy Podman and a bridged network interface
-  hosts: containerHost
+  hosts: containerHosts
   gather_facts: yes
   become: yes
   vars:

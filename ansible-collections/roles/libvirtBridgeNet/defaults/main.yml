@@ -1,4 +1,4 @@
 ---
 # defaults file for libvirtBridgeNet
-bridgeName: lanBridge
-bridgeDevice: containerLANbr0
+bridgeName: bridge0
+bridgeDevice: bridge0

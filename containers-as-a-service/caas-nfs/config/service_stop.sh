@@ -2,7 +2,7 @@
 
 set -x
 
-source /mnt/fastAndLoose/caas/nfs/config/service_vars.sh
+source /opt/service-containers/nfs/config/service_vars.sh
 
 echo "Killing container..."
 /usr/bin/podman kill $CONTAINER_NAME

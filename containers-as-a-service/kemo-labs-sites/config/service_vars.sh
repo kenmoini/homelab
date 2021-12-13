@@ -10,4 +10,4 @@ CONTAINER_SOURCE="quay.io/kenmoini/kemo.labs"
 
 RESOURCE_LIMITS="-m 512m"
 
-VOLUME_MOUNTS="-v /mnt/nvme_7TB/nfs/dropbox:/opt/app-root/src/dropbox"
+VOLUME_MOUNTS="-v /mnt/nvme_7TB/caas/kemo-labs-site/dropbox:/opt/app-root/src/dropbox"

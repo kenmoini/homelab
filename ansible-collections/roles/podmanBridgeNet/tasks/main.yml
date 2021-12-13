@@ -1,5 +1,12 @@
 ---
 # tasks file for podmanBridgeNet
+- name: Ensure directory exists
+  file:
+    path: /etc/cni/net.d/
+    state: directory
+    owner: root
+    group: root
+    
 - name: Template over Container Bridge
   template:
     src: bridge-network.conflist.j2

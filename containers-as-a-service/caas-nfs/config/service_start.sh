@@ -2,9 +2,9 @@
 
 set -x
 
-source /mnt/fastAndLoose/caas/nfs/config/service_vars.sh
+source /opt/service-containers/nfs/config/service_vars.sh
 
-/mnt/fastAndLoose/caas/nfs/config/service_stop.sh
+/opt/service-containers/nfs/config/service_stop.sh
 
 sleep 3
 

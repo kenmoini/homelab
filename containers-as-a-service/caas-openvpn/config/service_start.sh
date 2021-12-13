@@ -14,6 +14,9 @@ if [[ -f "$FILE_CHECK" ]]; then
     rm $FILE_CHECK
 fi
 
+echo "Enabling iptable_nat module..."
+modprobe iptable_nat
+
 echo "Starting container ${CONTAINER_NAME}..."
 /usr/bin/podman run --privileged \
  -d --name "${CONTAINER_NAME}" \

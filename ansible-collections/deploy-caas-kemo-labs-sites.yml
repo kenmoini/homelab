@@ -1,6 +1,6 @@
 ---
 - name: Deploy the Kemo Labs Sites Container-as-a-Service
-  hosts: containerHost
+  hosts: razaLocal
   gather_facts: yes
   become: yes
   vars:
