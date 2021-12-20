@@ -147,6 +147,15 @@ zones:
           ttl: 6400
           value: 192.168.42.50
 
+        - name: ahv-nfs-backend
+          ttl: 6400
+          value: 192.168.42.53
+        - name: ahv-nfs
+          ttl: 6400
+          value: 192.168.42.54
+        - name: ahv-pc
+          ttl: 6400
+          value: 192.168.42.55
         - name: ahv-rocinante
           ttl: 6400
           value: 192.168.42.56
