@@ -50,6 +50,9 @@ zones:
         - name: idm
           ttl: 6400
           value: 192.168.42.13
+        - name: ntp
+          ttl: 6400
+          value: 192.168.42.14
         - name: win-dc-1
           ttl: 6400
           value: 192.168.42.15
@@ -72,9 +75,6 @@ zones:
         - name: plex
           ttl: 6400
           value: 192.168.42.20
-        - name: tick-tock
-          ttl: 6400
-          value: 192.168.42.21
         - name: nexus3
           ttl: 6400
           value: 192.168.42.22
@@ -389,8 +389,15 @@ zones:
           weight: 100
 
         - name: _ntp._udp
-          value: tick-tock.kemo.labs.
+          value: ntp.kemo.labs.
           port: 123
+          priority: 0
+          ttl: 6400
+          weight: 100
+
+        - name: _chrony._udp
+          value: ntp.kemo.labs.
+          port: 323
           priority: 0
           ttl: 6400
           weight: 100
