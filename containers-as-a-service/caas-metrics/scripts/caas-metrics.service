@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-TimeoutStartSec=15
+TimeoutStartSec=45
 Type=forking
 Restart=on-failure
 ExecStop=/opt/service-containers/metrics/scripts/service_stop.sh

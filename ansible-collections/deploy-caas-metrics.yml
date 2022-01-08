@@ -61,10 +61,15 @@
       with_items:
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-config"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-data/plugins"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-postgresql-data"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/LabInfra"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/Kubernetes"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/Services"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/datasources"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/notifiers"
 
     - name: Create CaaS Directories
       ansible.builtin.file:
@@ -139,6 +144,53 @@
         - quay.io/prometheus/alertmanager:latest
       loop_control:
         loop_var: container_item
+
+    - name: Download Grafana plugins
+      unarchive:
+        src: "{{ url_item }}"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-data/plugins/"
+        owner: 1001
+        group: 1001
+        remote_src: yes
+      loop:
+        - https://grafana.com/api/plugins/grafana-worldmap-panel/versions/0.3.3/download
+      loop_control:
+        loop_var: url_item
+
+    - name: Download Grafana plugins
+      get_url:
+        url: "https://grafana.com/api/dashboards/{{ url_item.id }}/revisions/latest/download"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/{{ url_item.folder }}/"
+        owner: 1001
+        group: 1001
+        remote_src: yes
+      loop:
+        - id: 1860
+          folder: LabInfra
+        - id: 3662
+          folder: LabInfra
+        - id: 10482
+          folder: LabInfra
+        - id: 10441
+          folder: Services
+        - id: 12123
+          folder: Kubernetes
+        - id: 12006
+          folder: Kubernetes
+        - id: 11454
+          folder: Kubernetes
+        - id: 11455
+          folder: Kubernetes
+        - id: 7249
+          folder: Kubernetes
+        - id: 3070
+          folder: Kubernetes
+        - id: 6417
+          folder: Kubernetes
+        - id: 6417
+          folder: Kubernetes
+      loop_control:
+        loop_var: url_item  
 
     - name: Start CaaS
       ansible.builtin.service:
