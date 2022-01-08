@@ -34,6 +34,9 @@ zones:
         - name: RBS850
           ttl: 6400
           value: 192.168.42.6
+        - name: mirror-vm
+          ttl: 6400
+          value: 192.168.42.7
 
         - name: dns-core-1
           ttl: 6400
@@ -88,7 +91,7 @@ zones:
         - name: s3
           ttl: 6400
           value: 192.168.42.26
-        - name: grafana
+        - name: metrics
           ttl: 6400
           value: 192.168.42.27
 
@@ -108,6 +111,15 @@ zones:
           ttl: 6400
           value: 192.168.42.28
         - name: nexus
+          ttl: 6400
+          value: 192.168.42.28
+        - name: grafana
+          ttl: 6400
+          value: 192.168.42.28
+        - name: prometheus
+          ttl: 6400
+          value: 192.168.42.28
+        - name: alertmanager
           ttl: 6400
           value: 192.168.42.28
         - name: '@'
