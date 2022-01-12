@@ -65,9 +65,6 @@
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-postgresql-data"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/LabInfra"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/Kubernetes"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/Services"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/datasources"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/notifiers"
 
@@ -101,8 +98,15 @@
         group: 1001
       with_items:
         - "{{ caas_name }}/volumes/grafana-config/grafana.ini"
-        - "{{ caas_name }}/volumes/grafana-provisioning/dashboards/all.yml"
         - "{{ caas_name }}/volumes/grafana-provisioning/datasources/datasource.yml"
+        #- "{{ caas_name }}/volumes/grafana-provisioning/dashboards/all.yml"
+
+    - name: Copy dashboards
+      copy:
+        src: "../containers-as-a-service/caas-metrics/volumes/grafana-provisioning/dashboards"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/"
+        owner: 1001
+        group: 1001
 
     - name: Download CaaS deployment files
       copy:
@@ -157,40 +161,38 @@
       loop_control:
         loop_var: url_item
 
-    - name: Download Grafana plugins
-      get_url:
-        url: "https://grafana.com/api/dashboards/{{ url_item.id }}/revisions/latest/download"
-        dest: "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/{{ url_item.folder }}/"
-        owner: 1001
-        group: 1001
-        remote_src: yes
-      loop:
-        - id: 1860
-          folder: LabInfra
-        - id: 3662
-          folder: LabInfra
-        - id: 10482
-          folder: LabInfra
-        - id: 10441
-          folder: Services
-        - id: 12123
-          folder: Kubernetes
-        - id: 12006
-          folder: Kubernetes
-        - id: 11454
-          folder: Kubernetes
-        - id: 11455
-          folder: Kubernetes
-        - id: 7249
-          folder: Kubernetes
-        - id: 3070
-          folder: Kubernetes
-        - id: 6417
-          folder: Kubernetes
-        - id: 6417
-          folder: Kubernetes
-      loop_control:
-        loop_var: url_item  
+#    - name: Download Grafana dashboards
+#      get_url:
+#        url: "https://grafana.com/api/dashboards/{{ url_item.id }}/revisions/latest/download"
+#        dest: "{{ service_containers_dir }}/{{ caas_name }}/volumes/grafana-provisioning/dashboards/{{ url_item.folder }}/"
+#        owner: 1001
+#        group: 1001
+#        remote_src: yes
+#      loop:
+#        - id: 1860
+#          folder: LabInfra
+#        - id: 3662
+#          folder: LabInfra
+#        - id: 10482
+#          folder: LabInfra
+#        - id: 10441
+#          folder: Services
+#        - id: 12123
+#          folder: Kubernetes
+#        - id: 12006
+#          folder: Kubernetes
+#        - id: 11454
+#          folder: Kubernetes
+#        - id: 11455
+#          folder: Kubernetes
+#        - id: 7249
+#          folder: Kubernetes
+#        - id: 3070
+#          folder: Kubernetes
+#        - id: 6417
+#          folder: Kubernetes
+#      loop_control:
+#        loop_var: url_item
 
     - name: Start CaaS
       ansible.builtin.service:
