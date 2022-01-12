@@ -267,31 +267,31 @@ zones:
 #          ttl: 6400
 #          value: 192.168.42.73
 
-        - name: api.ahv-ocp
-          ttl: 6400
-          value: 192.168.42.74
-        - name: api-int.ahv-ocp
-          ttl: 6400
-          value: 192.168.42.74
-        - name: apps.ahv-ocp
-          ttl: 6400
-          value: 192.168.42.75
-        - name: "*.apps.ahv-ocp"
-          ttl: 6400
-          value: 192.168.42.75
+#        - name: api.ahv-ocp
+#          ttl: 6400
+#          value: 192.168.42.74
+#        - name: api-int.ahv-ocp
+#          ttl: 6400
+#          value: 192.168.42.74
+#        - name: apps.ahv-ocp
+#          ttl: 6400
+#          value: 192.168.42.75
+#        - name: "*.apps.ahv-ocp"
+#          ttl: 6400
+#          value: 192.168.42.75
 
-        - name: api.core-ocp
-          ttl: 6400
-          value: 192.168.42.76
-        - name: api-int.core-ocp
-          ttl: 6400
-          value: 192.168.42.76
-        - name: apps.core-ocp
-          ttl: 6400
-          value: 192.168.42.77
-        - name: "*.apps.core-ocp"
-          ttl: 6400
-          value: 192.168.42.77
+#        - name: api.core-ocp
+#          ttl: 6400
+#          value: 192.168.42.76
+#        - name: api-int.core-ocp
+#          ttl: 6400
+#          value: 192.168.42.76
+#        - name: apps.core-ocp
+#          ttl: 6400
+#          value: 192.168.42.77
+#        - name: "*.apps.core-ocp"
+#          ttl: 6400
+#          value: 192.168.42.77
 
       AAAA:
         - name: unifi
@@ -470,6 +470,10 @@ zones:
           ttl: 6400
           value: 192.168.42.28
 
+        - name: vcenter.lab
+          ttl: 6400
+          value: 192.168.42.30
+
         - name: can.vpn
           ttl: 6400
           value: 51.161.11.55
@@ -477,15 +481,15 @@ zones:
           ttl: 6400
           value: 51.161.11.55
 
-#        - name: sno-ocp
-#          ttl: 6400
-#          value: 192.168.42.72
-#        - name: api.sno-ocp
-#          ttl: 6400
-#          value: 192.168.42.72
-#        - name: "*.apps.sno-ocp"
-#          ttl: 6400
-#          value: 192.168.42.72
+        - name: sno-ocp.lab
+          ttl: 6400
+          value: 192.168.42.71
+        - name: api.sno-ocp.lab
+          ttl: 6400
+          value: 192.168.42.71
+        - name: "*.apps.sno-ocp.lab"
+          ttl: 6400
+          value: 192.168.42.71
 
         - name: core-ocp.lab
           ttl: 6400
@@ -496,3 +500,13 @@ zones:
         - name: "*.apps.core-ocp.lab"
           ttl: 6400
           value: 192.168.42.73
+
+        - name: loe-ocp.lab
+          ttl: 6400
+          value: 192.168.42.74
+        - name: api.loe-ocp.lab
+          ttl: 6400
+          value: 192.168.42.74
+        - name: "*.apps.loe-ocp.lab"
+          ttl: 6400
+          value: 192.168.42.75
