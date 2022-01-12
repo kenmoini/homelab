@@ -1,0 +1,15 @@
+[Unit]
+Description=Metrics Prometheus Node Exporter Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+ExecStop=/opt/service-containers/metrics-node-exporter/scripts/service_stop.sh
+ExecStart=/opt/service-containers/metrics-node-exporter/scripts/service_start.sh
+
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
