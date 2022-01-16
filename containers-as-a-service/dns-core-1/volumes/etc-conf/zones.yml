@@ -474,6 +474,10 @@ zones:
           ttl: 6400
           value: 192.168.42.30
 
+        - name: jfrog-artifactory.lab
+          ttl: 6400
+          value: 192.168.42.39
+
         - name: can.vpn
           ttl: 6400
           value: 51.161.11.55
