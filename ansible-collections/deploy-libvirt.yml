@@ -22,3 +22,5 @@
     - name: Setup Libvirt Bridge Device
       include_role:
         name: libvirtBridgeNet
+      tags:
+        - libvirt_bridge_net

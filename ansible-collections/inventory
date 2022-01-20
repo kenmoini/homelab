@@ -14,7 +14,8 @@ enduranceRemote
 
 [libvirtHosts:children]
 #razaRemote
-sukiRemote
+#sukiRemote
+enduranceRemote
 
 [sukiLocal]
 suki-local ansible_host=localhost ansible_connection=local

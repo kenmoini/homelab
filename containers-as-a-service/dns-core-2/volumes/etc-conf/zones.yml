@@ -474,6 +474,10 @@ zones:
           ttl: 6400
           value: 192.168.42.30
 
+        - name: rocinante.lab
+          ttl: 6400
+          value: 192.168.42.50
+
         - name: jfrog-artifactory.lab
           ttl: 6400
           value: 192.168.42.39
@@ -514,3 +518,13 @@ zones:
         - name: "*.apps.loe-ocp.lab"
           ttl: 6400
           value: 192.168.42.75
+
+        - name: vsphere-ocp.lab
+          ttl: 6400
+          value: 192.168.42.76
+        - name: api.vsphere-ocp.lab
+          ttl: 6400
+          value: 192.168.42.76
+        - name: "*.apps.vsphere-ocp.lab"
+          ttl: 6400
+          value: 192.168.42.77
