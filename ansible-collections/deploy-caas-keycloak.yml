@@ -1,10 +1,10 @@
 ---
-- name: Deploy the Red Hat SSO Container-as-a-Service
+- name: Deploy the Keycloak SSO Container-as-a-Service
   hosts: razaLocal
   gather_facts: yes
   become: yes
   vars:
-    caas_name: rh-sso
+    caas_name: keycloak
     service_containers_dir: /opt/service-containers
     selinux_cheat_codes: false
     update_system: false
@@ -49,14 +49,41 @@
         group: root
       with_items:
         - "{{ service_containers_dir }}/{{ caas_name }}"
-        - "{{ service_containers_dir }}/{{ caas_name }}/config"
+        - "{{ service_containers_dir }}/{{ caas_name }}/secrets"
+        - "{{ service_containers_dir }}/{{ caas_name }}/scripts"
         - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/db_data"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/redis_data"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/nextcloud"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/apps"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/config"
-        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/keycloak-data"
+
+    - name: Create CaaS Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: 1001
+        group: 1001
+      with_items:
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/postgresql-data"
+
+    - name: Check for DB secret file
+      ansible.builtin.stat:
+        path: "{{ service_containers_dir }}/{{ caas_name }}/secrets/db.pass"
+      register: postgresql_secret_file_stat
+
+    - name: Check for Admin Password secret file
+      ansible.builtin.stat:
+        path: "{{ service_containers_dir }}/{{ caas_name }}/secrets/admin.pass"
+      register: admin_secret_file_stat
+
+    - name: Create a Secrets file with a randomly generated password if it does not exist
+      copy:
+        content: "{{ lookup('community.general.random_string', length=12, special=false) }}"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/secrets/db.pass"
+      when: not postgresql_secret_file_stat.stat.exists
+
+    - name: Create a Secrets file with a randomly generated password if it does not exist
+      copy:
+        content: "{{ lookup('community.general.random_string', length=12, special=false) }}"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/secrets/admin.pass"
+      when: not admin_secret_file_stat.stat.exists
 
     - name: Download CaaS deployment files
       copy:
@@ -64,19 +91,9 @@
         dest: "{{ service_containers_dir }}/{{ item }}"
         owner: root
         group: root
-      with_items:
-        - "{{ caas_name }}/config/service_start.sh"
-        - "{{ caas_name }}/config/service_stop.sh"
-        - "{{ caas_name }}/config/service_vars.sh"
-
-    - name: Set executable bit on service bash files
-      ansible.builtin.file:
-        path: "{{ service_containers_dir }}/{{ item }}"
         mode: 0755
       with_items:
-        - "{{ caas_name }}/config/service_start.sh"
-        - "{{ caas_name }}/config/service_stop.sh"
-        - "{{ caas_name }}/config/service_vars.sh"
+        - "{{ caas_name }}/scripts/init.sh"
 
     - name: Download CaaS service
       copy:
@@ -93,9 +110,8 @@
     - name: Pre-pull the images
       shell: "podman pull {{ container_item }}"
       loop:
-        - quay.io/bitnami/redis:latest
         - quay.io/bitnami/postgresql:latest
-        - nextcloud
+        - quay.io/keycloak/keycloak:latest
       loop_control:
         loop_var: container_item
 

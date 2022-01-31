@@ -68,7 +68,7 @@ zones:
         - name: locksmith
           ttl: 6400
           value: 192.168.42.17
-        - name: sso
+        - name: keycloak
           ttl: 6400
           value: 192.168.42.18
         - name: vpn
@@ -81,6 +81,9 @@ zones:
         - name: nexus3
           ttl: 6400
           value: 192.168.42.22
+        - name: zerotier
+          ttl: 6400
+          value: 192.168.42.23
 
         - name: deluge
           ttl: 6400
@@ -96,6 +99,9 @@ zones:
           value: 192.168.42.27
 
         - name: ingress
+          ttl: 6400
+          value: 192.168.42.28
+        - name: bazarr
           ttl: 6400
           value: 192.168.42.28
         - name: sonarr
@@ -120,6 +126,12 @@ zones:
           ttl: 6400
           value: 192.168.42.28
         - name: alertmanager
+          ttl: 6400
+          value: 192.168.42.28
+        - name: sso
+          ttl: 6400
+          value: 192.168.42.28
+        - name: zt
           ttl: 6400
           value: 192.168.42.28
         - name: '@'
@@ -150,6 +162,9 @@ zones:
           ttl: 6400
           value: 192.168.42.47
         - name: deep-thought
+          ttl: 6400
+          value: 192.168.42.48
+        - name: "*.deep-thought"
           ttl: 6400
           value: 192.168.42.48
         - name: endurance

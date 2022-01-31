@@ -1,0 +1,17 @@
+[Unit]
+Description=Keycloak SSO Container
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+ExecStop=/opt/service-containers/keycloak/scripts/init.sh stop
+ExecStart=/opt/service-containers/keycloak/scripts/init.sh start
+ExecReload=/opt/service-containers/keycloak/scripts/init.sh restart
+
+TimeoutStartSec=20
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
