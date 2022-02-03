@@ -3,6 +3,7 @@ providers:
 - name: dashboards
   type: file
   updateIntervalSeconds: 30
+  allowUiUpdates: true
   options:
     path: /opt/bitnami/grafana/conf/provisioning
     foldersFromFilesStructure: true

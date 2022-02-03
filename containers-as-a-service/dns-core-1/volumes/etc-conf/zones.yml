@@ -155,6 +155,9 @@ zones:
         - name: raza
           ttl: 6400
           value: 192.168.42.40
+        - name: foundation
+          ttl: 6400
+          value: 192.168.42.43
         - name: suki
           ttl: 6400
           value: 192.168.42.46
@@ -174,6 +177,10 @@ zones:
           ttl: 6400
           value: 192.168.42.50
 
+        - name: era
+          ttl: 6400
+          value: 192.168.42.52
+
         - name: ahv-nfs-backend
           ttl: 6400
           value: 192.168.42.53
@@ -183,10 +190,10 @@ zones:
         - name: ahv-pc
           ttl: 6400
           value: 192.168.42.55
-        - name: ahv-rocinante
+        - name: ahv-foundation
           ttl: 6400
           value: 192.168.42.56
-        - name: ahv-rocinante-cvm
+        - name: ahv-foundation-cvm
           ttl: 6400
           value: 192.168.42.57
         - name: ahv-mycluster
@@ -331,6 +338,9 @@ zones:
         - name: raza
           ttl: 6400
           value: fdf4:e2e0:df12:a100::40
+        - name: foundation
+          ttl: 6400
+          value: fdf4:e2e0:df12:a100::43
         - name: suki
           ttl: 6400
           value: fdf4:e2e0:df12:a100::46
@@ -454,6 +464,9 @@ zones:
         - name: raza
           ttl: 6400
           value: 192.168.46.40
+        - name: foundation
+          ttl: 6400
+          value: 192.168.46.43
         - name: suki
           ttl: 6400
           value: 192.168.46.46
@@ -484,6 +497,15 @@ zones:
         - name: cloud
           ttl: 6400
           value: 192.168.42.28
+        - name: zt
+          ttl: 6400
+          value: 192.168.42.28
+        - name: zerotier
+          ttl: 6400
+          value: 209.97.152.22
+        - name: zerotier.lab
+          ttl: 6400
+          value: 192.168.42.23
 
         - name: vcenter.lab
           ttl: 6400

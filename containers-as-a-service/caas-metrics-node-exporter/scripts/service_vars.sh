@@ -5,6 +5,6 @@ NETWORK_NAME="host"
 
 CONTAINER_PORTS="-p 9100:9100"
 
-CONTAINER_SOURCE="quay.io/prometheus/node-exporter"
+CONTAINER_SOURCE="quay.io/prometheus/node-exporter:latest"
 
 RESOURCE_LIMITS="-m 512m"
