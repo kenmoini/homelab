@@ -1,0 +1,106 @@
+---
+- name: Deploy the Zerotier Container-as-a-Service
+  hosts: razaLocal
+  gather_facts: yes
+  become: yes
+  vars:
+    caas_name: zerotier
+    service_containers_dir: /opt/service-containers
+    selinux_cheat_codes: false
+    update_system: false
+    install_podman: false
+    create_podman_bridge: false
+  tasks:
+
+    - name: Update system
+      include_role:
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
+      when: update_system|bool
+
+    - name: Install Podman
+      include_role:
+        name: podmanInstall
+      when: install_podman|bool
+
+    - name: Create Container Network Bridge
+      include_role:
+        name: podmanBridgeNet
+      when: create_podman_bridge|bool
+
+    - name: Set SELinux Contexts for Container-as-a-Service
+      include_role:
+        name: caasSELinux
+      when: selinux_cheat_codes|bool
+
+    - name: Create Service Containers Directory
+      ansible.builtin.file:
+        path: "{{ service_containers_dir }}"
+        state: directory
+        owner: root
+        group: root
+
+    - name: Create CaaS Directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+      with_items:
+        - "{{ service_containers_dir }}/{{ caas_name }}"
+        - "{{ service_containers_dir }}/{{ caas_name }}/secrets"
+        - "{{ service_containers_dir }}/{{ caas_name }}/scripts"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/controller_data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/zero-ui_data"
+        - "{{ service_containers_dir }}/{{ caas_name }}/volumes/client_data"
+
+    - name: Check for Admin Password secret file
+      ansible.builtin.stat:
+        path: "{{ service_containers_dir }}/{{ caas_name }}/secrets/admin.pass"
+      register: admin_secret_file_stat
+
+    - name: Create a Secrets file with a randomly generated password if it does not exist
+      copy:
+        content: "{{ lookup('community.general.random_string', length=12, special=false) }}"
+        dest: "{{ service_containers_dir }}/{{ caas_name }}/secrets/admin.pass"
+      when: not admin_secret_file_stat.stat.exists
+
+    - name: Download CaaS deployment files
+      copy:
+        src: "../containers-as-a-service/caas-{{ item }}"
+        dest: "{{ service_containers_dir }}/{{ item }}"
+        owner: root
+        group: root
+        mode: 0755
+      with_items:
+        - "{{ caas_name }}/scripts/service_init.sh"
+
+    - name: Download CaaS service
+      copy:
+        src: "../containers-as-a-service/caas-{{ caas_name }}/caas-{{ caas_name }}.service"
+        dest: "/etc/systemd/system/caas-{{ caas_name }}.service"
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: yes
+
+    - name: Pre-pull the images
+      shell: "podman pull {{ container_item }}"
+      loop:
+        - dec0dos/zerotier-controller:latest
+        - dec0dos/zero-ui:latest
+        - zyclonite/zerotier:latest
+        - zyclonite/zerotier:bridge
+      loop_control:
+        loop_var: container_item
+
+    - name: Start CaaS
+      ansible.builtin.service:
+        name: "caas-{{ caas_name }}"
+        state: restarted
+        enabled: yes
