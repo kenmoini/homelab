@@ -289,6 +289,22 @@ zones:
 #          ttl: 6400
 #          value: 192.168.42.73
 
+        - name: tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: api.tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: api-int.tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: apps.tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: "*.apps.tosin-ocp"
+          ttl: 6400
+          value: 192.168.1.5
+
 #        - name: api.ahv-ocp
 #          ttl: 6400
 #          value: 192.168.42.74
