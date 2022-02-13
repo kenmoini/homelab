@@ -145,12 +145,27 @@ zones:
           ttl: 6400
           value: 192.168.42.29
 
-        - name: nfs
+        - name: fcos-k8s-cp-1
           ttl: 6400
           value: 192.168.42.31
-        - name: iscsi
+        - name: fcos-k8s-app-1
           ttl: 6400
           value: 192.168.42.32
+        - name: fcos-k8s-app-2
+          ttl: 6400
+          value: 192.168.42.33
+        - name: fcos-k8s-app-3
+          ttl: 6400
+          value: 192.168.42.34
+        - name: k8s
+          ttl: 6400
+          value: 192.168.42.35
+        - name: api.k8s
+          ttl: 6400
+          value: 192.168.42.35
+        - name: "*.apps.k8s"
+          ttl: 6400
+          value: 192.168.42.36
 
         - name: raza
           ttl: 6400
@@ -289,22 +304,6 @@ zones:
 #          ttl: 6400
 #          value: 192.168.42.73
 
-        - name: tosin-ocp
-          ttl: 6400
-          value: 192.168.1.5
-        - name: api.tosin-ocp
-          ttl: 6400
-          value: 192.168.1.5
-        - name: api-int.tosin-ocp
-          ttl: 6400
-          value: 192.168.1.5
-        - name: apps.tosin-ocp
-          ttl: 6400
-          value: 192.168.1.5
-        - name: "*.apps.tosin-ocp"
-          ttl: 6400
-          value: 192.168.1.5
-
 #        - name: api.ahv-ocp
 #          ttl: 6400
 #          value: 192.168.42.74
@@ -330,6 +329,16 @@ zones:
 #        - name: "*.apps.core-ocp"
 #          ttl: 6400
 #          value: 192.168.42.77
+
+        - name: vsphere-ocp
+          ttl: 6400
+          value: 192.168.42.76
+        - name: api.vsphere-ocp
+          ttl: 6400
+          value: 192.168.42.76
+        - name: "*.apps.vsphere-ocp"
+          ttl: 6400
+          value: 192.168.42.77
 
       AAAA:
         - name: unifi
@@ -459,6 +468,78 @@ zones:
         - name: _kerberos
           ttl: 6400
           value: "KEMO.LABS"
+
+  - name: atl.kemo.labs
+    subnet: 192.168.1.0/24
+    network: internal
+    primary_dns_server: dns-core-1.kemo.labs
+    ttl: 3600
+    records:
+      NS:
+        - name: dns-core-1
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+        - name: dns-core-2
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+      A:
+
+        - name: dns-core-1
+          ttl: 6400
+          value: 192.168.42.9
+        - name: dns-core-2
+          ttl: 6400
+          value: 192.168.42.10
+
+        - name: tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: api.tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: api-int.tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: apps.tosin-ocp
+          ttl: 6400
+          value: 192.168.1.5
+        - name: "*.apps.tosin-ocp"
+          ttl: 6400
+          value: 192.168.1.5
+
+        - name: loe-sno-atl1
+          ttl: 6400
+          value: 192.168.1.6
+        - name: api.loe-sno-atl1
+          ttl: 6400
+          value: 192.168.1.6
+        - name: api-int.loe-sno-atl1
+          ttl: 6400
+          value: 192.168.1.6
+        - name: apps.loe-sno-atl1
+          ttl: 6400
+          value: 192.168.1.6
+        - name: "*.apps.loe-sno-atl1"
+          ttl: 6400
+          value: 192.168.1.6
+
+        - name: loe-sno-atl2
+          ttl: 6400
+          value: 192.168.1.7
+        - name: api.loe-sno-atl2
+          ttl: 6400
+          value: 192.168.1.7
+        - name: api-int.loe-sno-atl2
+          ttl: 6400
+          value: 192.168.1.7
+        - name: apps.loe-sno-atl2
+          ttl: 6400
+          value: 192.168.1.7
+        - name: "*.apps.loe-sno-atl2"
+          ttl: 6400
+          value: 192.168.1.7
 
   - name: mgmt.kemo.labs
     subnet: 192.168.46.0/24
