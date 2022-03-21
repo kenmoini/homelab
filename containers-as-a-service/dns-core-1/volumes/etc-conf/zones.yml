@@ -148,15 +148,12 @@ zones:
         - name: fcos-k8s-cp-1
           ttl: 6400
           value: 192.168.42.31
-        - name: fcos-k8s-app-1
+        - name: fcos-k8s-cp-2
           ttl: 6400
           value: 192.168.42.32
-        - name: fcos-k8s-app-2
+        - name: fcos-k8s-cp-3
           ttl: 6400
           value: 192.168.42.33
-        - name: fcos-k8s-app-3
-          ttl: 6400
-          value: 192.168.42.34
         - name: k8s
           ttl: 6400
           value: 192.168.42.35
@@ -165,7 +162,19 @@ zones:
           value: 192.168.42.35
         - name: "*.apps.k8s"
           ttl: 6400
-          value: 192.168.42.36
+          value: 192.168.42.35
+        - name: apps.k8s
+          ttl: 6400
+          value: 192.168.42.35
+        - name: fcos-k8s-app-1
+          ttl: 6400
+          value: 192.168.42.37
+        - name: fcos-k8s-app-2
+          ttl: 6400
+          value: 192.168.42.38
+        - name: fcos-k8s-app-3
+          ttl: 6400
+          value: 192.168.42.39
 
         - name: raza
           ttl: 6400
@@ -317,28 +326,38 @@ zones:
 #          ttl: 6400
 #          value: 192.168.42.75
 
-#        - name: api.core-ocp
-#          ttl: 6400
-#          value: 192.168.42.76
-#        - name: api-int.core-ocp
-#          ttl: 6400
-#          value: 192.168.42.76
-#        - name: apps.core-ocp
-#          ttl: 6400
-#          value: 192.168.42.77
-#        - name: "*.apps.core-ocp"
-#          ttl: 6400
-#          value: 192.168.42.77
+        - name: api.core-ocp
+          ttl: 6400
+          value: 192.168.42.76
+        - name: api-int.core-ocp
+          ttl: 6400
+          value: 192.168.42.76
+        - name: apps.core-ocp
+          ttl: 6400
+          value: 192.168.42.77
+        - name: "*.apps.core-ocp"
+          ttl: 6400
+          value: 192.168.42.77
 
         - name: vsphere-ocp
           ttl: 6400
-          value: 192.168.42.76
+          value: 192.168.42.78
         - name: api.vsphere-ocp
           ttl: 6400
-          value: 192.168.42.76
+          value: 192.168.42.78
         - name: "*.apps.vsphere-ocp"
           ttl: 6400
-          value: 192.168.42.77
+          value: 192.168.42.79
+
+        - name: vsphere-ocp-ha
+          ttl: 6400
+          value: 192.168.42.88
+        - name: api.vsphere-ocp-ha
+          ttl: 6400
+          value: 192.168.42.88
+        - name: "*.apps.vsphere-ocp-ha"
+          ttl: 6400
+          value: 192.168.42.89
 
       AAAA:
         - name: unifi
