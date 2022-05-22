@@ -37,6 +37,9 @@ zones:
         - name: mirror-vm
           ttl: 6400
           value: 192.168.42.7
+        - name: discon51pf
+          ttl: 6400
+          value: 192.168.42.8
 
         - name: dns-core-1
           ttl: 6400
@@ -53,21 +56,21 @@ zones:
         - name: idm
           ttl: 6400
           value: 192.168.42.13
-        - name: ntp
-          ttl: 6400
-          value: 192.168.42.14
+        #- name: ntp
+        #  ttl: 6400
+        #  value: 192.168.42.14
         - name: win-dc-1
           ttl: 6400
           value: 192.168.42.15
         - name: win-dc-2
           ttl: 6400
           value: 192.168.42.16
-        - name: ca
+        - name: step-ca
           ttl: 6400
           value: 192.168.42.17
-        - name: locksmith
-          ttl: 6400
-          value: 192.168.42.17
+        #- name: locksmith
+        #  ttl: 6400
+        #  value: 192.168.42.17
         - name: keycloak
           ttl: 6400
           value: 192.168.42.18
@@ -179,6 +182,9 @@ zones:
         - name: raza
           ttl: 6400
           value: 192.168.42.40
+        - name: tower
+          ttl: 6400
+          value: 192.168.42.41
         - name: foundation
           ttl: 6400
           value: 192.168.42.43
@@ -200,6 +206,13 @@ zones:
         - name: rocinante
           ttl: 6400
           value: 192.168.42.50
+        
+        - name: gitlab
+          ttl: 6400
+          value: 192.168.42.51
+        - name: "*.gitlab"
+          ttl: 6400
+          value: 192.168.42.51
 
         - name: era
           ttl: 6400
@@ -254,38 +267,73 @@ zones:
 #        - name: "*.apps.k8s-lab"
 #          ttl: 6400
 #          value: 192.168.42.67
+#
+#        - name: api.ocp3
+#          ttl: 6400
+#          value: 192.168.42.60
+#        - name: api-int.ocp3
+#          ttl: 6400
+#          value: 192.168.42.60
+#        - name: lb.ocp3
+#          ttl: 6400
+#          value: 192.168.42.60
+#        - name: apps.ocp3
+#          ttl: 6400
+#          value: 192.168.42.60
+#        - name: "*.apps.ocp3"
+#          ttl: 6400
+#          value: 192.168.42.60
+#        - name: cp-1.ocp3
+#          ttl: 6400
+#          value: 192.168.42.62
+#        - name: cp-2.ocp3
+#          ttl: 6400
+#          value: 192.168.42.63
+#        - name: cp-3.ocp3
+#          ttl: 6400
+#          value: 192.168.42.64
+#        - name: app-1.ocp3
+#          ttl: 6400
+#          value: 192.168.42.65
+#        - name: app-2.ocp3
+#          ttl: 6400
+#          value: 192.168.42.66
+#        - name: app-3.ocp3
+#          ttl: 6400
+#          value: 192.168.42.67
 
-        - name: api.ocp3
+        - name: api.vsphere-ocp
           ttl: 6400
           value: 192.168.42.60
-        - name: api-int.ocp3
+        - name: api-int.vsphere-ocp
           ttl: 6400
           value: 192.168.42.60
-        - name: lb.ocp3
+        - name: "*.apps.vsphere-ocp"
           ttl: 6400
           value: 192.168.42.60
-        - name: apps.ocp3
+        - name: helper.vsphere-ocp
           ttl: 6400
           value: 192.168.42.60
-        - name: "*.apps.ocp3"
+
+        - name: bootstrap.vsphere-ocp
           ttl: 6400
-          value: 192.168.42.60
-        - name: cp-1.ocp3
+          value: 192.168.42.61
+        - name: control-plane1.vsphere-ocp
           ttl: 6400
           value: 192.168.42.62
-        - name: cp-2.ocp3
+        - name: control-plane2.vsphere-ocp
           ttl: 6400
           value: 192.168.42.63
-        - name: cp-3.ocp3
+        - name: control-plane3.vsphere-ocp
           ttl: 6400
           value: 192.168.42.64
-        - name: app-1.ocp3
+        - name: app-node1.vsphere-ocp
           ttl: 6400
           value: 192.168.42.65
-        - name: app-2.ocp3
+        - name: app-node2.vsphere-ocp
           ttl: 6400
           value: 192.168.42.66
-        - name: app-3.ocp3
+        - name: app-node3.vsphere-ocp
           ttl: 6400
           value: 192.168.42.67
 
@@ -313,18 +361,18 @@ zones:
 #          ttl: 6400
 #          value: 192.168.42.73
 
-#        - name: api.ahv-ocp
-#          ttl: 6400
-#          value: 192.168.42.74
-#        - name: api-int.ahv-ocp
-#          ttl: 6400
-#          value: 192.168.42.74
-#        - name: apps.ahv-ocp
-#          ttl: 6400
-#          value: 192.168.42.75
-#        - name: "*.apps.ahv-ocp"
-#          ttl: 6400
-#          value: 192.168.42.75
+        - name: api.ahv-ocp
+          ttl: 6400
+          value: 192.168.42.74
+        - name: api-int.ahv-ocp
+          ttl: 6400
+          value: 192.168.42.74
+        - name: apps.ahv-ocp
+          ttl: 6400
+          value: 192.168.42.75
+        - name: "*.apps.ahv-ocp"
+          ttl: 6400
+          value: 192.168.42.75
 
         - name: api.core-ocp
           ttl: 6400
@@ -339,15 +387,15 @@ zones:
           ttl: 6400
           value: 192.168.42.77
 
-        - name: vsphere-ocp
-          ttl: 6400
-          value: 192.168.42.78
-        - name: api.vsphere-ocp
-          ttl: 6400
-          value: 192.168.42.78
-        - name: "*.apps.vsphere-ocp"
-          ttl: 6400
-          value: 192.168.42.79
+        #- name: vsphere-ocp
+        #  ttl: 6400
+        #  value: 192.168.42.78
+        #- name: api.vsphere-ocp
+        #  ttl: 6400
+        #  value: 192.168.42.78
+        #- name: "*.apps.vsphere-ocp"
+        #  ttl: 6400
+        #  value: 192.168.42.79
 
         - name: vsphere-ocp-ha
           ttl: 6400
@@ -469,19 +517,19 @@ zones:
           ttl: 6400
           weight: 100
 
-        - name: _ntp._udp
-          value: ntp.kemo.labs.
-          port: 123
-          priority: 0
-          ttl: 6400
-          weight: 100
+        #- name: _ntp._udp
+        #  value: ntp.kemo.labs.
+        #  port: 123
+        #  priority: 0
+        #  ttl: 6400
+        #  weight: 100
 
-        - name: _chrony._udp
-          value: ntp.kemo.labs.
-          port: 323
-          priority: 0
-          ttl: 6400
-          weight: 100
+        #- name: _chrony._udp
+        #  value: ntp.kemo.labs.
+        #  port: 323
+        #  priority: 0
+        #  ttl: 6400
+        #  weight: 100
 
       TXT:
         - name: _kerberos
@@ -661,16 +709,25 @@ zones:
         - name: "*.apps.core-ocp.lab"
           ttl: 6400
           value: 192.168.42.73
+        # - name: core-ocp.lab
+        #   ttl: 6400
+        #   value: 192.168.42.72
+        # - name: api.core-ocp.lab
+        #   ttl: 6400
+        #   value: 192.168.42.72
+        # - name: "*.apps.core-ocp.lab"
+        #   ttl: 6400
+        #   value: 192.168.42.73
 
-        - name: loe-ocp.lab
-          ttl: 6400
-          value: 192.168.42.74
-        - name: api.loe-ocp.lab
-          ttl: 6400
-          value: 192.168.42.74
-        - name: "*.apps.loe-ocp.lab"
-          ttl: 6400
-          value: 192.168.42.75
+        #- name: loe-ocp.lab
+        #  ttl: 6400
+        #  value: 192.168.42.74
+        #- name: api.loe-ocp.lab
+        #  ttl: 6400
+        #  value: 192.168.42.74
+        #- name: "*.apps.loe-ocp.lab"
+        #  ttl: 6400
+        #  value: 192.168.42.75
 
         - name: vsphere-ocp.lab
           ttl: 6400
