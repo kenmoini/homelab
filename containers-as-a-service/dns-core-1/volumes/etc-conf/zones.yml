@@ -569,8 +569,8 @@ zones:
           ttl: 6400
           value: 192.168.46.50
 
-  - name: atl.kemo.labs
-    subnet: 192.168.1.0/24
+  - name: d51.kemo.labs
+    subnet: 192.168.51.0/24
     network: internal
     primary_dns_server: dns-core-1.kemo.labs
     ttl: 3600
@@ -593,6 +593,47 @@ zones:
           ttl: 6400
           value: 192.168.42.10
 
+        - name: pfsense
+          ttl: 6400
+          value: 192.168.51.1
+
+  - name: d77.kemo.labs
+    subnet: 192.168.77.0/24
+    network: internal
+    primary_dns_server: dns-core-1.kemo.labs
+    ttl: 3600
+    records:
+      NS:
+        - name: dns-core-1
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+        - name: dns-core-2
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+      A:
+
+        - name: pfsense
+          ttl: 6400
+          value: 192.168.77.1
+
+  - name: atl.kemo.labs
+    subnet: 192.168.1.0/24
+    network: internal
+    primary_dns_server: dns-core-1.kemo.labs
+    ttl: 3600
+    records:
+      NS:
+        - name: dns-core-1
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+        - name: dns-core-2
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+      A:
         - name: tosin-ocp
           ttl: 6400
           value: 192.168.1.5
@@ -667,21 +708,6 @@ zones:
         - name: zerotier
           ttl: 6400
           value: 209.97.152.22
-        - name: zerotier.lab
-          ttl: 6400
-          value: 192.168.42.23
-
-        - name: vcenter.lab
-          ttl: 6400
-          value: 192.168.42.30
-
-        - name: rocinante.lab
-          ttl: 6400
-          value: 192.168.42.50
-
-        - name: jfrog-artifactory.lab
-          ttl: 6400
-          value: 192.168.42.39
 
         - name: can.vpn
           ttl: 6400
@@ -690,51 +716,81 @@ zones:
           ttl: 6400
           value: 51.161.11.55
 
-        - name: sno-ocp.lab
+  - name: lab.kemo.network
+    subnet: 192.168.42.0/24
+    subnet_v6: fdf4:e2e0:df12:a142::/64
+    network: internal
+    primary_dns_server: dns-core-1.kemo.labs
+    ttl: 3600
+    records:
+      NS:
+        - name: dns-core-1
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+        - name: dns-core-2
+          ttl: 86400
+          domain: kemo.labs.
+          anchor: '@'
+      A:
+        - name: zerotier
           ttl: 6400
-          value: 192.168.42.71
-        - name: api.sno-ocp.lab
+          value: 192.168.42.23
+        - name: vcenter
           ttl: 6400
-          value: 192.168.42.71
-        - name: "*.apps.sno-ocp.lab"
+          value: 192.168.42.30
+        - name: rocinante
           ttl: 6400
-          value: 192.168.42.71
+          value: 192.168.42.50
+        - name: jfrog-artifactory
+          ttl: 6400
+          value: 192.168.42.39
 
-        - name: core-ocp.lab
+        - name: sno-ocp
           ttl: 6400
-          value: 192.168.42.72
-        - name: api.core-ocp.lab
+          value: 192.168.77.71
+        - name: api.sno-ocp
           ttl: 6400
-          value: 192.168.42.72
-        - name: "*.apps.core-ocp.lab"
+          value: 192.168.77.71
+        - name: "*.apps.sno-ocp"
           ttl: 6400
-          value: 192.168.42.73
-        # - name: core-ocp.lab
-        #   ttl: 6400
-        #   value: 192.168.42.72
-        # - name: api.core-ocp.lab
-        #   ttl: 6400
-        #   value: 192.168.42.72
-        # - name: "*.apps.core-ocp.lab"
-        #   ttl: 6400
-        #   value: 192.168.42.73
+          value: 192.168.77.71
 
-        #- name: loe-ocp.lab
+        #- name: core-ocp
+        #  ttl: 6400
+        #  value: 192.168.42.72
+        #- name: api.core-ocp
+        #  ttl: 6400
+        #  value: 192.168.42.72
+        #- name: "*.apps.core-ocp"
+        #  ttl: 6400
+        #  value: 192.168.42.73
+        - name: core-ocp
+          ttl: 6400
+          value: 192.168.51.72
+        - name: api.core-ocp
+          ttl: 6400
+          value: 192.168.51.72
+        - name: "*.apps.core-ocp"
+          ttl: 6400
+          value: 192.168.51.73
+
+        #- name: loe-ocp
         #  ttl: 6400
         #  value: 192.168.42.74
-        #- name: api.loe-ocp.lab
+        #- name: api.loe-ocp
         #  ttl: 6400
         #  value: 192.168.42.74
-        #- name: "*.apps.loe-ocp.lab"
+        #- name: "*.apps.loe-ocp"
         #  ttl: 6400
         #  value: 192.168.42.75
 
-        - name: vsphere-ocp.lab
+        - name: vsphere-ocp
           ttl: 6400
           value: 192.168.42.76
-        - name: api.vsphere-ocp.lab
+        - name: api.vsphere-ocp
           ttl: 6400
           value: 192.168.42.76
-        - name: "*.apps.vsphere-ocp.lab"
+        - name: "*.apps.vsphere-ocp"
           ttl: 6400
           value: 192.168.42.77
