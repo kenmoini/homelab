@@ -6,8 +6,9 @@ IP_ADDRESS="192.168.42.10"
 CONTAINER_PORT="53"
 
 VOLUME_MOUNT_ONE="/opt/service-containers/${CONTAINER_NAME}/volumes/etc-conf:/etc/go-zones/"
-VOLUME_MOUNT_TWO="/opt/service-containers/${CONTAINER_NAME}/volumes/vendor-conf:/opt/app-root/vendor/bind/"
+#VOLUME_MOUNT_TWO="-v /opt/service-containers/${CONTAINER_NAME}/volumes/vendor-conf:/opt/app-root/vendor/bind/"
+VOLUME_MOUNT_TWO=""
 
-CONTAINER_SOURCE="quay.io/kenmoini/go-zones:file-to-bind"
+CONTAINER_SOURCE="quay.io/kenmoini/go-zones:file-to-bind-latest"
 
 RESOURCE_LIMITS="-m 1024m"

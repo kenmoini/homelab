@@ -15,4 +15,7 @@ if [[ -f "$FILE_CHECK" ]]; then
 fi
 
 echo "Starting container ${CONTAINER_NAME}..."
-/usr/bin/podman run -d --name "${CONTAINER_NAME}" --privileged --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" -p "${CONTAINER_PORT}" -v ${VOLUME_MOUNT_ONE} -v ${VOLUME_MOUNT_TWO} ${RESOURCE_LIMITS} ${CONTAINER_SOURCE}
+/usr/bin/podman run -d --name "${CONTAINER_NAME}" --privileged \
+ --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" -p "${CONTAINER_PORT}" \
+ -v ${VOLUME_MOUNT_ONE} \
+ ${RESOURCE_LIMITS} ${CONTAINER_SOURCE}

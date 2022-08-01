@@ -1,0 +1,655 @@
+# example DNS Server Configuration
+dns:
+  ##########################################################################################
+  # acls is a list of named network groups
+  acls:
+    # privatenets can respond to internal client queries with an internal IP
+    - name: privatenets
+      networks:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - localhost
+        - localnets
+    # externalwan would match any external network
+    - name: externalwan
+      networks:
+        - any
+        - "!10.0.0.0/8"
+        - "!172.16.0.0/12"
+        - "!192.168.0.0/16"
+        - "!localhost"
+        - "!localnets"
+
+  ##########################################################################################
+  # views is a list of named views that glue together acls and zones
+  views:
+    - name: internalNetworks
+      # acls is a list of the named ACLs from above that this view will be applied to
+      acls:
+        - privatenets
+      # recursion is a boolean that controls whether this view will allow recursive DNS queries
+      recursion: true
+      # if recursion is true, then you can provide forwarders to be used for recursive queries 
+      #  such as a PiHole DNS server or just something like Cloudflare DNS at 1.0.0.1 and 1.1.1.1
+      forwarders:
+        - 192.168.42.11
+        - 192.168.42.12
+      # forwarded_zones is a list of zones and their authoritative nameservers to forward queries to
+      forwarded_zones:
+        - zone: tosins-lab.com
+          forwarders:
+            - 192.168.1.56
+        - zone: dsal.labs
+          forwarders:
+            - 10.1.241.136
+      # zones is a list of named Zones to associate with this view
+      zones:
+        - kemo-labs
+        - mgmt-kemo-labs
+        - kemo-network
+        - lab-kemo-network
+        - d51-kemo-labs
+        - d77-kemo-labs
+
+
+  ##########################################################################################
+  ## Assumes two authoritative dns servers at dns-core-1.example.labs and dns-core-2.example.labs serving both zones
+  zones:
+    - name: kemo-labs
+      zone: kemo.labs
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: unifi
+            value: 192.168.42.1/24
+          - name: us-16xg
+            value: 192.168.42.2/24
+          - name: us-48-pro
+            value: 192.168.42.3/24
+          - name: ap-ac-pro-1
+            value: 192.168.42.4/24
+          - name: RBR850
+            value: 192.168.42.5/24
+          - name: RBS850
+            value: 192.168.42.6/24
+          - name: mirror-vm
+            value: 192.168.42.7/24
+          - name: discon51pf
+            value: 192.168.42.8/24
+
+          - name: dns-core-1
+            value: 192.168.42.9/24
+          - name: dns-core-2
+            value: 192.168.42.10/24
+          - name: dns-pihole-1
+            value: 192.168.42.11/24
+          - name: dns-pihole-2
+            value: 192.168.42.12/24
+          - name: idm
+            value: 192.168.42.13/24
+          #- name: ntp
+          #  ttl: 6400
+          #  value: 192.168.42.14
+          - name: win-dc-1
+            value: 192.168.42.15/24
+          - name: win-dc-2
+            value: 192.168.42.16/24
+          - name: step-ca
+            value: 192.168.42.17/24
+          #- name: locksmith
+          #  ttl: 6400
+          #  value: 192.168.42.17
+          - name: keycloak
+            value: 192.168.42.18/24
+          - name: vpn
+            value: 192.168.42.19/24
+
+          - name: plex
+            value: 192.168.42.20/24
+          - name: nexus3
+            value: 192.168.42.22/24
+          - name: zerotier
+            value: 192.168.42.23/24
+
+          - name: deluge
+            value: 192.168.42.24/24
+          - name: nextcloud
+            value: 192.168.42.25/24
+          - name: s3
+            value: 192.168.42.26/24
+          - name: metrics
+            value: 192.168.42.27/24
+
+          - name: ingress
+            value: 192.168.42.28
+          - name: bazarr
+            value: 192.168.42.28
+          - name: sonarr
+            value: 192.168.42.28
+          - name: radarr
+            value: 192.168.42.28
+          - name: jackett
+            value: 192.168.42.28
+          - name: deluge-web
+            value: 192.168.42.28
+          - name: nexus
+            value: 192.168.42.28
+          - name: grafana
+            value: 192.168.42.28
+          - name: prometheus
+            value: 192.168.42.28
+          - name: alertmanager
+            value: 192.168.42.28
+          - name: sso
+            value: 192.168.42.28
+          - name: zt
+            value: 192.168.42.28
+          - name: '@'
+            value: 192.168.42.28
+          - name: www
+            value: 192.168.42.28
+
+          - name: web-svcs
+            value: 192.168.42.29
+
+          - name: proxy
+            value: 192.168.42.31/24
+
+          #- name: fcos-k8s-cp-1
+          #  value: 192.168.42.31
+          #- name: fcos-k8s-cp-2
+          #  value: 192.168.42.32
+          #- name: fcos-k8s-cp-3
+          #  value: 192.168.42.33
+          #- name: k8s
+          #  value: 192.168.42.35
+          #- name: api.k8s
+          #  value: 192.168.42.35
+          #- name: "*.apps.k8s"
+          #  value: 192.168.42.35
+          #- name: apps.k8s
+          #  value: 192.168.42.35
+          #- name: fcos-k8s-app-1
+          #  value: 192.168.42.37
+          #- name: fcos-k8s-app-2
+          #  value: 192.168.42.38
+          #- name: fcos-k8s-app-3
+          #  value: 192.168.42.39
+
+          - name: raza
+            value: 192.168.42.40/24
+          - name: tower
+            value: 192.168.42.41/24
+          - name: satellite
+            value: 192.168.42.42/24
+          - name: foundation
+            value: 192.168.42.43/24
+          - name: suki
+            value: 192.168.42.46/24
+          - name: vroom
+            value: 192.168.42.47/24
+          - name: deep-thought
+            value: 192.168.42.48/24
+          - name: "*.deep-thought"
+            value: 192.168.42.48
+          - name: endurance
+            value: 192.168.42.49/24
+          - name: rocinante
+            value: 192.168.42.50/24
+          
+          - name: gitlab
+            value: 192.168.42.51/24
+          - name: "*.gitlab"
+            value: 192.168.42.51
+
+          - name: era
+            value: 192.168.42.52/24
+
+          - name: ahv-nfs-backend
+            value: 192.168.42.53/24
+          - name: ahv-nfs
+            value: 192.168.42.54/24
+          - name: ahv-pc
+            value: 192.168.42.55/24
+          - name: ahv-foundation
+            value: 192.168.42.56/24
+          - name: ahv-foundation-cvm
+            value: 192.168.42.57/24
+          - name: ahv-mycluster
+            value: 192.168.42.58/24
+          - name: ahv-mycluster-ds
+            value: 192.168.42.59/24
+
+  #        - name: k8s-cp-1
+  #          ttl: 6400
+  #          value: 192.168.42.60
+  #        - name: k8s-cp-2
+  #          ttl: 6400
+  #          value: 192.168.42.61
+  #        - name: k8s-cp-3
+  #          ttl: 6400
+  #          value: 192.168.42.62
+  #        - name: k8s-app-1
+  #          ttl: 6400
+  #          value: 192.168.42.63
+  #        - name: k8s-app-2
+  #          ttl: 6400
+  #          value: 192.168.42.64
+  #        - name: k8s-app-3
+  #          ttl: 6400
+  #          value: 192.168.42.65
+  #        - name: api.k8s-lab
+  #          ttl: 6400
+  #          value: 192.168.42.66
+  #        - name: apps.k8s-lab
+  #          ttl: 6400
+  #          value: 192.168.42.67
+  #        - name: "*.apps.k8s-lab"
+  #          ttl: 6400
+  #          value: 192.168.42.67
+  #
+  #        - name: api.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.60
+  #        - name: api-int.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.60
+  #        - name: lb.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.60
+  #        - name: apps.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.60
+  #        - name: "*.apps.ocp3"
+  #          ttl: 6400
+  #          value: 192.168.42.60
+  #        - name: cp-1.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.62
+  #        - name: cp-2.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.63
+  #        - name: cp-3.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.64
+  #        - name: app-1.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.65
+  #        - name: app-2.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.66
+  #        - name: app-3.ocp3
+  #          ttl: 6400
+  #          value: 192.168.42.67
+
+          - name: sno-two-ocp
+            value: 192.168.42.34
+          - name: api.sno-two-ocp
+            value: 192.168.42.34
+          - name: api-int.sno-two-ocp
+            value: 192.168.42.34
+          - name: "*.apps.sno-two-ocp"
+            value: 192.168.42.34
+
+          - name: api.vsphere-ocp
+            value: 192.168.42.60
+          - name: api-int.vsphere-ocp
+            value: 192.168.42.60
+          - name: "*.apps.vsphere-ocp"
+            value: 192.168.42.60
+          - name: helper.vsphere-ocp
+            value: 192.168.42.60
+
+          - name: bootstrap.vsphere-ocp
+            value: 192.168.42.61
+          - name: control-plane1.vsphere-ocp
+            value: 192.168.42.62
+          - name: control-plane2.vsphere-ocp
+            value: 192.168.42.63
+          - name: control-plane3.vsphere-ocp
+            value: 192.168.42.64
+          - name: app-node1.vsphere-ocp
+            value: 192.168.42.65
+          - name: app-node2.vsphere-ocp
+            value: 192.168.42.66
+          - name: app-node3.vsphere-ocp
+            value: 192.168.42.67
+
+          - name: quay
+            value: 192.168.42.69/24
+          - name: "*.quay"
+            value: 192.168.42.69
+
+          - name: assisted-installer
+            value: 192.168.42.70/24
+
+  #        - name: api.ai-poc
+  #          ttl: 6400
+  #          value: 192.168.42.72
+  #        - name: api-int.ai-poc
+  #          ttl: 6400
+  #          value: 192.168.42.72
+  #        - name: apps.ai-poc
+  #          ttl: 6400
+  #          value: 192.168.42.73
+  #        - name: "*.apps.ai-poc"
+  #          ttl: 6400
+  #          value: 192.168.42.73
+
+          - name: api.ahv-ocp
+            value: 192.168.42.74
+          - name: api-int.ahv-ocp
+            value: 192.168.42.74
+          - name: apps.ahv-ocp
+            value: 192.168.42.75
+          - name: "*.apps.ahv-ocp"
+            value: 192.168.42.75
+
+          - name: api.core-ocp
+            value: 192.168.42.76
+          - name: api-int.core-ocp
+            value: 192.168.42.76
+          - name: apps.core-ocp
+            value: 192.168.42.77
+          - name: "*.apps.core-ocp"
+            value: 192.168.42.77
+
+          #- name: vsphere-ocp
+          #  ttl: 6400
+          #  value: 192.168.42.78
+          #- name: api.vsphere-ocp
+          #  ttl: 6400
+          #  value: 192.168.42.78
+          #- name: "*.apps.vsphere-ocp"
+          #  ttl: 6400
+          #  value: 192.168.42.79
+
+          - name: vsphere-ocp-ha
+            value: 192.168.42.88
+          - name: api.vsphere-ocp-ha
+            value: 192.168.42.88
+          - name: api-int.vsphere-ocp-ha
+            value: 192.168.42.88
+          - name: "*.apps.vsphere-ocp-ha"
+            value: 192.168.42.89
+
+        AAAA:
+          - name: unifi
+            value: fdf4:e2e0:df12:a100::0
+          - name: us-16xg
+            value: fdf4:e2e0:df12:a100::2
+          - name: us-48-pro
+            value: fdf4:e2e0:df12:a100::3
+          - name: ap-ac-pro-1
+            value: fdf4:e2e0:df12:a100::4
+          - name: RBR850
+            value: fdf4:e2e0:df12:a100::5
+          - name: RBS850
+            value: fdf4:e2e0:df12:a100::6
+
+          - name: raza
+            value: fdf4:e2e0:df12:a100::40
+          - name: foundation
+            value: fdf4:e2e0:df12:a100::43
+          - name: suki
+            value: fdf4:e2e0:df12:a100::46
+          - name: vroom
+            value: fdf4:e2e0:df12:a100::47
+          - name: deep-thought
+            value: fdf4:e2e0:df12:a100::48
+          - name: endurance
+            value: fdf4:e2e0:df12:a100::49
+          - name: rocinante
+            value: fdf4:e2e0:df12:a100::50
+  
+          - name: dns-core-1
+            value: fdf4:e2e0:df12:a100::11
+          - name: dns-core-2
+            value: fdf4:e2e0:df12:a100::12
+
+        CNAME:
+          - name: ns1
+            value: dns-core-1.kemo.labs.
+          - name: ns2
+            value: dns-core-2.kemo.labs.
+
+        SRV:
+          - name: _kerberos._udp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+          - name: _kerberos._tcp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+
+          - name: _kerberos-master._udp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+          - name: _kerberos-master._tcp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+
+          - name: _kpasswd._udp
+            value: idm.kemo.labs.
+            port: 464
+            priority: 0
+            weight: 100
+          - name: _kpasswd._tcp
+            value: idm.kemo.labs.
+            port: 464
+            priority: 0
+            weight: 100
+
+          - name: _ldap._tcp
+            value: idm.kemo.labs.
+            port: 389
+            priority: 0
+            weight: 100
+          - name: _ldaps._tcp
+            value: idm.kemo.labs.
+            port: 636
+            priority: 0
+            weight: 100
+
+          #- name: _ntp._udp
+          #  value: ntp.kemo.labs.
+          #  port: 123
+          #  priority: 0
+          #  ttl: 6400
+          #  weight: 100
+
+          #- name: _chrony._udp
+          #  value: ntp.kemo.labs.
+          #  port: 323
+          #  priority: 0
+          #  ttl: 6400
+          #  weight: 100
+
+        TXT:
+          - name: _kerberos
+            value: "KEMO.LABS"
+
+    - name: mgmt-kemo-labs
+      zone: mgmt.kemo.labs
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: raza
+            value: 192.168.46.40/24
+          - name: foundation
+            value: 192.168.46.43/24
+          - name: suki
+            value: 192.168.46.46/24
+          - name: endurance
+            value: 192.168.46.49/24
+          - name: rocinante
+            value: 192.168.46.50/24
+
+    - name: d51-kemo-labs
+      zone: d51.kemo.labs
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+
+          - name: dns-core-1
+            value: 192.168.42.9
+          - name: dns-core-2
+            value: 192.168.42.10
+
+          - name: pfsense
+            value: 192.168.51.1/24
+
+    - name: d77-kemo-labs
+      zone: d77.kemo.labs
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+
+          - name: pfsense
+            value: 192.168.77.1/24
+
+    - name: kemo-network
+      zone: kemo.network
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: cloud
+            value: 192.168.42.28/24
+          - name: zt
+            value: 192.168.42.28/24
+          - name: zerotier
+            value: 209.97.152.22/24
+
+          - name: can.vpn
+            value: 51.161.11.55/24
+          - name: can-ca.vpn
+            value: 51.161.11.55/24
+
+    - name: lab-kemo-network
+      zone: lab.kemo.network
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: zerotier
+            value: 192.168.42.23/24
+          - name: vcenter
+            value: 192.168.42.30/24
+          - name: rocinante
+            value: 192.168.42.50/24
+          - name: jfrog-artifactory
+            value: 192.168.77.7/24
+
+          - name: sno-ocp
+            value: 192.168.77.71
+          - name: sno-white.sno-ocp
+            value: 192.168.77.71/24
+          - name: api.sno-ocp
+            value: 192.168.77.71
+          - name: api-int.sno-ocp
+            value: 192.168.77.71
+          - name: "*.apps.sno-ocp"
+            value: 192.168.77.71
+
+          #- name: core-ocp
+          #  ttl: 6400
+          #  value: 192.168.42.72
+          #- name: api.core-ocp
+          #  ttl: 6400
+          #  value: 192.168.42.72
+          #- name: "*.apps.core-ocp"
+          #  ttl: 6400
+          #  value: 192.168.42.73
+          - name: core-ocp
+            value: 192.168.51.72
+          - name: api.core-ocp
+            value: 192.168.51.72
+          - name: api-int.core-ocp
+            value: 192.168.51.72
+          - name: "*.apps.core-ocp"
+            value: 192.168.51.73
+
+          - name: loe-ocp
+            value: 192.168.77.74
+          - name: api.loe-ocp
+            value: 192.168.77.74
+          - name: api-int.loe-ocp
+            value: 192.168.77.74
+          - name: "*.apps.loe-ocp"
+            value: 192.168.77.75
+
+          - name: vsphere-ocp
+            value: 192.168.42.76
+          - name: api.vsphere-ocp
+            value: 192.168.42.76
+          - name: api-int.vsphere-ocp
+            value: 192.168.42.76
+          - name: "*.apps.vsphere-ocp"
+            value: 192.168.42.77

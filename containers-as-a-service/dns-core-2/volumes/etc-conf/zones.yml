@@ -185,6 +185,9 @@ zones:
         - name: tower
           ttl: 6400
           value: 192.168.42.41
+        - name: satellite
+          ttl: 6400
+          value: 192.168.42.42
         - name: foundation
           ttl: 6400
           value: 192.168.42.43
@@ -301,6 +304,16 @@ zones:
 #        - name: app-3.ocp3
 #          ttl: 6400
 #          value: 192.168.42.67
+
+        - name: sno-two-ocp
+          ttl: 6400
+          value: 192.168.42.34
+        - name: api.sno-two-ocp
+          ttl: 6400
+          value: 192.168.42.34
+        - name: "*.apps.sno-two-ocp"
+          ttl: 6400
+          value: 192.168.42.34
 
         - name: api.vsphere-ocp
           ttl: 6400
@@ -744,7 +757,7 @@ zones:
           value: 192.168.42.50
         - name: jfrog-artifactory
           ttl: 6400
-          value: 192.168.42.39
+          value: 192.168.77.7
 
         - name: sno-ocp
           ttl: 6400
