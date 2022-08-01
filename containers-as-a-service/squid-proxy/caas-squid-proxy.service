@@ -1,0 +1,17 @@
+[Unit]
+Description=Squid Proxy Container Services
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+TimeoutStartSec=15
+ExecStop=/opt/service-containers/squid-proxy/scripts/service_init.sh start
+ExecStart=/opt/service-containers/squid-proxy/scripts/service_init.sh stop
+ExecReload=/opt/service-containers/squid-proxy/scripts/service_init.sh restart
+
+TimeoutStartSec=20
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

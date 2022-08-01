@@ -1,0 +1,14 @@
+FROM registry.access.redhat.com/ubi8/ubi:8.6-855
+
+RUN dnf update -y \
+ && dnf install -y squid openssl \
+ && dnf clean all \
+ && rm -rf /var/cache/yum
+
+COPY container_root/ /
+
+RUN update-ca-trust
+
+EXPOSE 3128
+
+CMD /start.sh
