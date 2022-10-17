@@ -15,29 +15,42 @@ if [[ -f "$FILE_CHECK" ]]; then
 fi
 
 # Download RHCOS live CD
-if [[ ! -f $OAS_LIVE_CD ]]; then
-    echo "Base Live ISO not found. Downloading RHCOS live CD from $BASE_OS_IMAGE"
-    curl -L $BASE_OS_IMAGE -o $OAS_LIVE_CD
-fi
+#if [[ ! -f $OAS_LIVE_CD ]]; then
+#    echo "Base Live ISO not found. Downloading RHCOS live CD from $BASE_OS_IMAGE"
+#    curl -L $BASE_OS_IMAGE -o $OAS_LIVE_CD
+#fi
 
 # Download RHCOS installer
-if [[ ! -f $OAS_COREOS_INSTALLER ]]; then
-  podman run --privileged -it --rm \
-    -v ${OAS_HOSTDIR}/local-store:/data \
-    -w /data \
-    --entrypoint /bin/bash \
-    ${COREOS_INSTALLER} \
-    -c 'cp /usr/sbin/coreos-installer /data/coreos-installer'
-fi
+#if [[ ! -f $OAS_COREOS_INSTALLER ]]; then
+#  podman run --privileged -it --rm \
+#    -v ${OAS_HOSTDIR}/local-store:/data \
+#    -w /data \
+#    --entrypoint /bin/bash \
+#    ${COREOS_INSTALLER} \
+#    -c 'cp /usr/sbin/coreos-installer /data/coreos-installer'
+#fi
 
 # Prepare for persistence
 # NOTE: Make sure to delete this directory if persistence is not desired for a new environment!
-mkdir -p ${OAS_HOSTDIR}/data/postgresql
-chown -R 26 ${OAS_HOSTDIR}/data/postgresql/
+#mkdir -p ${OAS_HOSTDIR}/data/postgresql
+#chown -R 26 ${OAS_HOSTDIR}/data/postgresql/
 
 # Create Pod and deploy containers
 echo -e "Deploying Pod...\n"
-podman pod create --name "${CONTAINER_NAME}" --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" -p 8000:8000 -p 8090:8090 -p 8888:8080
+podman play kube \
+ --configmap /opt/service-containers/caas-assisted-installer/config/configmap.yaml \
+ --configmap /opt/service-containers/caas-assisted-installer/config/configmap-certs.yaml \
+ --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" \
+ /opt/service-containers/caas-assisted-installer/config/pod.yaml
+
+exit 0
+
+##################################################################################################
+## Old manual way
+##################################################################################################
+
+
+#podman pod create --name "${CONTAINER_NAME}" --network "${NETWORK_NAME}" --ip "${IP_ADDRESS}" -p 8000:8000 -p 8090:8090 -p 8888:8080
 
 sleep 3
 

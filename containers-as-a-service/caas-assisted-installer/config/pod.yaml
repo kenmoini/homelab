@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: assisted-installer
+  name: assisted-installer
+spec:
+  containers:
+  - args:
+      - run-postgresql
+    image: quay.io/centos7/postgresql-12-centos7:latest
+    name: db
+    envFrom:
+      - configMapRef:
+          name: config
+    volumeMounts:
+      - mountPath: /var/lib/pgsql
+        name: pg-data
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+  - image: quay.io/edge-infrastructure/assisted-installer-ui:latest
+    name: ui
+    ports:
+      - hostPort: 8080
+        containerPort: 8080
+    envFrom:
+      - configMapRef:
+          name: config
+    #volumeMounts:
+    #  - name: certs-configmap-volume
+    #    mountPath: /etc/certs
+    #securityContext:
+    #  privileged: true
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+  - image: quay.io/edge-infrastructure/assisted-image-service:latest
+    name: image-service
+    ports:
+      - hostPort: 8888
+        containerPort: 8888
+    envFrom:
+      - configMapRef:
+          name: config
+    #volumeMounts:
+    #  - name: certs-configmap-volume
+    #    mountPath: /etc/certs
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+  - image: quay.io/edge-infrastructure/assisted-service:latest
+    name: service
+    ports:
+      - hostPort: 8090
+        containerPort: 8090
+    envFrom:
+      - configMapRef:
+          name: config
+    volumeMounts:
+      - mountPath: /data
+        name: ai-data
+      #- name: certs-configmap-volume
+      #  mountPath: /etc/certs
+    resources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+  restartPolicy: Never
+  volumes:
+    - name: ai-data
+      persistentVolumeClaim:
+        claimName: ai-service-data
+    - name: pg-data
+      persistentVolumeClaim:
+        claimName: ai-db-data
+    #- name: certs-configmap-volume
+    #  configMap:
+    #    name: certs

@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: config
+data:
+  # HTTP is provided by an HAProxy Reverse Proxy and wildcard certificate
+  ASSISTED_SERVICE_URL: https://assisted-service.kemo.labs
+  #HTTPS_CERT_FILE: "/etc/certs/tls.crt"
+  #HTTPS_KEY_FILE: "/etc/certs/tls.key"
+  #HTTPS_CA_FILE: "/etc/certs/ca.crt"
+  ASSISTED_SERVICE_HOST: 127.0.0.1:8090
+  ASSISTED_SERVICE_SCHEME: http
+  AUTH_TYPE: none
+  DB_HOST: 127.0.0.1
+  DB_NAME: installer
+  DB_PASS: admin
+  DB_PORT: "5432"
+  DB_USER: admin
+  DEPLOY_TARGET: onprem
+  DISK_ENCRYPTION_SUPPORT: "true"
+  DUMMY_IGNITION: "false"
+  ENABLE_SINGLE_NODE_DNSMASQ: "true"
+  HW_VALIDATOR_REQUIREMENTS: '[{"version":"default","master":{"cpu_cores":4,"ram_mib":16384,"disk_size_gb":100,"installation_disk_speed_threshold_ms":10,"network_latency_threshold_ms":100,"packet_loss_percentage":0},"worker":{"cpu_cores":2,"ram_mib":8192,"disk_size_gb":100,"installation_disk_speed_threshold_ms":10,"network_latency_threshold_ms":1000,"packet_loss_percentage":10},"sno":{"cpu_cores":8,"ram_mib":16384,"disk_size_gb":100,"installation_disk_speed_threshold_ms":10}}]'
+  #IMAGE_SERVICE_BASE_URL: http://127.0.0.1:8888
+  IMAGE_SERVICE_BASE_URL: https://assisted-image-service.kemo.labs
+  IPV6_SUPPORT: "true"
+  ISO_IMAGE_TYPE: "full-iso"
+  LISTEN_PORT: "8888"
+  NTP_DEFAULT_SERVER: ""
+  OS_IMAGES: '[{"openshift_version":"4.8","cpu_architecture":"x86_64","url":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.8/4.8.14/rhcos-4.8.14-x86_64-live.x86_64.iso","version":"48.84.202109241901-0"},{"openshift_version":"4.9","cpu_architecture":"x86_64","url":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.9/4.9.45/rhcos-4.9.45-x86_64-live.x86_64.iso","version":"49.84.202207192205-0"},{"openshift_version":"4.10","cpu_architecture":"x86_64","url":"https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.10/4.10.25/rhcos-4.10.25-x86_64-live.x86_64.iso","version":"410.84.202207061638-0"},{"openshift_version":"4.10","cpu_architecture":"arm64","url":"https://mirror.openshift.com/pub/openshift-v4/aarch64/dependencies/rhcos/4.10/4.10.25/rhcos-4.10.25-aarch64-live.aarch64.iso","version":"410.84.202207051516-0"},{"openshift_version":"4.11","cpu_architecture":"x86_64","url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/4.11/4.11.2/rhcos-4.11.2-x86_64-live.x86_64.iso","version":"411.86.202208112011-0"},{"openshift_version":"4.11","cpu_architecture":"arm64","url":"https://mirror.openshift.com/pub/openshift-v4/aarch64/dependencies/rhcos/4.11/4.11.2/rhcos-4.11.2-aarch64-live.aarch64.iso","version":"411.86.202208111758-0"},{"openshift_version":"4.12","cpu_architecture":"x86_64","url":"https://mirror.openshift.com/pub/openshift-v4/x86_64/dependencies/rhcos/pre-release/4.12.0-ec.2/rhcos-4.12.0-ec.2-x86_64-live.x86_64.iso","version":"412.86.202208101039-0"},{"openshift_version":"4.12","cpu_architecture":"arm64","url":"https://mirror.openshift.com/pub/openshift-v4/aarch64/dependencies/rhcos/pre-release/4.12.0-ec.2/rhcos-4.12.0-ec.2-aarch64-live.aarch64.iso","version":"412.86.202208101040-0"}]'
+  POSTGRESQL_DATABASE: installer
+  POSTGRESQL_PASSWORD: admin
+  POSTGRESQL_USER: admin
+  PUBLIC_CONTAINER_REGISTRIES: 'quay.io'
+  RELEASE_IMAGES: '[{"openshift_version":"4.8","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.8.50-x86_64","version":"4.8.50"},{"openshift_version":"4.9","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.9.48-x86_64","version":"4.9.48"},{"openshift_version":"4.10","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.10.34-x86_64","version":"4.10.34"},{"openshift_version":"4.10","cpu_architecture":"arm64","cpu_architectures":["arm64"],"url":"quay.io/openshift-release-dev/ocp-release:4.10.34-aarch64","version":"4.10.34"},{"openshift_version":"4.11","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.11.5-x86_64","version":"4.11.5","default":true},{"openshift_version":"4.11","cpu_architecture":"arm64","cpu_architectures":["arm64"],"url":"quay.io/openshift-release-dev/ocp-release:4.11.5-aarch64","version":"4.11.5"},{"openshift_version":"4.11.0-multi","cpu_architecture":"multi","cpu_architectures":["x86_64","arm64","ppc64le","s390x"],"url":"quay.io/openshift-release-dev/ocp-release:4.11.0-multi","version":"4.11.0-multi"},{"openshift_version":"4.12","cpu_architecture":"x86_64","cpu_architectures":["x86_64"],"url":"quay.io/openshift-release-dev/ocp-release:4.12.0-ec.3-x86_64","support_level":"beta","version":"4.12.0-ec.3"},{"openshift_version":"4.12","cpu_architecture":"arm64","cpu_architectures":["arm64"],"url":"quay.io/openshift-release-dev/ocp-release:4.12.0-ec.3-aarch64","support_level":"beta","version":"4.12.0-ec.3"}]'
+  SERVICE_BASE_URL: http://127.0.0.1:8090
+  STORAGE: filesystem
+  ENABLE_UPGRADE_AGENT: "false"
