@@ -21,5 +21,7 @@ CEV5="ServerIP=192.168.42.11"
 CEV6="ServerIPv6=fdf4:e2e0:df12:a100::11"
 CEV7="PIHOLE_DNS_=1.1.1.1;1.0.0.1"
 CEV8="TEMPERATUREUNIT=f"
+CEV9="PIHOLE_UID=0"
+CEV10="DNSMASQ_USER=root"
 
-CONTAINER_ENVS="-e ${CEV1} -e ${CEV2} -e ${CEV3} -e ${CEV4} -e ${CEV5} -e ${CEV6} -e ${CEV7} -e ${CEV8}"
+CONTAINER_ENVS="-e ${CEV1} -e ${CEV2} -e ${CEV3} -e ${CEV4} -e ${CEV5} -e ${CEV7} -e ${CEV8} -e ${CEV9} -e ${CEV10}"
