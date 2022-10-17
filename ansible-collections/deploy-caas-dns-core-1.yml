@@ -65,6 +65,7 @@
         - "{{ caas_name }}/config/service_stop.sh"
         - "{{ caas_name }}/config/service_vars.sh"
         - "{{ caas_name }}/volumes/etc-conf/zones.yml"
+        - "{{ caas_name }}/volumes/etc-conf/server.yml"
         - "{{ caas_name }}/volumes/vendor-conf/named.conf"
         - "{{ caas_name }}/volumes/vendor-conf/external_forwarders.conf"
 
@@ -90,7 +91,7 @@
         daemon_reload: yes
 
     - name: Pre-pull the image
-      shell: podman pull quay.io/kenmoini/go-zones:file-to-bind
+      shell: podman pull quay.io/kenmoini/go-zones:file-to-bind-latest
 
     - name: Start CaaS
       ansible.builtin.service:
