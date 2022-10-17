@@ -22,3 +22,8 @@ suki-local ansible_host=localhost ansible_connection=local
 
 [razaLocal]
 raza-local ansible_host=localhost ansible_connection=local
+
+[baseFleet:children]
+sukiRemote
+razaRemote
+enduranceRemote
