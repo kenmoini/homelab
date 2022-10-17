@@ -51,6 +51,8 @@ dns:
         - lab-kemo-network
         - d51-kemo-labs
         - d77-kemo-labs
+        - d70-kemo-labs
+        - d70-lab-kemo-network
 
 
   ##########################################################################################
@@ -117,6 +119,8 @@ dns:
 
           - name: plex
             value: 192.168.42.20/24
+          - name: rhcs
+            value: 192.168.42.21/24
           - name: nexus3
             value: 192.168.42.22/24
           - name: zerotier
@@ -132,6 +136,10 @@ dns:
             value: 192.168.42.27/24
 
           - name: ingress
+            value: 192.168.42.28
+          - name: assisted-image-service
+            value: 192.168.42.28
+          - name: assisted-service
             value: 192.168.42.28
           - name: bazarr
             value: 192.168.42.28
@@ -195,6 +203,8 @@ dns:
             value: 192.168.42.42/24
           - name: foundation
             value: 192.168.42.43/24
+          - name: serenity
+            value: 192.168.42.44/24
           - name: suki
             value: 192.168.42.46/24
           - name: vroom
@@ -402,6 +412,8 @@ dns:
             value: fdf4:e2e0:df12:a100::40
           - name: foundation
             value: fdf4:e2e0:df12:a100::43
+          - name: serenity
+            value: fdf4:e2e0:df12:a100::44
           - name: suki
             value: fdf4:e2e0:df12:a100::46
           - name: vroom
@@ -506,12 +518,27 @@ dns:
             value: 192.168.46.40/24
           - name: foundation
             value: 192.168.46.43/24
+          - name: serenity
+            value: 192.168.46.44/24
           - name: suki
             value: 192.168.46.46/24
           - name: endurance
             value: 192.168.46.49/24
           - name: rocinante
             value: 192.168.46.50/24
+        AAAA:
+          - name: raza
+            value: fdf4:e2e0:df12:a146::40
+          - name: foundation
+            value: fdf4:e2e0:df12:a146::43
+          - name: serenity
+            value: fdf4:e2e0:df12:a146::44
+          - name: suki
+            value: fdf4:e2e0:df12:a146::46
+          - name: endurance
+            value: fdf4:e2e0:df12:a146::49
+          - name: rocinante
+            value: fdf4:e2e0:df12:a146::50
 
     - name: d51-kemo-labs
       zone: d51.kemo.labs
@@ -556,6 +583,32 @@ dns:
           - name: pfsense
             value: 192.168.77.1/24
 
+    - name: d70-kemo-labs
+      zone: d70.kemo.labs
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+
+          - name: raza
+            value: 192.168.70.40/24
+          - name: suki
+            value: 192.168.70.46/24
+          - name: endurance
+            value: 192.168.70.49/24
+
+          - name: jfrog-artifactory
+            value: 192.168.70.7/24
+
     - name: kemo-network
       zone: kemo.network
       primary_dns_server: dns-core-1.kemo.labs
@@ -570,6 +623,15 @@ dns:
             ttl: 86400
             domain: kemo.labs.
             anchor: '@'
+
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: 'lab.kemo.network.'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: 'lab.kemo.network.'
         A:
           - name: cloud
             value: 192.168.42.28/24
@@ -597,6 +659,15 @@ dns:
             ttl: 86400
             domain: kemo.labs.
             anchor: '@'
+
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: 'd70.lab.kemo.network.'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: 'd70.lab.kemo.network.'
         A:
           - name: zerotier
             value: 192.168.42.23/24
@@ -605,18 +676,18 @@ dns:
           - name: rocinante
             value: 192.168.42.50/24
           - name: jfrog-artifactory
-            value: 192.168.77.7/24
+            value: 192.168.70.7/24
 
           - name: sno-ocp
-            value: 192.168.77.71
+            value: 192.168.70.71
           - name: sno-white.sno-ocp
-            value: 192.168.77.71/24
+            value: 192.168.70.71/24
           - name: api.sno-ocp
-            value: 192.168.77.71
+            value: 192.168.70.71
           - name: api-int.sno-ocp
-            value: 192.168.77.71
+            value: 192.168.70.71
           - name: "*.apps.sno-ocp"
-            value: 192.168.77.71
+            value: 192.168.70.71
 
           #- name: core-ocp
           #  ttl: 6400
@@ -637,13 +708,13 @@ dns:
             value: 192.168.51.73
 
           - name: loe-ocp
-            value: 192.168.77.74
+            value: 192.168.70.74
           - name: api.loe-ocp
-            value: 192.168.77.74
+            value: 192.168.70.74
           - name: api-int.loe-ocp
-            value: 192.168.77.74
+            value: 192.168.70.74
           - name: "*.apps.loe-ocp"
-            value: 192.168.77.75
+            value: 192.168.70.75
 
           - name: vsphere-ocp
             value: 192.168.42.76
@@ -653,3 +724,61 @@ dns:
             value: 192.168.42.76
           - name: "*.apps.vsphere-ocp"
             value: 192.168.42.77
+
+
+    - name: d70-lab-kemo-network
+      zone: d70.lab.kemo.network
+      primary_dns_server: dns-core-1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: dns-core-1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+          - name: dns-core-2
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+
+          - name: jfrog-artifactory
+            value: 192.168.70.7
+
+          - name: sno-ocp
+            value: 192.168.70.71
+          - name: sno-white.sno-ocp
+            value: 192.168.70.71/24
+          - name: api.sno-ocp
+            value: 192.168.70.71
+          - name: api-int.sno-ocp
+            value: 192.168.70.71
+          - name: "*.apps.sno-ocp"
+            value: 192.168.70.71
+
+          - name: core-ocp
+            value: 192.168.70.72
+          - name: api.core-ocp
+            value: 192.168.70.72
+          - name: api-int.core-ocp
+            value: 192.168.70.72
+          - name: "*.apps.core-ocp"
+            value: 192.168.70.73
+
+          - name: loe-ocp
+            value: 192.168.70.74
+          - name: api.loe-ocp
+            value: 192.168.70.74
+          - name: api-int.loe-ocp
+            value: 192.168.70.74
+          - name: "*.apps.loe-ocp"
+            value: 192.168.70.75
+
+          - name: vsphere-ocp
+            value: 192.168.70.76
+          - name: api.vsphere-ocp
+            value: 192.168.70.76
+          - name: api-int.vsphere-ocp
+            value: 192.168.70.76
+          - name: "*.apps.vsphere-ocp"
+            value: 192.168.70.77
