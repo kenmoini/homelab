@@ -1,2 +1,2 @@
-NFS_SERVER=${NFS_SERVER:="192.168.42.31"}
-NFS_PATH=${NFS_PATH:="/nfs/fast/ocpreg/core-ocp"}
+NFS_SERVER=${NFS_SERVER:="deep-thought.kemo.labs"}
+NFS_PATH=${NFS_PATH:="/nfs-fast/ocp-reg/core-ocp"}

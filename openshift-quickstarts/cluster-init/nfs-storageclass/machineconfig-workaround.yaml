@@ -1,0 +1,22 @@
+apiVersion: machineconfiguration.openshift.io/v1
+kind: MachineConfig
+metadata:
+  labels:
+    machineconfiguration.openshift.io/role: worker
+  name: 98-worker-nfs-pv-selinux-workaround
+spec:
+  config:
+    ignition:
+      version: 3.1.0
+    systemd:
+      units:
+      - contents: |
+          [Unit]
+          Description=NFS PV selinux error workaround
+          [Service]
+          Type=oneshot
+          ExecStart=/bin/sh -c '/sbin/semanage permissive -l | /bin/grep -qw container_init_t || /sbin/semanage permissive -a container_init_t'
+          [Install]
+          WantedBy=multi-user.target
+        enabled: true
+        name: nfs-pv-selinux-workaround.service
