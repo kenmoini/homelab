@@ -1,0 +1,5 @@
+---
+- name: Check for a .zshrc file
+  stat:
+    path: "/home/{{ target_user }}/.oh-my-zsh"
+  register: omz_exists

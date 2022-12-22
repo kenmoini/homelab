@@ -1,0 +1,15 @@
+---
+
+- name: Check for a .zshrc file
+  stat:
+    path: "/home/{{ target_user }}/.zshrc"
+  register: zshrc_exists
+
+- name: Template the basic .zshrc file
+  template:
+    src: "templates/zshrc.j2"
+    dest: "/home/{{ target_user }}/.zshrc"
+    owner: "{{ target_user }}"
+    group: "{{ target_user }}"
+    mode: 0644
+  when: zshrc_exists.stat.exists == false

@@ -1,0 +1,37 @@
+---
+- name: Setup a new RHEL-based system for terminal efficiency
+  gather_facts: no
+  hosts: baseFleet
+  become: yes
+  vars:
+    update_system: true
+    install_zsh: true
+    install_ohmyzsh: true
+    install_powerline: true
+    install_powertools: true
+
+  tasks:
+    - name: Update system
+      include_role:
+        name: baseLinuxUpdate
+      vars:
+        reboot_after_kernel_update: false
+      when: update_system|bool
+
+    - name: Install Zsh
+      dnf:
+        name: ['zsh', 'git']
+        state: latest
+      when: install_zsh|bool
+
+    - name: Install oh-my-zsh
+      include_tasks: tasks/install_oh_my_zsh.yml
+      when: install_ohmyzsh|bool
+
+    - name: Setup ZSH Defaults
+      include_tasks: tasks/setup_user_zsh_defaults.yml
+      when: install_zsh|bool
+      loop:
+        - kemo
+      loop_control:
+        loop_var: target_user
