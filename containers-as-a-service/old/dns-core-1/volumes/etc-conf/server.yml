@@ -394,6 +394,9 @@ dns:
           - name: "*.apps.vsphere-ocp-ha"
             value: 192.168.42.89
 
+          - name: "*.apps.lbtest"
+            value: 192.168.42.142
+
         AAAA:
           - name: unifi
             value: fdf4:e2e0:df12:a100::0
