@@ -15,7 +15,7 @@ if [[ -f "$FILE_CHECK" ]]; then
 fi
 
 echo "Starting container ${CONTAINER_NAME}..."
-/usr/bin/podman run -d --rm --name "${CONTAINER_NAME}" \
+/usr/bin/podman run -d --name "${CONTAINER_NAME}" \
  --cap-add SYS_TIME \
  --cap-add NET_BIND_SERVICE \
  --network "${NETWORK_NAME}" \
