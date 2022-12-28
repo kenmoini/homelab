@@ -1,0 +1,9 @@
+---
+podman_packages:
+- podman
+- udica
+- buildah
+- skopeo
+- cockpit-podman
+- podman-docker
+- container-tools

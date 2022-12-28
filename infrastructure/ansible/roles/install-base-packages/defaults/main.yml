@@ -1,0 +1,14 @@
+---
+# defaults file for install-base-packages
+
+universal_packages:
+- nano
+- git
+- wget
+- curl
+- unzip
+- zip
+- tar
+- jq
+- cockpit
+- zsh

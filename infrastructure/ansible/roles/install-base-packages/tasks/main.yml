@@ -1,0 +1,26 @@
+---
+# tasks file for install-base-packages
+
+- name: Load Distribution-specific vars
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install universal base packages
+  ansible.builtin.package:
+    name: "{{ universal_packages }}"
+    state: latest
+
+- name: Install base packages, OS specific
+  ansible.builtin.package:
+    name: "{{ base_packages }}"
+    state: latest
+
+- name: Enable services
+  when: post_install_enable_services is defined and post_install_enable_services | length > 0
+  ansible.builtin.service:
+    name: "{{ service_item.name }}"
+    enabled: "{{ service_item.enabled|bool }}"
+    state: "{{ service_item.state }}"
+  loop: "{{ post_install_enable_services }}"
+  loop_control:
+    loop_var: service_item
+    label: "{{ service_item }}"

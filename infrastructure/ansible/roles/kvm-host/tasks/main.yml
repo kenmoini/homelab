@@ -1,0 +1,111 @@
+---
+# tasks file for kvm-host
+
+- name: Gather bridge interfaces
+  set_fact:
+    #allNetworkInterfaces: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list }}"
+    #allNetworkInterfaces_variant2: "{{ ansible_facts.interfaces | map('extract', ansible_facts ) | list }}"
+    bridgeInterfaces: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | selectattr('value.type', 'equalto', 'bridge') }}"
+
+- name: Install Libvirt packages
+  dnf:
+    name: "{{ libvirt_packages }}"
+    state: latest
+
+- name: Set the permissions on the libvirt images directory
+  file:
+    path: /var/lib/libvirt/images
+    owner: root
+    group: qemu
+    mode: 0775
+    recurse: yes
+    state: directory
+
+- name: Enable Nested Virtualization
+  when: enable_nested_virt|bool
+  block:
+    - name: Gather CPU Type
+      shell: "cat /proc/cpuinfo | grep '^vendor_id' | head -n 1 | cut -d : -f 2 | awk '{$1=$1};1'"
+      register: cpuType
+
+    - name: Nested virtualization for Intel
+      when: cpuType.stdout == "GenuineIntel"
+      block:
+        - name: Unload the kvm kernel module - Intel
+          shell: modprobe -r kvm_intel
+
+        - name: Reload the kvm kernel module with Nested Virtualization - Intel
+          shell: modprobe kvm_intel nested=1
+
+        - name: Make the nested virt permanent - Intel
+          copy:
+            dest: /etc/modprobe.d/kvm.conf
+            content: |
+              options kvm_intel nested=1
+
+    - name: Nested Virtualization for AMD
+      when: cpuType.stdout == "AuthenticAMD"
+      block:
+        - name: Unload the kvm kernel module - AMD
+          shell: modprobe -r kvm_amd
+
+        - name: Reload the kvm kernel module - AMD
+          shell: modprobe kvm_amd nested=1
+
+        - name: Make the nested virt permanent - AMD
+          copy:
+            dest: /etc/modprobe.d/kvm.conf
+            content: |
+              options kvm_amd nested=1
+
+- name: Enable unsafe interrupts
+  when: enable_unsafe_interrupts|bool
+  copy:
+    dest: /etc/modprobe.d/unsafe-interrupts.conf
+    content: |
+      options vfio_iommu_type1 allow_unsafe_interrupts=1
+
+- name: Start libvirtd
+  service:
+    name: libvirtd
+    enabled: yes
+    state: restarted
+
+- name: Configure Networking
+  block:
+
+    - name: Copy over netfilter sysctl
+      copy:
+        src: files/nf-bridge.conf
+        dest: /etc/sysctl.d/libvirt-nf-bridge.conf
+      notify: Restart libvirtd
+
+    - name: Copy over bridge udev rule
+      copy:
+        src: files/99-bridge.rules
+        dest: /etc/udev/rules.d/99-bridge.rules
+      notify: Restart libvirtd
+
+    - name: Check for default network
+      shell: virsh net-dumpxml default
+      register: default_net_dump
+      ignore_errors: true
+
+    - name: Destroy default libvirt network device
+      when: default_net_dump.rc == 0
+      shell: virsh net-destroy default
+      ignore_errors: true
+
+    - name: Undefine default libvirt network device
+      when: default_net_dump.rc == 0
+      shell: virsh net-undefine default
+      ignore_errors: true
+
+    - name: Loop through the bridge interfaces and create Libvirt bridges as well
+      include_tasks:
+        file: bridge-network.yml
+      loop: "{{ bridgeInterfaces }}"
+      loop_control:
+        loop_var: interface
+        label: "{{ interface.key }}"
+      when: interface.key != "virbr0"

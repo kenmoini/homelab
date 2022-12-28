@@ -1,0 +1,6 @@
+---
+# defaults file for add-root-ca-certs
+additionalTrustedRootCerts:
+- https://github.com/kenmoini/homelab/raw/main/pki/root-authorities/serto-root-ca.pem
+- https://github.com/kenmoini/homelab/raw/main/pki/root-authorities/klstep-ca.pem
+- https://github.com/kenmoini/homelab/raw/main/pki/root-authorities/pgv-root-ca.pem

@@ -1,0 +1,13 @@
+---
+# defaults file for kvm-host
+
+enable_nested_virt: true
+enable_unsafe_interrupts: true
+
+libvirt_packages:
+- virt-install
+- virt-viewer
+- virt-top
+- cockpit-machines
+- libvirt
+- libguestfs-tools

@@ -1,0 +1,10 @@
+---
+base_packages:
+- cockpit-storaged
+- firewalld
+- bash-completion
+
+post_install_enable_services:
+- name: cockpit.socket
+  enabled: true
+  state: started

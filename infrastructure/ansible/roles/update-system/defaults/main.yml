@@ -1,0 +1,4 @@
+---
+# defaults file for update-system
+
+reboot_after_kernel_update: false

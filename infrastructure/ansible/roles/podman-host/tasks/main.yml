@@ -1,0 +1,37 @@
+---
+# tasks file for podman-host
+- name: Gather bridge interfaces
+  set_fact:
+    #allNetworkInterfaces: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | map(attribute='value') | list }}"
+    #allNetworkInterfaces_variant2: "{{ ansible_facts.interfaces | map('extract', ansible_facts ) | list }}"
+    bridgeInterfaces: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | selectattr('value.type', 'equalto', 'bridge') }}"
+
+- name: Load Distribution-specific vars
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install packages for Podman
+  package:
+    name: "{{ podman_packages }}"
+    state: latest
+
+- name: Ensure directory exists for CNI network config
+  file:
+    path: /etc/cni/net.d/
+    state: directory
+    owner: root
+    group: root
+    
+- name: Template over Container Bridge
+  template:
+    src: bridge-network.conflist.j2
+    dest: "/etc/cni/net.d/{{ interface.key }}.conflist"
+  loop: "{{ bridgeInterfaces }}"
+  loop_control:
+    loop_var: interface
+    label: "{{ interface.key }}"
+
+- name: Enable the Podman API service
+  service:
+    name: podman
+    state: started
+    enabled: yes

@@ -1,0 +1,27 @@
+---
+
+- name: Template over libvirt network device
+  template:
+    src: libvirt-bridge.xml.j2
+    dest: "/opt/libvirt-bridge-{{ interface.key }}.xml"
+
+- name: Check for bridge network
+  shell: "virsh net-dumpxml {{ interface.key }}"
+  register: bridge_net_dump
+  ignore_errors: true
+
+- name: Set up the interface
+  when: bridge_net_dump.rc != 0
+  block:
+
+    - name: Define libvirt bridge device
+      shell: "virsh net-define /opt/libvirt-bridge-{{ interface.key }}.xml"
+      ignore_errors: true
+
+    - name: Start libvirt bridge device
+      shell: "virsh net-start {{ interface.key }}"
+      ignore_errors: true
+
+    - name: Auto-Start libvirt bridge device
+      shell: "virsh net-autostart {{ interface.key }}"
+      ignore_errors: true

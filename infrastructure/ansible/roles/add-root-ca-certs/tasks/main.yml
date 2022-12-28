@@ -1,0 +1,29 @@
+---
+# tasks file for add-root-ca-certs
+
+- name: Load Distribution-specific vars
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Create directory for certs
+  ansible.builtin.file:
+    path: "{{ pem_path }}"
+    state: directory
+    owner: root
+    group: root
+
+- name: Download any additional trusted Root CA certs
+  ansible.builtin.get_url:
+    url: "{{ download_item }}"
+    dest: "{{ pem_path }}/{{ (download_item | basename | split('.'))[:-1] | join('.')  }}.{{ cert_file_extension }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop: "{{ additionalTrustedRootCerts }}"
+  loop_control:
+    loop_var: download_item
+    label: "{{ download_item }} to {{ pem_path }}/{{ (download_item | basename | split('.'))[:-1] | join('.')  }}.{{ cert_file_extension }}"
+  register: downloadedCerts
+
+- name: Update the trusted Root CA certs when there was a new certificate downloaded
+  when: downloadedCerts is changed
+  ansible.builtin.command: "{{ update_command }}"

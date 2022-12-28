@@ -1,0 +1,4 @@
+---
+pem_path: "/usr/local/share/ca-certificates"
+cert_file_extension: "crt"
+update_command: "update-ca-certificates"

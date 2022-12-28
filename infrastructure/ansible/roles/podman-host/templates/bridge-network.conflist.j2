@@ -1,0 +1,42 @@
+{
+  "cniVersion": "0.4.0",
+  "name": "{{ interface.key }}",
+  "plugins": [
+      {
+        "type": "bridge",
+        "bridge": "{{ interface.key }}",
+        "ipam": {
+            "type": "host-local",
+            "ranges": [
+                [
+                    {
+                        "subnet": "{{ interface.value.ipv4.network }}/{{ interface.value.ipv4.prefix }}",
+                        "rangeStart": "{{ interface.value.ipv4.network | ipmath(1) }}",
+                        "rangeEnd": "{{ interface.value.ipv4.broadcast | ipmath(-1) }}",
+                        "gateway": "{{ interface.value.ipv4.network | ipmath(1) }}"
+                    }
+                ]
+            ],
+            "routes": [
+                {"dst": "0.0.0.0/0"}
+            ]
+        }
+      },
+      {
+        "type": "portmap",
+        "capabilities": {
+            "portMappings": true
+        }
+      },
+      {
+        "type": "firewall",
+        "backend": ""
+      },
+      {
+        "type": "tuning",
+        "capabilities": {
+            "mac": true
+        }
+      }
+  ]
+}

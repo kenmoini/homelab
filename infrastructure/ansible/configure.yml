@@ -1,0 +1,71 @@
+---
+- name: Kemo's Homelab Infrastructure Configuration Playbook
+  hosts: all
+  become: true
+  gather_facts: true
+
+  vars:
+    set_hostname: false
+    add_root_ca_certs: false
+    subscribe_rhel_host: false
+
+    # Order matters here, roles are run in the order they are listed
+    configured_roles: []
+    #configured_roles:
+    #- update-system
+    #- install-base-packages
+    #- kvm-host
+    #- podman-host
+
+  tasks:
+
+    - name: Wait for SSH to come up
+      wait_for_connection:
+        delay: 1
+        connect_timeout: 5
+        sleep: 20
+        timeout: 600
+
+    - name: Load in the host specific site config files
+      include_vars:
+        dir: "site-configs/{{ inventory_hostname }}"
+        extensions:
+          - yml
+          - yaml
+
+    # We set the hostname and add root CA certs before we subscribe the host or run any roles 
+    # Because the custom Satellite server or other endpoints may be secured by them
+    - name: Set hostname
+      when: set_hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+
+    - name: Add Root CA Certificates
+      when: add_root_ca_certs
+      include_role:
+        name: add-root-ca-certs
+
+    - name: Subscribe the RHEL Host
+      when: subscribe_rhel_host
+      block:
+        - name: Subscribe to RHSM or Satellite
+          community.general.redhat_subscription:
+            state: present
+            username: "{{ srh_rhsm_username | default(omit) }}"
+            password: "{{ srh_rhsm_password | default(omit) }}"
+            pool: "{{ srh_rhsm_pool | default(omit) }}"
+            pool_ids: "{{ srh_rhsm_pool_ids | default(omit) }}"
+            server_hostname: "{{ srh_rhsm_server_hostname | default(omit) }}"
+            activationkey: "{{ srh_rhsm_activationkey | default(omit) }}"
+            org_id: "{{ srh_rhsm_org_id | default(omit) }}"
+            auto_attach: "{{ srh_rhsm_auto_attach | default(false) }}"
+            force_register: "{{ srh_rhsm_force_register | default(false) }}"
+            server_insecure: "{{ srh_rhsm_server_insecure | default(false) }}"
+
+    - name: Run target host configuration roles
+      when: configured_roles | length > 0
+      include_role:
+        name: "{{ role_item }}"
+      loop: "{{ configured_roles }}"
+      loop_control:
+        loop_var: role_item

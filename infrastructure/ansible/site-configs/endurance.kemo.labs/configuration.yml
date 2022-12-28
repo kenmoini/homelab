@@ -1,0 +1,11 @@
+---
+
+set_hostname: true
+add_root_ca_certs: true
+
+configured_roles:
+- update-system
+- install-base-packages
+- kvm-host
+- podman-host
+
