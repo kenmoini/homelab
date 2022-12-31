@@ -1,0 +1,14 @@
+---
+# defaults file for configure-nfs-mounts
+
+# NFS version, default 3
+nfs_version: 3
+
+# Default NFS4 mount options
+nfs_mount_opts: rw,relatime
+#nfs_mount_opts: rsize=8192,wsize=8192,timeo=14,intr
+
+# as set on the raza in fstab
+# deep-thought.kemo.labs:/nfs-fast/remoteWork   /mnt/remoteWork    nfs    rw,relatime   0   0
+# as read from the raza mountstats
+# rw,vers=3,rsize=524288,wsize=524288,namlen=255,acregmin=3,acregmax=60,acdirmin=30,acdirmax=60,hard,proto=tcp,timeo=600,retrans=2,sec=sys,mountaddr=192.168.42.48,mountvers=3,mountport=30000,mountproto=udp,local_lock=none

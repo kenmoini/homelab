@@ -1,0 +1,23 @@
+---
+# tasks file for configure-nfs-mounts
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Ensure NFS packages are installed.
+  ansible.builtin.package:
+    name: "{{ nfs_packages }}"
+    state: present
+
+- name: Mount the NFS Shares
+  ansible.builtin.mount:
+    src: "{{ item.src }}"
+    path: "{{ item.path }}"
+    fstype: nfs
+    opts: "vers={{ nfs_version }},{{ item.opts | default(nfs_mount_opts) }}"
+    dump: "{{ item.dump | default(omit) }}"
+    passno: "{{ item.passno | default(omit) }}"
+    state: "{{ item.state | default( 'mounted' ) }}"
+    boot: "{{ item.boot | default(true) }}"
+  loop: "{{ nfs_mounts }}"
+  loop_control:
+    loop_var: item
