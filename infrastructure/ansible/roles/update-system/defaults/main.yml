@@ -2,3 +2,5 @@
 # defaults file for update-system
 
 reboot_after_kernel_update: false
+
+reboot_wait_timeout: 3600

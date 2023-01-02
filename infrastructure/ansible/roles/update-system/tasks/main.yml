@@ -1,3 +1,6 @@
 ---
 # tasks file for update-system
 
+- name: Include OS-specific update tasks
+  include_tasks: "{{ ansible_os_family }}.yml"
+  when: ansible_os_family in ["RedHat", "Debian"]
