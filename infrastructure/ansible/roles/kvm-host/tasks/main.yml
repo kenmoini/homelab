@@ -19,7 +19,7 @@
     owner: root
     group: qemu
     mode: 0775
-    recurse: yes
+    recurse: true
     state: directory
 
 - name: Enable Nested Virtualization
@@ -96,7 +96,7 @@
   when: libvirtReconfigured
   ansible.builtin.service:
     name: libvirtd
-    enabled: yes
+    enabled: true
     state: restarted
 
 - name: Configure Networking
