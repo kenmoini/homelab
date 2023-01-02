@@ -15,8 +15,9 @@
     mode: 0644
   register: cockpit_configged
 
-- name: Restart Cockpit
+- name: Restart Cockpit & ensure it is enabled
   when: cockpit_configged.changed
   ansible.builtin.service:
-    name: cockpit
+    name: cockpit.socket
     state: restarted
+    enabled: true

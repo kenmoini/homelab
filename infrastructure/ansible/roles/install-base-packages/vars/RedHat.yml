@@ -4,7 +4,7 @@ base_packages:
 - firewalld
 - bash-completion
 
-post_install_enable_services:
-- name: cockpit.socket
-  enabled: true
-  state: started
+# post_install_enable_services:
+# - name: cockpit.socket
+#   enabled: true
+#   state: started

@@ -12,3 +12,4 @@ universal_packages:
 - jq
 - cockpit
 - zsh
+- bind-utils

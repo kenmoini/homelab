@@ -2,7 +2,7 @@
 base_packages:
 - ufw
 
-post_install_enable_services:
-- name: cockpit.socket
-  enabled: true
-  state: started
+# post_install_enable_services:
+# - name: cockpit.socket
+#   enabled: true
+#   state: started

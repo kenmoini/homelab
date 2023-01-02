@@ -1,38 +1,61 @@
-Role Name
+configure-nfs-mounts
 =========
 
-A brief description of the role goes here.
+This role configures NFS mounts on Linux systems.  It will install the needed packages, create the mount points, and mount the NFS shares.
+
+This is how I configure common mounts on all my systems.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- An NFS server with active exports?
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+- `nfs_packages` - A list of packages that are installed, the variable is traditionally loaded from the `vars/{{ ansible_os_family }}.yml` file.
+- `nfs_version` - The version of NFS to use.  Defaults to `3`.
+- `nfs_mount_opts` - The mount options to use.  Defaults to `rw,relatime`.
+- `nfs_mounts` - A list of NFS Mounts that can be defined as:
+  - `src` - The source of the NFS mount, in the format of `server:/path/to/share`.
+  - `path` - The path to mount the NFS share to.
+  - `opts` - Optional. The mount options to use.  Defaults to `rw,relatime`.
+  - `dump` - Optional. The dump value to use.  Defaults to `omit`.
+  - `passno` - Optional. The pass number to use.  Defaults to `omit`.
+  - `state` - Optional. The state of the mount.  Defaults to `mounted`.
+  - `boot` - Optional. Whether or not to mount the share at boot.  Defaults to `true`.
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
+- hosts: servers
+  roles:
+  - { role: configure-nfs-mounts, nfs_mounts: [{'src': 'nfs.example.com:/path/to/export', 'path': '/path/to/mount'}] }
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- name: Other play for other servers
+  hosts: other_servers
+  tasks:
+  - name: Include the role this way
+    include_role:
+      name: configure-nfs-mounts
+    vars:
+      nfs_mounts:
+      - src: nfs.example.com:/path/to/export
+        path: /path/to/mount
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This is a garbage role written by Ken Moini. You can find me on [Twitter](https://twitter.com/kenmoini) and [GitHub](https://github.com/kenmoini) and some other fun things at my [personal site](https://kenmoini.com).

@@ -10,14 +10,14 @@
 
 - name: Mount the NFS Shares
   ansible.builtin.mount:
-    src: "{{ item.src }}"
-    path: "{{ item.path }}"
+    src: "{{ mount_item.src }}"
+    path: "{{ mount_item.path }}"
     fstype: nfs
-    opts: "vers={{ nfs_version }},{{ item.opts | default(nfs_mount_opts) }}"
-    dump: "{{ item.dump | default(omit) }}"
-    passno: "{{ item.passno | default(omit) }}"
-    state: "{{ item.state | default( 'mounted' ) }}"
-    boot: "{{ item.boot | default(true) }}"
+    opts: "vers={{ nfs_version }},{{ mount_item.opts | default(nfs_mount_opts) }}"
+    dump: "{{ mount_item.dump | default(omit) }}"
+    passno: "{{ mount_item.passno | default(omit) }}"
+    state: "{{ mount_item.state | default( 'mounted' ) }}"
+    boot: "{{ mount_item.boot | default(true) }}"
   loop: "{{ nfs_mounts }}"
   loop_control:
-    loop_var: item
+    loop_var: mount_item

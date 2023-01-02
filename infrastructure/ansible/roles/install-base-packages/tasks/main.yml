@@ -14,13 +14,16 @@
     name: "{{ base_packages }}"
     state: latest
 
-- name: Enable services
-  when: post_install_enable_services is defined and post_install_enable_services | length > 0
-  ansible.builtin.service:
-    name: "{{ service_item.name }}"
-    enabled: "{{ service_item.enabled|bool }}"
-    state: "{{ service_item.state }}"
-  loop: "{{ post_install_enable_services }}"
-  loop_control:
-    loop_var: service_item
-    label: "{{ service_item }}"
+# This role should really just be for installing packages, not enabling services.
+# Any services that need enabling probably also need configuring and should have their own role.
+
+#- name: Enable services
+#  when: post_install_enable_services is defined and post_install_enable_services | length > 0
+#  ansible.builtin.service:
+#    name: "{{ service_item.name }}"
+#    enabled: "{{ service_item.enabled|bool }}"
+#    state: "{{ service_item.state }}"
+#  loop: "{{ post_install_enable_services }}"
+#  loop_control:
+#    loop_var: service_item
+#    label: "{{ service_item }}"
