@@ -9,6 +9,10 @@
 - name: Load Distribution-specific vars
   ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
 
+- name: Run Debian/Ubuntu specific tasks
+  when: ansible_os_family == "Debian"
+  include_tasks: Debian.yml
+
 - name: Install packages for Podman
   package:
     name: "{{ podman_packages }}"

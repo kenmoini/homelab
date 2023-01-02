@@ -1,3 +1,5 @@
 ---
 podman_packages:
 - podman
+- buildah
+- skopeo

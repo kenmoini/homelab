@@ -1,0 +1,32 @@
+---
+- name: Install gnupg2
+  ansible.builtin.package:
+    name: gnupg2
+    state: latest
+
+- name: Read in the os-release file
+  ansible.builtin.slurp:
+    src: /etc/os-release
+  register: os_release
+
+- name: Set the version_id fact
+  ansible.builtin.set_fact:
+    version_id: "{{ os_release['content'] | b64decode | regex_search('VERSION_ID=\"(.*)\"') | regex_replace('VERSION_ID=\"(.*)\"', '\\1') }}"
+
+- name: Make the source list file
+  ansible.builtin.copy:
+    content: |
+      deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ version_id }}/ /
+    dest: /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Add the repository key
+  ansible.builtin.apt_key:
+    url: https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_{{ version_id }}/Release.key
+    state: present
+
+- name: Update cache
+  ansible.builtin.apt:
+    update_cache: yes
