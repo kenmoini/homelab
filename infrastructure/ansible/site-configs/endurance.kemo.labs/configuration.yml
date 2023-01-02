@@ -8,4 +8,6 @@ configured_roles:
 - install-base-packages
 - kvm-host
 - podman-host
-
+- configure-nfs-mounts
+- configure-cockpit
+- configure-ntp
