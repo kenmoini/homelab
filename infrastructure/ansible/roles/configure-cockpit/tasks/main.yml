@@ -1,0 +1,22 @@
+---
+# tasks file for configure-cockpit
+
+- name: Install at least Cockpit
+  ansible.builtin.package:
+    name: cockpit
+    state: latest
+
+- name: Template the Cockpit config file
+  ansible.builtin.template:
+    src: cockpit.conf.j2
+    dest: /etc/cockpit/cockpit.conf
+    owner: root
+    group: root
+    mode: 0644
+  register: cockpit_configged
+
+- name: Restart Cockpit
+  when: cockpit_configged.changed
+  ansible.builtin.service:
+    name: cockpit
+    state: restarted
