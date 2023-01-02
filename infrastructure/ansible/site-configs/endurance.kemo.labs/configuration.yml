@@ -4,10 +4,11 @@ set_hostname: true
 add_root_ca_certs: true
 
 configured_roles:
-- update-system
+- update-system # optional reboot if kernel is updated
 - install-base-packages
+- configure-cockpit
+- configure-nfs-mounts
+- configure-ntp
 - kvm-host
 - podman-host
-- configure-nfs-mounts
-- configure-cockpit
-- configure-ntp
+- setup-ipa-client # optional reboot if newly joined to domain
