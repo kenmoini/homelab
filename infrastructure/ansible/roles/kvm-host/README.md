@@ -1,25 +1,28 @@
 kvm-host
 =========
 
-Configures a host to be a KVM/libvirt host.  Will also create a Libvirt bridge network for any bridge network it detects on the host.
+Configures a RHEL/Debian host to be a KVM/libvirt virtualization host.  Will also create a Libvirt bridge network for any bridge network it detects on the host.
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+None.
 
 Role Variables
 --------------
 
 ```yaml
 #==============================================================================
-# defaults for kvm-host
+# defaults for the role
 
 # enable_nested_virt enables nested virtualization, default is true
 enable_nested_virt: true
 
 # enable_unsafe_interrupts enables unsafe interrupts, default is true
 enable_unsafe_interrupts: true
+
+#==============================================================================
+# OS specific variables, example for RHEL
 
 # libvirt_packages is a list of packages to install for libvirt, and maybe some extras
 libvirt_packages:

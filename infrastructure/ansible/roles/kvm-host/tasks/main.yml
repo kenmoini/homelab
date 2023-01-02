@@ -8,6 +8,9 @@
     bridgeInterfaces: "{{ ansible_facts | dict2items | selectattr('value.ipv4', 'defined') | selectattr('value.type', 'equalto', 'bridge') }}"
     libvirtReconfigured: false
 
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
 - name: Install Libvirt packages
   dnf:
     name: "{{ libvirt_packages }}"

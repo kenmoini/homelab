@@ -1,0 +1,9 @@
+---
+libvirt_packages:
+- virtinst
+- virt-viewer
+- virt-top
+- cockpit-machines
+- qemu-kvm
+- libvirt-daemon-system
+- libguestfs-tools

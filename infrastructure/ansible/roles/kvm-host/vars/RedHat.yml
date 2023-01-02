@@ -1,0 +1,8 @@
+---
+libvirt_packages:
+- virt-install
+- virt-viewer
+- virt-top
+- cockpit-machines
+- libvirt
+- libguestfs-tools
