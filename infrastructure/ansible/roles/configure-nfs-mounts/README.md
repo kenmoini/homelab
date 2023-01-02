@@ -13,17 +13,39 @@ Requirements
 Role Variables
 --------------
 
-- `nfs_packages` - A list of packages that are installed, the variable is traditionally loaded from the `vars/{{ ansible_os_family }}.yml` file.
-- `nfs_version` - The version of NFS to use.  Defaults to `3`.
-- `nfs_mount_opts` - The mount options to use.  Defaults to `rw,relatime`.
-- `nfs_mounts` - A list of NFS Mounts that can be defined as:
-  - `src` - The source of the NFS mount, in the format of `server:/path/to/share`.
-  - `path` - The path to mount the NFS share to.
-  - `opts` - Optional. The mount options to use.  Defaults to `rw,relatime`.
-  - `dump` - Optional. The dump value to use.  Defaults to `omit`.
-  - `passno` - Optional. The pass number to use.  Defaults to `omit`.
-  - `state` - Optional. The state of the mount.  Defaults to `mounted`.
-  - `boot` - Optional. Whether or not to mount the share at boot.  Defaults to `true`.
+```yaml
+#==============================================================================
+# defaults for the role
+
+# NFS version
+nfs_version: 3
+
+# Default NFS4 mount options
+nfs_mount_opts: rw,relatime
+
+#==============================================================================
+# OS specific variables, example for RHEL
+
+# nfs_packages is the list of packages to install
+nfs_packages:
+- nfs-utils
+
+#==============================================================================
+# Input variables for the role
+
+# nfs_mounts is a list of NFS mounts to configure
+nfs_mounts:
+- path: "/mnt/remoteWork" # the path to mount the NFS share to
+  src: "deep-thought.kemo.labs:/nfs-fast/remoteWork" # the source of the NFS mount, in the format of server:/path/to/share
+  #opts: "rw,relatime" # optional, the mount options to use, defaults to rw,relatime
+  #dump: 0 # optional, the dump value to use, defaults to omit
+  #passno: 0 # optional, the pass number to use, defaults to omit
+  #state: "mounted" # optional, the state of the mount, defaults to mounted
+  #boot: true # optional, whether or not to mount the share at boot, defaults to true
+
+- path: "/mnt/ISOs"
+  src: "deep-thought.kemo.labs:/ISOs"
+```
 
 Dependencies
 ------------
