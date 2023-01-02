@@ -1,0 +1,46 @@
+---
+# tasks file for setup-ipa-client
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install IPA client packages.
+  ansible.builtin.package:
+    name: "{{ ipa_client_packages }}"
+    state: latest
+
+- name: Start the OddJobD service
+  ansible.builtin.service:
+    name: oddjobd
+    state: started
+    enabled: yes
+
+- name: Build the IPA Commands
+  ansible.builtin.set_fact:
+    check_domain_cmd: ipa-client-install --unattended
+    join_domain_cmd: ipa-client-install --domain={{ freeipa_domain }} --realm={{ freeipa_realm }} --server={{ freeipa_server }} --principal={{ freeipa_principal }} --password={{ freeipa_password }} --unattended --mkhomedir
+    automount_cmd: ipa-client-automount --unattended
+
+- name: Add the automount command
+  when: enable_nfs_home
+  ansible.builtin.set_fact:
+    join_domain_cmd: "{{ join_domain_cmd }} && {{ automount_cmd }}"
+
+- name: Run the Check domain command
+  ansible.builtin.shell: "{{ check_domain_cmd }}"
+  register: ipa_client_check
+  changed_when: false
+  failed_when:
+  - ipa_client_check.rc != 0
+  - "'IPA client is already configured on this system' not in ipa_client_check.stderr"
+  - "'One of password / principal / keytab is required' not in ipa_client_check.stderr"
+
+- name: Join the IPA domain if not already a member of a domain
+  when: "'One of password / principal / keytab is required' in ipa_client_check.stderr"
+  ansible.builtin.shell: "{{ join_domain_cmd }}"
+  register: ipa_client_install
+  failed_when: ipa_client_install.rc != 0 and 'already a member of this domain' not in ipa_client_install.stderr
+
+- name: Reboot the node if it was freshly joined to the domain
+  when: ipa_client_install.changed
+  ansible.builtin.reboot:
+    reboot_timeout: "{{ reboot_wait_timeout }}"

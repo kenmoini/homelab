@@ -1,0 +1,11 @@
+---
+# defaults file for setup-ipa-client
+
+# enable_nfs_home enables automounting of NFS home directories if that's configured on the FreeIPA server
+enable_nfs_home: true
+
+# reboot_after_join enables rebooting the node if it just joined, helpful if you want to do the automounting of NFS home directories
+reboot_after_join: true
+
+# reboot_wait_timeout is the number of seconds to wait for the node to come back online after rebooting
+reboot_wait_timeout: 3600

@@ -1,0 +1,10 @@
+---
+ipa_client_packages:
+- freeipa-client
+- oddjob
+- autofs
+# the following are opinionated for my setup
+- zsh
+- bash-completion
+- nano
+- perl
