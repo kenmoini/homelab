@@ -1,0 +1,20 @@
+---
+
+# set_hostname will set the hostname of the node to the value of the `inventory_hostname` variable.
+set_hostname: true
+
+# add_root_ca_certs will add the root CA certificates to the system with the add-root-ca-certs role.
+# This is done as a boolean value and run before the other configured_roles since there may be some that depend on TLS connections signed by the Root CAs.
+add_root_ca_certs: true
+
+# A list of configured roles to apply to this host
+# These are executed in order and are the names of the role folders in the roles directory.
+configured_roles:
+- update-system # optional reboot if kernel is updated
+- install-base-packages
+- configure-cockpit
+- configure-nfs-mounts
+- configure-ntp
+- kvm-host
+- podman-host
+- setup-ipa-client # optional reboot if newly joined to domain

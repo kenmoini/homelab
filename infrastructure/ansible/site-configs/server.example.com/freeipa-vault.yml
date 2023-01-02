@@ -1,0 +1,20 @@
+---
+# This file should be filled and then encrypted with Ansible Vault before submitting to a Git repo
+# See https://docs.ansible.com/ansible/latest/user_guide/vault.html
+# The following command will encrypt the file:
+# ansible-vault encrypt freeipa-vault.yml
+
+# freeipa_domain is the domain to join
+freeipa_domain: example.com
+
+# freeipa_realm is the realm to join - you can most times leave this as the default
+freeipa_realm: "{{ freeipa_domain | upper }}"
+
+# freeipa_server is the hostname of the FreeIPA server to authenticate against
+freeipa_server: idm.example.com
+
+# freeipa_principal is the principal to use for authentication, usually admin
+freeipa_principal: admin
+
+# freeipa_password is the password to use for authentication - all this information should be stored in a vault, eg `ansible-vault create site-configs/host.example.com/freeipa-vault.yml`
+freeipa_password: "someSecurePassword"

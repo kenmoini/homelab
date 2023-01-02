@@ -1,0 +1,22 @@
+---
+# The following configures how a Linux server should be configured to work as an NTP client
+
+# ntp_configuration is a dictionary that contains the configuration for NTP.
+ntp_configuration:
+  # mode is the mode to run NTP in.  Valid values are `client` or `server` though only client is supported at this time.
+  mode: client
+
+  # timezone is optional and is the timezone to set on the system. Defaults to `America/New_York`.
+  timezone: America/New_York
+
+  # servers is a list of servers to use.  This is only used if `upstream_source` is set to `servers`.
+  servers:
+    - deep-thought.kemo.labs
+  
+  # pools is a list of pools to use.  This is only used if `upstream_source` is set to `pools`.
+  pools:
+    - time.apple.com
+    - 0.debian.pool.ntp.org
+
+  # upstream_source is the source of NTP servers to use.  Valid values are `servers` or `pools`.
+  upstream_source: servers
