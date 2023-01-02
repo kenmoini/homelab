@@ -1,0 +1,9 @@
+---
+# The NTP package to install
+ntp_package: chrony
+
+# The path where the configuration file should be placed
+ntp_config_file_path: /etc/chrony/chrony.conf
+
+# The name of the service that should be restarted after configuration
+ntp_service_name: chronyd

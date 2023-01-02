@@ -1,0 +1,14 @@
+---
+# defaults file for configure-ntp
+ntp_servers:
+- 0.pool.ntp.org
+- 1.pool.ntp.org
+- 2.pool.ntp.org
+- 3.pool.ntp.org
+
+ntp_pools:
+- time.apple.com
+
+ntp_upstream_source: pools
+
+ntp_timezone: America/New_York

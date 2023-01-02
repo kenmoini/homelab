@@ -1,0 +1,29 @@
+---
+# tasks file for configure-ntp
+- name: Load OS-specific variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install NTP
+  ansible.builtin.package:
+    name: "{{ ntp_package }}"
+    state: present
+
+- name: Configure NTP
+  ansible.builtin.template:
+    src: "{{ ansible_os_family }}-ntp.conf.j2"
+    dest: "{{ ntp_config_file_path }}"
+    owner: root
+    group: root
+    mode: 0644
+    backup: true
+  register: ntp_configged
+
+- name: Set the timezone
+  ansible.builtin.timezone:
+    name: "{{ ntp_timezone }}"
+
+- name: Restart NTP
+  when: ntp_configged.changed
+  ansible.builtin.service:
+    name: "{{ ntp_service_name }}"
+    state: restarted
