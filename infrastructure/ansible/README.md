@@ -26,7 +26,7 @@
 
 If the below roles are linked directly to the role source in this repo then the documentation has been created - if not then that part is still a WIP (Work In Progress).
 
-- [RHEL/Debian] **add-root-ca-certs** - Adds custom root CA certificates to the system
+- [RHEL/Debian] **[add-root-ca-certs](roles/add-root-ca-certs/)** - Adds custom root CA certificates to the system
 - [RHEL/Debian] **[update-system](roles/update-system/)** - Updates the system to the latest packages, optionally rebooting after a kernel update
 - [RHEL/Debian] **[install-base-packages](roles/install-base-packages/)** - Installs base packages for the system
 - [RHEL/Debian] **[configure-cockpit](roles/configure-cockpit/)** - Configures Cockpit on the system
