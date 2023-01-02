@@ -1,5 +1,10 @@
 ---
 
+# This is the base configuration file for a server's site config.
+# It can be named whatever - all the YAML files can have whatever name you'd like, just as long as they use the `yml` or `yaml` extension.
+
+# This file is used primarily to pass the variables needed by the `configure.yml` Playbook, which is pretty simple really.
+
 # set_hostname will set the hostname of the node to the value of the `inventory_hostname` variable.
 set_hostname: true
 
