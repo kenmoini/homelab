@@ -1,7 +1,7 @@
-Role Name
+kvm-host
 =========
 
-A brief description of the role goes here.
+Configures a host to be a KVM/libvirt host.  Will also create a Libvirt bridge network for any bridge network it detects on the host.
 
 Requirements
 ------------
@@ -11,28 +11,56 @@ Any pre-requisites that may not be covered by Ansible itself or the role should 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+```yaml
+#==============================================================================
+# defaults for kvm-host
+
+# enable_nested_virt enables nested virtualization, default is true
+enable_nested_virt: true
+
+# enable_unsafe_interrupts enables unsafe interrupts, default is true
+enable_unsafe_interrupts: true
+
+# libvirt_packages is a list of packages to install for libvirt, and maybe some extras
+libvirt_packages:
+- virt-install
+- virt-viewer
+- virt-top
+- cockpit-machines
+- libvirt
+- libguestfs-tools
+```
 
 Dependencies
 ------------
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 Example Playbook
 ----------------
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+```yaml
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+- hosts: servers
+  roles:
+      - { role: kvm-host, enable_nested_virt: false }
+
+- name: Other play with other servers to configure
+  hosts: other_servers
+  tasks:
+  - name: Include the role
+    include_role:
+      name: kvm-host
+    vars:
+      enable_nested_virt: false
+```
 
 License
 -------
 
-BSD
+MIT
 
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+This is a garbage role written by Ken Moini. You can find me on [Twitter](https://twitter.com/kenmoini) and [GitHub](https://github.com/kenmoini) and some other fun things at my [personal site](https://kenmoini.com).

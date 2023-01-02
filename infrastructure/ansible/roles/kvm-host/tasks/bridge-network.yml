@@ -8,7 +8,8 @@
 - name: Check for bridge network
   shell: "virsh net-dumpxml {{ interface.key }}"
   register: bridge_net_dump
-  ignore_errors: true
+  failed_when: bridge_net_dump is failed and 'Network not found' not in bridge_net_dump.stderr
+  changed_when: false
 
 - name: Set up the interface
   when: bridge_net_dump.rc != 0
