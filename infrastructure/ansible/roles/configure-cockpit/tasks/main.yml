@@ -15,6 +15,30 @@
     mode: 0644
   register: cockpit_configged
 
+- name: SELinux Mod - Enable Cockpit-Socket to use NFS home directories
+  block:
+    - name: Copy the CIL file over to the host
+      ansible.builtin.copy:
+        src: files/cockpit-session.cil
+        dest: /tmp/cockpit-session.cil
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Check for the SELinux module
+      ansible.builtin.shell: "semodule -l | { grep -w cockpit-session || true; }"
+      register: selinux_module_exists
+
+    - name: Remove the SELinux module if it already exists
+      ansible.builtin.shell: "semodule -r cockpit-session"
+      when: selinux_module_exists.stdout == 'cockpit-session'
+
+    - name: Install the SELinux module
+      ansible.builtin.shell: "semodule -i /tmp/cockpit-session.cil"
+
+    - name: Reload the Policy
+      ansible.builtin.shell: "semodule -R"
+
 - name: Restart Cockpit & ensure it is enabled
   when: cockpit_configged.changed
   ansible.builtin.service:

@@ -1,0 +1,3 @@
+(typeattributeset cil_gen_require cockpit_session_t)
+(typeattributeset cil_gen_require nfs_t)
+(allow cockpit_session_t nfs_t (dir (getattr)))

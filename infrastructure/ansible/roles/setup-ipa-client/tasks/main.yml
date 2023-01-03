@@ -20,10 +20,19 @@
     join_domain_cmd: ipa-client-install --domain={{ freeipa_domain }} --realm={{ freeipa_realm }} --server={{ freeipa_server }} --principal={{ freeipa_principal }} --password={{ freeipa_password }} --unattended --mkhomedir
     automount_cmd: ipa-client-automount --unattended
 
-- name: Add the automount command
+- name: Run configuration for NFS automounted home directories
   when: enable_nfs_home
-  ansible.builtin.set_fact:
-    join_domain_cmd: "{{ join_domain_cmd }} && {{ automount_cmd }}"
+  block:
+
+    - name: Add the automount command
+      ansible.builtin.set_fact:
+        join_domain_cmd: "{{ join_domain_cmd }} && {{ automount_cmd }}"
+
+    - name: SELinux Mod - Enable use of NFS Home Directories
+      ansible.builtin.seboolean:
+        name: use_nfs_home_dirs
+        state: yes
+        persistent: yes
 
 - name: Run the Check domain command
   ansible.builtin.shell: "{{ check_domain_cmd }}"
