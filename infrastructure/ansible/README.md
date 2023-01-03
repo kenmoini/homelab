@@ -2,24 +2,6 @@
 
 > This document serves as the entrypoint to the Ansible automation that is used to configure my homelab infrastructure and set a Standard Operating Environment.
 
-## Hardware
-
-### The Raza
-
-- **Name Influence**: [Dark Matter](https://darkmatter.fandom.com/wiki/Raza)
-- **Hostname**: `raza.kemo.labs`
-- **Build**: Custom Watercooled Tower
-- **Operating System**: RHEL 8.6
-- **Purpose**: Core Infrastructure Services (DNS, VPN, etc)
-
-### Endurance
-
-- **Name Influence**: [Interstellar](https://interstellarfilm.fandom.com/wiki/Endurance)
-- **Hostname**: `endurance.kemo.labs`
-- **Build**: Custom Watercooled Tower
-- **Operating System**: RHEL 9.1
-- **Purpose**: Bulk Infrastructure Services (KVM/Podman)
-
 ## Configuration Options
 
 ### Ansible Roles
@@ -33,10 +15,10 @@ If the below roles are linked directly to the role source in this repo then the 
 - [RHEL/Debian] **[configure-nfs-mounts](roles/configure-nfs-mounts/)** - Configures NFS mounts on the system
 - [RHEL/Debian] **[configure-ntp](roles/configure-ntp/)** - Configures the system to use NTP as a client
 - [RHEL/Debian] **[kvm-host](roles/kvm-host/)** - Configures the system as a Libvirt/KVM host
+- [RHEL/Debian] **[configure-sshd](roles/configure-sshd/)** - Configures the system with a standard OpenSSH Server configuration
 - [RHEL/Debian] **[podman-host](roles/podman-host/)** - Configures the system as a Podman host
 - [RHEL/Debian] **[setup-ipa-client](roles/setup-ipa-client/)** - Setup the system to join a FreeIPA/IDM domain/realm
 - [WIP] configure-firewalld
-- [WIP] configure-sshd
 
 ## Getting Started
 
