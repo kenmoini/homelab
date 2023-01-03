@@ -9,6 +9,7 @@ configured_roles:
 - configure-cockpit
 - configure-nfs-mounts
 - configure-ntp
+- configure-sshd
 - kvm-host
 - podman-host
 - setup-ipa-client # optional reboot if newly joined to domain

@@ -1,0 +1,7 @@
+---
+# handlers file for configure-sshd
+- name: Restart SSHd service
+  ansible.builtin.service:
+    name: sshd
+    state: restarted
+    enabled: yes

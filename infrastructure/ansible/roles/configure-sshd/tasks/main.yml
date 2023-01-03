@@ -1,0 +1,30 @@
+---
+# tasks file for configure-sshd
+- name: Install SSHd packages
+  ansible.builtin.package:
+    name: openssh-server
+    state: latest
+
+- name: Configure SSHd
+  ansible.builtin.template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+    backup: true
+  notify: Restart SSHd service
+
+- name: Apply the needed SELinux context if not on the standard port 22
+  when: sshd_port != 22
+  community.general.seport:
+    ports: "{{ sshd_port }}"
+    proto: tcp
+    setype: ssh_port_t
+    state: present
+
+- name: Enable and start SSHd service
+  ansible.builtin.service:
+    name: sshd
+    state: started
+    enabled: true
