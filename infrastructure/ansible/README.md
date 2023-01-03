@@ -12,13 +12,13 @@ If the below roles are linked directly to the role source in this repo then the 
 - [RHEL/Debian] **[update-system](roles/update-system/)** - Updates the system to the latest packages, optionally rebooting after a kernel update
 - [RHEL/Debian] **[install-base-packages](roles/install-base-packages/)** - Installs base packages for the system
 - [RHEL/Debian] **[configure-cockpit](roles/configure-cockpit/)** - Configures Cockpit on the system
+- [RHEL/DebWIP] **[configure-firewalld](roles/configure-firewall/)** - Configures the system's firewall with a desired state
 - [RHEL/Debian] **[configure-nfs-mounts](roles/configure-nfs-mounts/)** - Configures NFS mounts on the system
 - [RHEL/Debian] **[configure-ntp](roles/configure-ntp/)** - Configures the system to use NTP as a client
 - [RHEL/Debian] **[kvm-host](roles/kvm-host/)** - Configures the system as a Libvirt/KVM host
 - [RHEL/Debian] **[configure-sshd](roles/configure-sshd/)** - Configures the system with a standard OpenSSH Server configuration
 - [RHEL/Debian] **[podman-host](roles/podman-host/)** - Configures the system as a Podman host
 - [RHEL/Debian] **[setup-ipa-client](roles/setup-ipa-client/)** - Setup the system to join a FreeIPA/IDM domain/realm
-- [WIP] configure-firewalld
 
 ## Getting Started
 

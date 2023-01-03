@@ -1,0 +1,8 @@
+---
+# defaults file for configure-firewall
+
+# reboot_after_default_zone_change is whether or not to reboot the system after changing the default zone, helps for changes affecting active interfaces
+reboot_after_default_zone_change: false
+
+# reboot_wait_timeout is the number of seconds to wait for the node to come back online after rebooting
+reboot_wait_timeout: 3600

@@ -1,0 +1,5 @@
+---
+firewall_packages:
+- firewalld
+- python3-firewall
+

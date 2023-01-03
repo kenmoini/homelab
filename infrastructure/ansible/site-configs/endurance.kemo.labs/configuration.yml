@@ -1,7 +1,7 @@
 ---
 
-set_hostname: true
-add_root_ca_certs: true
+set_hostname: false
+add_root_ca_certs: false
 
 configured_roles:
 - update-system # optional reboot if kernel is updated
@@ -13,3 +13,4 @@ configured_roles:
 - kvm-host
 - podman-host
 - setup-ipa-client # optional reboot if newly joined to domain
+- configure-firewall

@@ -1,0 +1,5 @@
+---
+#- name: Set the current firewall state
+#- name: Set the at-boot firewall state
+#- name: Allow the needed firewall ports
+#- name: Allow the needed firewall services

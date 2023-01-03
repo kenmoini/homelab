@@ -1,0 +1,62 @@
+---
+reboot_after_default_zone_change: true
+
+firewall:
+  enabled: true
+  at_boot: true
+
+  zones:
+  - name: lab
+    description: A zone for the lab that I tightly maintain
+    state: present
+    default: true
+    enable_forwarding: true
+    #enable_masquerading: true
+
+    block_ping: false
+    # target: ACCEPT | DROP | REJECT or just omit for default
+    target: ACCEPT
+    
+    allowed_services:
+    - ssh
+    - cockpit
+    - dhcpv6-client
+    - mdns
+    - samba-client
+
+    allowed_ports:
+    - port: 8081
+      protocol: tcp
+    - port: 8082
+      protocol: tcp
+
+    allowed_sources:
+    - 0.0.0.0/0
+
+    interfaces:
+    - bridge0
+    - bridge0.70
+    - bridge70
+
+  # ubuntu-based systems use profiles instead of zones
+  profiles:
+  - name: Home
+    state: present
+    permanent: true
+
+    allowed_services:
+    - ssh
+    - cockpit
+    - dhcpv6-client
+    - mdns
+    - samba-client
+
+    allowed_ports:
+    - port: 8081
+      protocol: tcp
+    - port: 8082
+      protocol: tcp
+
+    interfaces:
+    - bridge0
+    - bridge70

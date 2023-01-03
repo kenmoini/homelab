@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<zone{% if zone_item.target is defined %} target="{{ zone_item.target }}"{% endif %}>
+  <short>{{ zone_item.name }}</short>
+{% if zone_item.allowed_services is defined %}{% for service in zone_item.allowed_services %}
+  <service name="{{ service }}"/>
+{% endfor %}{% endif %}
+{% if zone_item.allowed_ports is defined %}{% for port in zone_item.allowed_ports %}
+  <port port="{{ port.port }}" protocol="{{ port.protocol }}"/>
+{% endfor %}{% endif %}
+{% if zone_item.interfaces is defined %}{% for interface in zone_item.interfaces %}
+  <interface name="{{ interface }}"/>
+{% endfor %}{% endif %}
+{% if zone_item.allowed_sources is defined %}{% for source in zone_item.allowed_sources %}
+  <source address="{{ source }}"/>
+{% endfor %}{% endif %}
+{% if zone_item.description is defined %}
+  <description>{{ zone_item.description }}</description>
+{% endif %}
+{% if zone_item.enable_forwarding is defined and zone_item.enable_forwarding|bool %}
+  <forward/>
+{% endif %}
+{% if zone_item.enable_masquerading is defined and zone_item.enable_masquerading|bool %}
+  <masquerade/>
+{% endif %}
+{% if zone_item.block_ping is defined and zone_item.block_ping|bool %}
+  <icmp-block-inversion/>
+{% endif %}
+</zone>

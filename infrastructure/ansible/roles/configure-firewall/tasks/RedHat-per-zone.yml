@@ -1,0 +1,144 @@
+---
+- name: Create Zones
+  when: zone_item.state == 'present'
+  block:
+
+    - name: Template the Zone XML file
+      ansible.builtin.template:
+        src: "zone.xml.j2"
+        dest: "/etc/firewalld/zones/{{ zone_item.name }}.xml"
+        owner: root
+        group: root
+        mode: 0644
+        backup: true
+      register: zone_xml_result
+
+- name: Delete Zones
+  when: zone_item.state == 'absent'
+  block:
+
+    - name: Delete the Zone XML file
+      ansible.builtin.file:
+        path: "/etc/firewalld/zones/{{ zone_item.name }}.xml"
+        state: absent
+      register: zone_xml_result
+
+- name: Reload the firewall if the zone XML file was just deleted
+  when: zone_xml_result is changed
+  ansible.builtin.service:
+    name: firewalld
+    state: reloaded
+
+- name: Get the default zone
+  ansible.builtin.shell: firewall-cmd --get-default-zone
+  register: default_zone_result
+  changed_when: false
+
+- name: Change the zone if needed
+  when: zone_item.default is defined and zone_item.default and default_zone_result.stdout != zone_item.name
+  block:
+
+    - name: Set the zone as the default zone
+      ansible.builtin.shell: firewall-cmd --set-default-zone={{ zone_item.name }}
+
+    - name: Reboot the system if the default zone was changed, maybe
+      when: reboot_after_default_zone_change|bool
+      ansible.builtin.reboot:
+        reboot_timeout: "{{ reboot_wait_timeout }}"
+
+# Old things lol
+
+#- name: Make sure all the defined zones exist
+#  ansible.builtin.firewalld:
+#    zone: "{{ zone_item.name }}"
+#    state: "{{ zone_item.state | default('present') }}"
+#    permanent: true
+#  register: create_zone_result
+#
+#- name: Reload the firewall if the zone was just created
+#  when: create_zone_result is changed
+#  ansible.builtin.service:
+#    name: firewalld
+#    state: reloaded
+#
+#- name: Set the target of the zone
+#  ansible.builtin.firewalld:
+#    zone: "{{ zone_item.name }}"
+#    state: present
+#    permanent: true
+#    target: "{{ zone_item.target | default('default') }}"
+#  register: target_result
+#
+#- name: Configure the masquerading of the port
+#  when: zone_item.masquerade is defined
+#  ansible.builtin.firewalld:
+#    zone: "{{ zone_item.name }}"
+#    state: enabled
+#    permanent: true
+#    masquerade: "{{ zone_item.masquerade }}"
+#  register: masquerade_result
+#
+#- name: Configure the icmp block inversion
+#  when: zone_item.block_ping is defined
+#  ansible.builtin.firewalld:
+#    zone: "{{ zone_item.name }}"
+#    state: "{{ zone_item.block_ping| ternary('enabled', 'disabled') }}"
+#    permanent: true
+#    icmp_block_inversion: "{{ zone_item.block_ping|bool }}"
+#  register: icmp_block_inversion_result
+#
+#- name: Allow the needed firewall ports
+#  when: zone_item.allowed_ports is defined
+#  ansible.builtin.firewalld:
+#    port: "{{ port_item }}"
+#    permanent: true
+#    immediate: true
+#    state: enabled
+#    zone: "{{ zone_item.name }}"
+#  loop: "{{ zone_item.allowed_ports }}"
+#  loop_control:
+#    loop_var: port_item
+#  register: allowed_ports_result
+#
+#- name: Allow the needed firewall services
+#  when: zone_item.allowed_services is defined
+#  ansible.posix.firewalld:
+#    service: "{{ service_item }}"
+#    permanent: true
+#    immediate: true
+#    state: enabled
+#    zone: "{{ zone_item.name }}"
+#  loop: "{{ zone_item.allowed_services }}"
+#  loop_control:
+#    loop_var: service_item
+#  register: allowed_services_result
+#
+#- name: Allow the needed firewall sources
+#  when: zone_item.allowed_sources is defined
+#  ansible.builtin.firewalld:
+#    source: "{{ source_item }}"
+#    permanent: true
+#    state: enabled
+#    zone: "{{ zone_item.name }}"
+#  loop: "{{ zone_item.allowed_sources }}"
+#  loop_control:
+#    loop_var: source_item
+#  register: allowed_sources_result
+#
+#- name: Associate the needed interfaces with the zone
+#  when: zone_item.interfaces is defined
+#  ansible.builtin.firewalld:
+#    interface: "{{ interface_item }}"
+#    permanent: true
+#    state: enabled
+#    zone: "{{ zone_item.name }}"
+#  loop: "{{ zone_item.interfaces }}"
+#  loop_control:
+#    loop_var: interface_item
+#  register: allowed_interfaces_result
+#
+#- name: Reload the firewall if anything was changed
+#  when: (target_result is changed) or (masquerade_result is changed) or (icmp_block_inversion_result is changed) or (allowed_ports_result is changed) or (allowed_services_result is changed) or (allowed_sources_result is changed) or (allowed_interfaces_result is changed)
+#  ansible.builtin.service:
+#    name: firewalld
+#    state: reloaded

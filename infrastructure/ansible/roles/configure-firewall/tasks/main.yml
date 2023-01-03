@@ -1,0 +1,13 @@
+---
+# tasks file for configure-firewall
+- name: Include the OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install the firewall packages
+  when: firewall.enabled|bool
+  ansible.builtin.package:
+    name: "{{ firewall_packages }}"
+    state: latest
+
+- name: Load the tasks depending on the OS
+  include_tasks: "{{ ansible_os_family }}.yml"

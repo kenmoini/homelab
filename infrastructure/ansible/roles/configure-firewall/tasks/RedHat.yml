@@ -1,0 +1,41 @@
+---
+- name: Set the current firewall state
+  ansible.builtin.service:
+    name: firewalld
+    state: "{{ firewall.enabled|bool | ternary('started', 'stopped') }}"
+
+- name: Set the at-boot firewall state
+  ansible.builtin.service:
+    name: firewalld
+    enabled: "{{ firewall.at_boot|bool }}"
+
+- name: Perform per-zone configuration loops
+  when: firewall.zones is defined
+  include_tasks:
+    file: "RedHat-per-zone.yml"
+  loop: "{{ firewall.zones }}"
+  loop_control:
+    loop_var: zone_item
+
+#- name: Perform per-profile configuration loops for ufw
+#  when: firewall.profiles is defined
+#  include_tasks:
+#    file: "Debian-per-profile.yml"
+#  loop: "{{ firewall.profiles }}"
+#  loop_control:
+#    loop_var: profile_item
+
+# public (active)
+#   target: default
+#   icmp-block-inversion: no
+#   interfaces: bridge0 bridge0.70 bridge70 enp97s0f0
+#   sources: 
+#   services: cockpit dhcpv6-client ssh
+#   ports: 
+#   protocols: 
+#   forward: yes
+#   masquerade: no
+#   forward-ports: 
+#   source-ports: 
+#   icmp-blocks: 
+#   rich rules:
