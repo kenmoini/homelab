@@ -32,7 +32,7 @@ sshd_listen_addresses:
 Dependencies
 ------------
 
-None
+This role depends on the [community.general](https://docs.ansible.com/ansible/latest/collections/community/general/index.html) collection, part of the collections/requirements.yml file.
 
 Example Playbook
 ----------------
