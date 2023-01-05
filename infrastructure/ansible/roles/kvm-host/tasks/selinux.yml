@@ -1,0 +1,29 @@
+---
+- name: SELinux Mod - Apply SELinux CIL for virtqemud-swtpm
+  block:
+
+    # ausearch -c 'rpc-virtqemud' --raw | audit2allow -M my-virtqemud-swtpm
+    # /usr/libexec/selinux/hll/pp my-virtqemud-swtpm.pp > my-virtqemud-swtpm.cil
+    # semodule -X 300 -i my-virtqemud-swtpm.cil
+
+    - name: Copy the CIL file over to the host
+      ansible.builtin.copy:
+        src: files/my-virtqemud-swtpm.cil
+        dest: /tmp/my-virtqemud-swtpm.cil
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Check for the SELinux module
+      ansible.builtin.shell: "semodule -l | { grep -w virtqemud-swtpm || true; }"
+      register: selinux_module_exists
+
+    - name: Remove the SELinux module if it already exists
+      ansible.builtin.shell: "semodule -r virtqemud-swtpm"
+      when: selinux_module_exists.stdout == 'virtqemud-swtpm'
+
+    - name: Install the SELinux module
+      ansible.builtin.shell: "semodule -X 300 -i /tmp/my-virtqemud-swtpm.cil"
+
+    - name: Reload the Policy
+      ansible.builtin.shell: "semodule -R"

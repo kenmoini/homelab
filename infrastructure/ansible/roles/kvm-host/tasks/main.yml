@@ -16,6 +16,9 @@
     name: "{{ libvirt_packages }}"
     state: latest
 
+- name: Perform SELinux modifications
+  include_tasks: selinux.yml
+
 - name: Set the permissions on the libvirt images directory
   ansible.builtin.file:
     path: /var/lib/libvirt/images

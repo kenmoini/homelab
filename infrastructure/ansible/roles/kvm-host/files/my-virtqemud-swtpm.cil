@@ -1,0 +1,3 @@
+(typeattributeset cil_gen_require svirt_t)
+(typeattributeset cil_gen_require bin_t)
+(allow svirt_t bin_t (file (entrypoint)))
