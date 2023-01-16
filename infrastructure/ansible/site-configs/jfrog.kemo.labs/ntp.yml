@@ -1,0 +1,10 @@
+---
+
+ntp_configuration:
+  mode: client
+  servers:
+    - deep-thought.kemo.labs
+  #pools:
+  #  - time.apple.com
+  #  - 0.debian.pool.ntp.org
+  upstream_source: servers

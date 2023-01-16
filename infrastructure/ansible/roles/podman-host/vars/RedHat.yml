@@ -6,4 +6,4 @@ podman_packages:
 - skopeo
 - cockpit-podman
 - podman-docker
-- container-tools
+#- container-tools # not in RHEL 8 and not really needed if all the other things are being installed anyway

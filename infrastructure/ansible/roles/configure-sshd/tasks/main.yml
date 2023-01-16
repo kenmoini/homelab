@@ -15,6 +15,14 @@
     backup: true
   notify: Restart SSHd service
 
+- name: Make the config directory if it isn't there
+  ansible.builtin.file:
+    path: /etc/ssh/sshd_config.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Apply the needed SELinux context if not on the standard port 22
   when: sshd_port != 22
   community.general.seport:

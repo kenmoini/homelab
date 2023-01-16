@@ -1,0 +1,14 @@
+---
+
+set_hostname: true
+add_root_ca_certs: true
+
+configured_roles:
+- update-system # optional reboot if kernel is updated
+- install-base-packages
+- configure-cockpit
+- configure-ntp
+- configure-sshd
+- podman-host
+- setup-ipa-client # optional reboot if newly joined to domain
+- configure-firewall

@@ -13,6 +13,12 @@
         backup: true
       register: zone_xml_result
 
+    - name: Reload the firewall if the zone XML file was just changed
+      when: zone_xml_result is changed
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
+
 - name: Delete Zones
   when: zone_item.state == 'absent'
   block:
@@ -23,11 +29,11 @@
         state: absent
       register: zone_xml_result
 
-- name: Reload the firewall if the zone XML file was just deleted
-  when: zone_xml_result is changed
-  ansible.builtin.service:
-    name: firewalld
-    state: reloaded
+    - name: Reload the firewall if the zone XML file was just deleted
+      when: zone_xml_result is changed
+      ansible.builtin.service:
+        name: firewalld
+        state: reloaded
 
 - name: Get the default zone
   ansible.builtin.shell: firewall-cmd --get-default-zone
