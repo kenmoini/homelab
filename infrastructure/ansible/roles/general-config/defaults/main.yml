@@ -1,0 +1,8 @@
+---
+# defaults file for general-config
+selinux_booleans:
+  - name: colord_use_nfs
+  - name: domain_can_mmap_files
+  - name: use_nfs_home_dirs
+  - name: virt_use_nfs
+  - name: virt_sandbox_use_all_caps

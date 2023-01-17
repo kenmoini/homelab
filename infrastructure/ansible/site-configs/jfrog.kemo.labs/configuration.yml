@@ -1,11 +1,12 @@
 ---
 
-set_hostname: true
-add_root_ca_certs: true
+set_hostname: false
+add_root_ca_certs: false
 
 configured_roles:
 - update-system # optional reboot if kernel is updated
 - install-base-packages
+- general-config
 - configure-cockpit
 - configure-ntp
 - configure-sshd

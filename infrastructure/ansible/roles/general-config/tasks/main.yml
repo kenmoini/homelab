@@ -1,0 +1,45 @@
+---
+# tasks file for general-config
+
+- name: Set additional SELinux Booleans
+  when: selinux_booleans is defined
+  ansible.posix.seboolean:
+    name: "{{ selinux_boolean.name }}"
+    state: "{{ selinux_boolean.state | default('yes') }}"
+    persistent: "{{ selinux_boolean.persistent | default('yes') }}"
+  loop: "{{ selinux_booleans }}"
+  loop_control:
+    loop_var: selinux_boolean
+
+# ==================================================
+# Install the OC CLI
+# ==================================================
+
+- name: Check the local bin dir for the oc file
+  ansible.builtin.stat:
+    path: "/usr/local/bin/oc"
+  register: local_oc_check
+
+- name: Download the tar package and extract
+  when: local_oc_check.stat.exists == False
+  ansible.builtin.unarchive:
+    src: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
+    dest: "/usr/local/bin/"
+    remote_src: yes
+
+# ==================================================
+# ZSH Profile Files
+# ==================================================
+
+- name: Create the profiles directory if it doesn't exist
+  ansible.builtin.file:
+    path: /etc/profile.d
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Create the oc completion file for ZSH
+  ansible.builtin.shell: "/usr/local/bin/oc completion zsh > /etc/profile.d/oc_completion.zsh"
+  args:
+    creates: /etc/profile.d/oc_completion.zsh
