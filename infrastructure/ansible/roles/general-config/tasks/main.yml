@@ -23,7 +23,7 @@
 - name: Download the tar package and extract
   when: local_oc_check.stat.exists == False
   ansible.builtin.unarchive:
-    src: https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/stable/openshift-client-linux.tar.gz
+    src: "https://mirror.openshift.com/pub/openshift-v4/{{ ansible_architecture }}/clients/ocp/stable/openshift-client-linux.tar.gz"
     dest: "/usr/local/bin/"
     remote_src: yes
 
