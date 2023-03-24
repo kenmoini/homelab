@@ -1,0 +1,7 @@
+---
+nfs_mounts:
+- path: "/mnt/remoteWork"
+  src: "deep-thought.kemo.labs:/nfs-fast/remoteWork"
+
+- path: "/mnt/ISOs"
+  src: "deep-thought.kemo.labs:/ISOs"

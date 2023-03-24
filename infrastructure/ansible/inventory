@@ -9,5 +9,7 @@ all:
       hosts:
         #endurance.kemo.labs:
         #  ansible_host: 192.168.42.49
-        jfrog.kemo.labs:
-          ansible_host: 192.168.42.33
+        #jfrog.kemo.labs:
+        #  ansible_host: 192.168.42.33
+        avalon.kemo.labs:
+          ansible_host: 192.168.42.43
