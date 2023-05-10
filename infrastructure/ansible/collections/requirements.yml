@@ -1,3 +1,5 @@
 ---
-- name: community.general
-- name: ansible.posix
+collections:
+  - name: community.general
+  - name: ansible.posix
+  - name: ansible.netcommon
