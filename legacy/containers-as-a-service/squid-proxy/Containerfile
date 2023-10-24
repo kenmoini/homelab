@@ -1,3 +1,9 @@
+# podman build -t squid-proxy -f Containerfile .
+# podman tag squid-proxy quay.io/kenmoini/squid-proxy:latest
+# podman tag squid-proxy quay.io/kenmoini/squid-proxy:$(date +'%F')
+# podman push quay.io/kenmoini/squid-proxy:latest
+# podman push quay.io/kenmoini/squid-proxy:$(date +'%F')
+
 FROM registry.access.redhat.com/ubi8/ubi:8.6-855
 
 RUN dnf update -y \
@@ -7,8 +13,10 @@ RUN dnf update -y \
 
 COPY container_root/ /
 
-RUN update-ca-trust
+RUN update-ca-trust \
+ && /usr/sbin/squid -k parse -f /etc/squid.conf
 
 EXPOSE 3128
+EXPOSE 3129
 
 CMD /start.sh
