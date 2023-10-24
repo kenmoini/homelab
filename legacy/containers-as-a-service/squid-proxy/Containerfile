@@ -4,7 +4,7 @@
 # podman push quay.io/kenmoini/squid-proxy:latest
 # podman push quay.io/kenmoini/squid-proxy:$(date +'%F')
 
-FROM registry.access.redhat.com/ubi8/ubi:8.6-855
+FROM registry.access.redhat.com/ubi8/ubi:8.8-1067.1698056881
 
 RUN dnf update -y \
  && dnf install -y squid openssl \
@@ -13,8 +13,7 @@ RUN dnf update -y \
 
 COPY container_root/ /
 
-RUN update-ca-trust \
- && /usr/sbin/squid -k parse -f /etc/squid.conf
+RUN update-ca-trust
 
 EXPOSE 3128
 EXPOSE 3129
