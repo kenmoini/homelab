@@ -105,6 +105,13 @@
     enabled: true
     state: restarted
 
+- name: Start libvirtd.socket # Arm doesn't enable by default?
+  when: libvirtReconfigured
+  ansible.builtin.service:
+    name: libvirtd-tcp.socket
+    enabled: true
+    state: restarted
+
 - name: Configure Networking
   block:
 
