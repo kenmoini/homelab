@@ -1,10 +1,10 @@
 ---
 
 set_hostname: true
-add_root_ca_certs: true
+add_root_ca_certs: false
 
 configured_roles:
-#- update-system # optional reboot if kernel is updated
+- update-system # optional reboot if kernel is updated
 - install-base-packages
 - general-config
 - configure-cockpit
