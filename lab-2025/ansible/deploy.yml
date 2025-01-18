@@ -1,0 +1,67 @@
+---
+- name: Deploy Services
+  hosts: labcore
+
+  vars:
+    container_root_dir: /opt/caas
+
+    podman_bridge_name: lanBridge
+
+    ghcr_pull_auth_file: /opt/ghcr.io.json
+
+    # =============================================================
+    # Pihole
+    deploy_pihole: false
+    pihole_ip_address: 192.168.42.12
+    pihole_admin_password: notpassword
+    pihole_timezone: America/New_York
+    pihole_admin_email: ken@kenmoini.com
+    pihole_upstream_dns_servers:
+      - 208.67.220.220
+      - 208.67.222.222
+    pihole_temperature_unit: f
+
+    # =============================================================
+    # Chronyd
+    deploy_chronyd: false
+    chronyd_pools:
+      - time.apple.com
+    #chronyd_servers:
+    #  - 192.168.42.61
+    #  - 192.168.42.62
+    #  - 192.168.42.63
+
+    # =============================================================
+    # PowerDNS
+    deploy_pdns: true
+    pdns_ip_address: 192.168.42.
+
+  tasks:
+    - name: Create Service Containers Directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+      with_items:
+        - "{{ container_root_dir }}"
+        - "{{ container_root_dir }}/gozones"
+        - "{{ container_root_dir }}/squid"
+        - "{{ container_root_dir }}/step-ca"
+        - "{{ container_root_dir }}/npm-ingress"
+        - "{{ container_root_dir }}/sso"
+        - "{{ container_root_dir }}/vault"
+        - "{{ container_root_dir }}/o11y"
+
+    - name: Deploy PiHole
+      when: deploy_pihole|bool
+      include_tasks: tasks/pihole.yml
+
+    - name: Deploy Chronyd
+      when: deploy_chronyd|bool
+      include_tasks: tasks/chronyd.yml
+
+    - name: Deploy PowerDNS
+      when: deploy_pdns|bool
+      include_role:
+        name: powerdns

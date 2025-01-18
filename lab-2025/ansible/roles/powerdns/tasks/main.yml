@@ -1,0 +1,43 @@
+---
+# tasks file for powerdns
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/lab-powerdns"
+    - "{{ container_root_dir }}/lab-powerdns/scripts"
+    - "{{ container_root_dir }}/lab-powerdns/volumes"
+    - "{{ container_root_dir }}/lab-powerdns/volumes/auth"
+    - "{{ container_root_dir }}/lab-powerdns/volumes/recursor"
+
+- name: Create Service Containers Directory - DB
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/lab-powerdns/volumes/mysql"
+    state: directory
+    owner: 27
+    group: 27
+
+- name: Create Service Containers Directory - UI
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/lab-powerdns/volumes/ui"
+    state: directory
+    owner: 100
+    group: 101
+
+- name: Pre-pull the images
+  containers.podman.podman_image:
+    name: "{{ ctnr_img }}"
+    pull: yes
+    force: yes
+    auth_file: "{{ ghcr_pull_auth_file }}"
+  loop:
+    - "{{ pdns_auth_image }}"
+    - "{{ pdns_recursor_image }}"
+    - "{{ pdns_ui_image }}"
+    - "{{ pdns_db_image }}"
+  loop_control:
+    loop_var: ctnr_img

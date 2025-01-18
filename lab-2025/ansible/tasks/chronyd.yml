@@ -1,0 +1,52 @@
+---
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/lab-chronyd"
+    - "{{ container_root_dir }}/lab-chronyd/scripts"
+    - "{{ container_root_dir }}/lab-chronyd/config"
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: chronyd/servicectl.sh.j2
+    dest: "{{ container_root_dir }}/lab-chronyd/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - lab-chronyd.service"
+  ansible.builtin.template:
+    src: chronyd/service.j2
+    dest: "/etc/systemd/system/lab-chronyd.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - chrony.conf"
+  ansible.builtin.template:
+    src: chronyd/chrony.conf.j2
+    dest: "{{ container_root_dir }}/lab-chronyd/config/chrony.conf"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: docker.io/publicarray/chrony:latest
+    pull: yes
+    force: yes
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: lab-chronyd
+    state: restarted
+    enabled: yes

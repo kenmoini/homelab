@@ -1,0 +1,41 @@
+#!/bin/bash
+
+set -x
+
+###################################################################################
+# VARIABLES
+###################################################################################
+
+POD_NAME="{{ pdns_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ pdns_ip_address }}"
+
+AUTH_CONTAINER_SOURCE="{{ pdns_auth_image }}"
+RECURSOR_CONTAINER_SOURCE="{{ pdns_recursor_image }}"
+DB_CONTAINER_SOURCE="{{ pdns_db_image }}"
+UI_CONTAINER_SOURCE="{{ pdns_ui_image }}"
+
+## ENVIRONMENTAL VARIABLES
+ENV_VARS="-e TZ={{ pihole_timezone | default('America/New_York') }}"
+ENV_VARS="${ENV_VARS} -e WEBPASSWORD={{ pihole_admin_password | default('Password123') }}"
+ENV_VARS="${ENV_VARS} -e VIRTUAL_HOST=pihole"
+ENV_VARS="${ENV_VARS} -e TEMPERATUREUNIT={{ pihole_temperature_unit | default('f') }}"
+ENV_VARS="${ENV_VARS} -e ADMIN_EMAIL={{ pihole_admin_email | default('me@you.us') }}"
+ENV_VARS="${ENV_VARS} -e PIHOLE_DNS_={{ pihole_upstream_dns_servers | join(';') }}"
+ENV_VARS="${ENV_VARS} -e PIHOLE_UID=0"
+ENV_VARS="${ENV_VARS} -e DNSMASQ_USER=root"
+
+NETWORK="--network {{ podman_bridge_name | default('host') }}"
+
+CONTAINER_PORTS="-p 53/tcp -p 53/udp -p 80/tcp"
+NETWORK="${NETWORK} ${CONTAINER_PORTS}"
+
+{% if pihole_ip_address is defined %}
+IP_ADDRESS="{{ pihole_ip_address }}"
+NETWORK="${NETWORK} --ip ${IP_ADDRESS}"
+ENV_VARS="${ENV_VARS} -e ServerIP={{ pihole_ip_address }}"
+{% endif %}
+
+VOLUME_MOUNT_ONE="{{ container_root_dir }}/${CONTAINER_NAME}/volumes/etc-pihole:/etc/pihole:z"
+VOLUME_MOUNT_TWO="{{ container_root_dir }}/${CONTAINER_NAME}/volumes/etc-dnsmasq.d:/etc/dnsmasq.d:z"

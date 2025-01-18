@@ -1,0 +1,8 @@
+---
+# defaults file for powerdns
+pdns_auth_image: quay.io/kenmoini/pdns-auth:latest
+pdns_recursor_image: quay.io/kenmoini/pdns-recursor:latest
+pdns_db_image: ghcr.io/kenmoini/lab-powerdns:mysql-latest
+pdns_ui_image: docker.io/powerdnsadmin/pda-legacy:latest
+
+pdns_service_name: lab-powerdns
