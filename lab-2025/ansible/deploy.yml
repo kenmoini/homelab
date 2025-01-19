@@ -23,7 +23,7 @@
 
     # =============================================================
     # PowerDNS
-    deploy_pdns: true
+    deploy_pdns: false
     pdns_ip_address: 192.168.42.11
 
     pdns_upstream_servers:
@@ -45,6 +45,13 @@
     #  - 192.168.42.62
     #  - 192.168.42.63
 
+    # =============================================================
+    # Squid Proxy
+    deploy_squid: true
+    squid_ip_address: 192.168.42.18
+    squid_hostname: proxy.kemo.labs
+
+  # ===============================================================
   tasks:
     - name: Create Service Containers Directory
       ansible.builtin.file:
@@ -75,3 +82,8 @@
       when: deploy_pdns|bool
       ansible.builtin.include_role:
         name: powerdns
+
+    - name: Deploy Squid Outbound Proxy
+      when: deploy_squid|bool
+      ansible.builtin.include_role:
+        name: squid

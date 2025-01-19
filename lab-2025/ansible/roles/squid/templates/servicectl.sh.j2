@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -x
+
+CONTAINER_NAME="{{ squid_service_name }}"
+CONTAINER_IMAGE="{{ squid_container_image }}"
+
+CONTAINER_NETWORK_NAME="{{ podman_bridge_name }}"
+CONTAINER_IP="{{ squid_ip_address }}"
+CONTAINER_PORTS="-p {{ squid_mitm_port }} -p {{ squid_no_mitm_port }} -p {{ squid_https_intercept_port }}"
+CONTAINER_RESOURCE_LIMITS="-m 1024m"
+CONTAINER_VOLUMES="-v {{ container_root_dir }}/${CONTAINER_NAME}/volumes/certs:/etc/squid/certs:Z -v {{ container_root_dir }}/${CONTAINER_NAME}/volumes/logs:/var/log/squid:Z -v {{ container_root_dir }}/${CONTAINER_NAME}/volumes/conf.d:/etc/squid/conf.d:ro"
+{% if squid_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+CONTAINER_VOLUMES="${CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${CONTAINER_NAME} container..."
+    /usr/bin/podman kill ${CONTAINER_NAME}
+
+    echo "Removing ${CONTAINER_NAME} container..."
+    /usr/bin/podman rm -f -i ${CONTAINER_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Pulling container image..."
+    podman pull ${CONTAINER_IMAGE}
+
+    echo "Starting container services..."
+
+    # Deploy container
+    echo -e "Deploying ${CONTAINER_NAME}...\n"
+    podman run -dt \
+    --name ${CONTAINER_NAME} \
+    --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
+    ${CONTAINER_RESOURCE_LIMITS} \
+    ${CONTAINER_VOLUMES} \
+    ${CONTAINER_IMAGE}
+
+    ;;
+
+esac

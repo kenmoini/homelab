@@ -1,0 +1,20 @@
+# SSL MitM config
+http_port {{ squid_mitm_port }} ssl-bump \
+  generate-host-certificates=on dynamic_cert_mem_cache_size=16MB \
+  cert={{ squid_ca_path }}/{{ squid_ca_cert_filename }} \
+  key={{ squid_ca_path }}/{{ squid_ca_key_filename }} \
+  cafile={{ squid_ca_path }}/{{ squid_ca_bundle_filename }}
+
+#https_port {{ squid_https_intercept_port }} intercept ssl-bump \
+#  generate-host-certificates=on dynamic_cert_mem_cache_size=16MB \
+#  cert={{ squid_ca_path }}/{{ squid_ca_cert_filename }} \
+#  key={{ squid_ca_path }}/{{ squid_ca_key_filename }} \
+#  cafile={{ squid_ca_path }}/{{ squid_ca_bundle_filename }}
+
+# no SSL MitM
+http_port {{ squid_no_mitm_port }}
+
+# Misc general configuration
+visible_hostname {{ squid_hostname }}
+#dns_v4_first on
+forwarded_for on

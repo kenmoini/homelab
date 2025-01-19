@@ -1,2 +1,19 @@
 ---
 # defaults file for squid
+squid_service_name: lab-squid
+squid_container_image: quay.io/kenmoini/squid-proxy:latest
+
+squid_mitm_port: 3128
+squid_no_mitm_port: 3129
+squid_https_intercept_port: 3130
+
+squid_mount_host_trusted_certs: true
+
+squid_bypass_sites:
+  - google.com
+  - github.com
+
+squid_ca_path: /etc/squid/certs
+squid_ca_cert_filename: squid-ca.pem
+squid_ca_key_filename: squid-ca.key
+squid_ca_bundle_filename: full-chain.pem

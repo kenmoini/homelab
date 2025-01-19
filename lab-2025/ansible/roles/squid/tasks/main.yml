@@ -1,2 +1,79 @@
 ---
-# tasks file for squid
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ squid_service_name }}"
+    - "{{ container_root_dir }}/{{ squid_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ squid_service_name }}/volumes"
+    - "{{ container_root_dir }}/{{ squid_service_name }}/volumes/certs"
+    - "{{ container_root_dir }}/{{ squid_service_name }}/volumes/conf.d"
+    - "{{ container_root_dir }}/{{ squid_service_name }}/volumes/logs"
+  loop_control:
+    loop_var: d_item
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ squid_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ squid_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ squid_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Copy over the configuration files
+  ansible.builtin.copy:
+    src: "{{ f_item }}"
+    dest: "{{ container_root_dir }}/{{ squid_service_name }}/volumes/conf.d/{{ f_item }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - 00_general.conf
+    - 05_access-map.conf
+    - 20_ssl-mitm.conf
+    - 30_logging.conf
+    - 40_local-cache.conf
+    - 45_cache-refresh-patterns.conf
+  loop_control:
+    loop_var: f_item
+
+- name: Template the dynamic configuration
+  ansible.builtin.template:
+    src: "{{ f_item }}.j2"
+    dest: "{{ container_root_dir }}/{{ squid_service_name }}/volumes/conf.d/{{ f_item }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - 01_acls.conf
+    - 10_listening.conf
+  loop_control:
+    loop_var: f_item
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ squid_container_image }}"
+    pull: yes
+    force: yes
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ squid_service_name }}"
+    state: restarted
+    enabled: yes
