@@ -1,0 +1,8 @@
+---
+# defaults file for chronyd
+chronyd_service_name: lab-chronyd
+
+chronyd_container_image: docker.io/publicarray/chrony:latest
+
+chronyd_pools:
+  - time.apple.com

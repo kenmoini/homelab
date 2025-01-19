@@ -1,2 +1,5 @@
 ---
 # defaults file for pihole
+pihole_service_name: pihole
+
+pihole_container_image: docker.io/pihole/pihole:latest

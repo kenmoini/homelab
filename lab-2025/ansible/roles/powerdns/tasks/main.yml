@@ -8,25 +8,86 @@
     group: root
   with_items:
     - "{{ container_root_dir }}"
-    - "{{ container_root_dir }}/lab-powerdns"
-    - "{{ container_root_dir }}/lab-powerdns/scripts"
-    - "{{ container_root_dir }}/lab-powerdns/volumes"
-    - "{{ container_root_dir }}/lab-powerdns/volumes/auth"
-    - "{{ container_root_dir }}/lab-powerdns/volumes/recursor"
+    - "{{ container_root_dir }}/{{ pdns_service_name }}"
+    - "{{ container_root_dir }}/{{ pdns_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ pdns_service_name }}/volumes"
+
+- name: Create Service Containers Directory - Auth
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/auth"
+    state: directory
+    owner: 998
+    group: 998
+
+- name: Create Service Containers Directory - Recursor
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/recursor"
+    state: directory
+    owner: 997
+    group: 997
 
 - name: Create Service Containers Directory - DB
   ansible.builtin.file:
-    path: "{{ container_root_dir }}/lab-powerdns/volumes/mysql"
+    path: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/db"
     state: directory
     owner: 27
     group: 27
 
 - name: Create Service Containers Directory - UI
   ansible.builtin.file:
-    path: "{{ container_root_dir }}/lab-powerdns/volumes/ui"
+    path: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/ui"
     state: directory
     owner: 100
     group: 101
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ pdns_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ pdns_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ pdns_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template over the PDNS Auth config
+  ansible.builtin.template:
+    src: pdns.conf.j2
+    dest: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/auth/pdns.conf"
+    owner: 998
+    group: 998
+    mode: 0644
+
+- name: Template over the PDNS Recursor config
+  ansible.builtin.template:
+    src: recursor.conf.j2
+    dest: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/recursor/recursor.conf"
+    owner: 997
+    group: 997
+    mode: 0644
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Copy over DB init files
+  ansible.builtin.copy:
+    src: "{{ i_file }}"
+    dest: "{{ container_root_dir }}/{{ pdns_service_name }}/volumes/db/{{ i_file }}"
+    owner: 27
+    group: 27
+    mode: 0644
+  loop:
+    - schema.sql
+    - enable_fkeys.sql
+  loop_control:
+    loop_var: i_file
 
 - name: Pre-pull the images
   containers.podman.podman_image:
@@ -41,3 +102,9 @@
     - "{{ pdns_db_image }}"
   loop_control:
     loop_var: ctnr_img
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ pdns_service_name }}"
+    state: restarted
+    enabled: yes

@@ -7,24 +7,24 @@
     group: root
   with_items:
     - "{{ container_root_dir }}"
-    - "{{ container_root_dir }}/pihole"
-    - "{{ container_root_dir }}/pihole/scripts"
-    - "{{ container_root_dir }}/pihole/volumes"
-    - "{{ container_root_dir }}/pihole/volumes/etc-pihole"
-    - "{{ container_root_dir }}/pihole/volumes/etc-dnsmasq.d"
+    - "{{ container_root_dir }}/{{ pihole_service_name }}"
+    - "{{ container_root_dir }}/{{ pihole_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ pihole_service_name }}/volumes"
+    - "{{ container_root_dir }}/{{ pihole_service_name }}/volumes/etc-pihole"
+    - "{{ container_root_dir }}/{{ pihole_service_name }}/volumes/etc-dnsmasq.d"
 
 - name: Template CaaS deployment files - servicectl.sh.j2
   ansible.builtin.template:
-    src: pihole/servicectl.sh.j2
-    dest: "{{ container_root_dir }}/pihole/scripts/servicectl.sh"
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ pihole_service_name }}/scripts/servicectl.sh"
     owner: root
     group: root
     mode: 0755
 
-- name: "Template CaaS deployment files - pihole.service"
+- name: "Template CaaS deployment files - {{ pihole_service_name }}.service"
   ansible.builtin.template:
-    src: pihole/service.j2
-    dest: "/etc/systemd/system/pihole.service"
+    src: service.j2
+    dest: "/etc/systemd/system/{{ pihole_service_name }}.service"
     owner: root
     group: root
     mode: 0755
@@ -35,12 +35,12 @@
 
 - name: Pre-pull the image
   containers.podman.podman_image:
-    name: docker.io/pihole/pihole:latest
+    name: "{{ pihole_container_image }}"
     pull: yes
     force: yes
 
 - name: Start CaaS
   ansible.builtin.service:
-    name: pihole
+    name: "{{ pihole_service_name }}"
     state: restarted
     enabled: yes

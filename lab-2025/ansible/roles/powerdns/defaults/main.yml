@@ -6,3 +6,15 @@ pdns_db_image: ghcr.io/kenmoini/lab-powerdns:mysql-latest
 pdns_ui_image: docker.io/powerdnsadmin/pda-legacy:latest
 
 pdns_service_name: lab-powerdns
+
+pdns_shared_api_key: supersecretapikey
+
+pdns_auth_port: 5300
+pdns_auth_web_port: 8081
+
+pdns_recursor_port: 53
+
+pdns_mysql_host: 127.0.0.1
+pdns_mysql_user: pdnsadmin
+pdns_mysql_password: pdnsadmin
+pdns_mysql_db: pdns

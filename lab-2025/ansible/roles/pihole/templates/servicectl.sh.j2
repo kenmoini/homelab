@@ -1,0 +1,89 @@
+#!/bin/bash
+
+set -x
+
+###################################################################################
+# VARIABLES
+###################################################################################
+
+CONTAINER_NAME="{{ pihole_service_name }}"
+CONTAINER_SOURCE="{{ pihole_container_image }}"
+
+## ENVIRONMENTAL VARIABLES
+ENV_VARS="-e TZ={{ pihole_timezone | default('America/New_York') }}"
+ENV_VARS="${ENV_VARS} -e WEBPASSWORD={{ pihole_admin_password | default('Password123') }}"
+ENV_VARS="${ENV_VARS} -e VIRTUAL_HOST=pihole"
+ENV_VARS="${ENV_VARS} -e TEMPERATUREUNIT={{ pihole_temperature_unit | default('f') }}"
+ENV_VARS="${ENV_VARS} -e ADMIN_EMAIL={{ pihole_admin_email | default('me@you.us') }}"
+ENV_VARS="${ENV_VARS} -e PIHOLE_DNS_={{ pihole_upstream_dns_servers | join(';') }}"
+ENV_VARS="${ENV_VARS} -e PIHOLE_UID=0"
+ENV_VARS="${ENV_VARS} -e DNSMASQ_USER=root"
+
+NETWORK="--network {{ podman_bridge_name | default('host') }}"
+
+CONTAINER_PORTS="-p 53/tcp -p 53/udp -p 80/tcp"
+NETWORK="${NETWORK} ${CONTAINER_PORTS}"
+
+{% if pihole_ip_address is defined %}
+IP_ADDRESS="{{ pihole_ip_address }}"
+NETWORK="${NETWORK} --ip ${IP_ADDRESS}"
+ENV_VARS="${ENV_VARS} -e ServerIP={{ pihole_ip_address }}"
+{% endif %}
+
+VOLUME_MOUNT_ONE="{{ container_root_dir }}/${CONTAINER_NAME}/volumes/etc-pihole:/etc/pihole:z"
+VOLUME_MOUNT_TWO="{{ container_root_dir }}/${CONTAINER_NAME}/volumes/etc-dnsmasq.d:/etc/dnsmasq.d:z"
+
+###################################################################################
+# EXECUTION PREFLIGHT
+###################################################################################
+
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Stopping ${CONTAINER_NAME} container..."
+    /usr/bin/podman kill ${CONTAINER_NAME}
+
+    echo "Removing ${CONTAINER_NAME} container..."
+    /usr/bin/podman rm -f -i ${CONTAINER_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+    sleep 3
+
+    echo "Starting container services..."
+
+    # Deploy ${CONTAINER_NAME} container
+    echo -e "Deploying ${CONTAINER_NAME}...\n"
+
+    /usr/bin/podman create \
+      --name "${CONTAINER_NAME}" \
+      --hostname "${CONTAINER_NAME}" \
+      -m 1g --cpus 0.500 \
+      ${ENV_VARS} \
+      ${NETWORK} \
+      -v ${VOLUME_MOUNT_ONE} \
+      -v ${VOLUME_MOUNT_TWO} \
+      ${CONTAINER_SOURCE}
+
+    /usr/bin/podman start ${CONTAINER_NAME}
+
+    ;;
+
+esac

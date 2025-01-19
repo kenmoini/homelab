@@ -1,0 +1,347 @@
+
+dns:
+  ##########################################################################################
+  # acls is a list of named network groups
+  acls:
+    # privatenets can respond to internal client queries with an internal IP
+    - name: privatenets
+      networks:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - localhost
+        - localnets
+    # externalwan would match any external network
+    - name: externalwan
+      networks:
+        - any
+        - "!10.0.0.0/8"
+        - "!172.16.0.0/12"
+        - "!192.168.0.0/16"
+        - "!localhost"
+        - "!localnets"
+
+  ##########################################################################################
+  # views is a list of named views that glue together acls and zones
+  views:
+    - name: internalNetworks
+      # acls is a list of the named ACLs from above that this view will be applied to
+      acls:
+        - privatenets
+      # recursion is a boolean that controls whether this view will allow recursive DNS queries
+      recursion: true
+      # if recursion is true, then you can provide forwarders to be used for recursive queries 
+      #  such as a PiHole DNS server or just something like Cloudflare DNS at 1.0.0.1 and 1.1.1.1
+      forwarders:
+        - 192.168.42.12
+      # forwarded_zones is a list of zones and their authoritative nameservers to forward queries to
+      forwarded_zones:
+        - zone: kemo.edge
+          forwarders:
+            - 192.168.99.10
+      # zones is a list of named Zones to associate with this view
+      zones:
+        - kemo-labs
+        - mgmt-kemo-labs
+        - kemo-network
+        - lab-kemo-network
+        - d51-kemo-labs
+        - d77-kemo-labs
+        - d70-kemo-labs
+        - d70-lab-kemo-network
+
+
+  ##########################################################################################
+  ## Assumes two authoritative dns servers at dns-core-1.example.labs and dns-core-2.example.labs serving both zones
+  zones:
+    - name: kemo-labs
+      zone: kemo.labs
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: udmp
+            value: 192.168.42.1/23
+          - name: usw-pro-agg
+            value: 192.168.42.2/23
+          - name: usw-pro-48
+            value: 192.168.42.3/23
+          - name: uap-ac-pro-1
+            value: 192.168.42.4/23
+
+          - name: orbi-router
+            value: 192.168.42.7/23
+          - name: orbi-sat1
+            value: 192.168.42.8/23
+          - name: orbi-sat2
+            value: 192.168.42.9/23
+          - name: orbi-sat3
+            value: 192.168.42.10/23
+
+          - name: ns1
+            value: 192.168.42.11/23
+          - name: pihole
+            value: 192.168.42.12/23
+          - name: idm
+            value: 192.168.42.13/23
+
+          - name: ntp
+            value: 192.168.42.42/23
+
+          - name: keycloak
+            value: 192.168.42.15/23
+          - name: step-ca
+            value: 192.168.42.17/23
+          - name: proxy
+            value: 192.168.42.18/23
+          - name: vpn
+            value: 192.168.42.19/23
+          - name: plex
+            value: 192.168.42.20/23
+          - name: lb
+            value: 192.168.42.21/23
+          - name: vault
+            value: 192.168.42.22/23
+          - name: o11y
+            value: 192.168.42.23/23
+          - name: deluge
+            value: 192.168.42.24/23
+
+          - name: npm-ingress
+            value: 192.168.42.25/23
+          - name: bazarr
+            value: 192.168.42.25
+          - name: sonarr
+            value: 192.168.42.25
+          - name: radarr
+            value: 192.168.42.25
+          - name: jackett
+            value: 192.168.42.25
+          - name: sabnzbd
+            value: 192.168.42.25
+          - name: deluge-web
+            value: 192.168.42.25
+          - name: sso
+            value: 192.168.42.25
+          - name: dashy
+            value: 192.168.42.25
+          - name: '@'
+            value: 192.168.42.25
+          - name: www
+            value: 192.168.42.25
+          - name: status
+            value: 192.168.42.25
+          - name: pdns
+            value: 192.168.42.25
+          - name: pihole-1
+            value: 192.168.42.25
+
+          - name: raza
+            value: 192.168.42.40/23
+          - name: rocinante
+            value: 192.168.42.41/23
+          - name: normandy
+            value: 192.168.42.42/23
+          - name: avalon
+            value: 192.168.42.43/23
+          - name: serenity
+            value: 192.168.42.44/23
+          - name: maximus
+            value: 192.168.42.45/23
+          - name: suki
+            value: 192.168.42.46/23
+
+          - name: deep-thought
+            value: 192.168.42.48/23
+          - name: "*.deep-thought"
+            value: 192.168.42.48
+
+          - name: endurance
+            value: 192.168.42.49/23
+
+          - name: api.k8s
+            value: 192.168.42.60
+          - name: k8s-1
+            value: 192.168.42.61/23
+          - name: k8s-2
+            value: 192.168.42.62/23
+          - name: k8s-3
+            value: 192.168.42.63/23
+          - name: apps.k8s
+            value: 192.168.42.68
+          - name: "*.apps.k8s"
+            value: 192.168.42.68
+
+        SRV:
+          - name: _kerberos._udp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+          - name: _kerberos._tcp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+
+          - name: _kerberos-master._udp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+          - name: _kerberos-master._tcp
+            value: idm.kemo.labs.
+            port: 88
+            priority: 0
+            weight: 100
+
+          - name: _kpasswd._udp
+            value: idm.kemo.labs.
+            port: 464
+            priority: 0
+            weight: 100
+          - name: _kpasswd._tcp
+            value: idm.kemo.labs.
+            port: 464
+            priority: 0
+            weight: 100
+
+          - name: _ldap._tcp
+            value: idm.kemo.labs.
+            port: 389
+            priority: 0
+            weight: 100
+          - name: _ldaps._tcp
+            value: idm.kemo.labs.
+            port: 636
+            priority: 0
+            weight: 100
+
+          - name: _ntp._udp
+            value: ntp.kemo.labs.
+            port: 123
+            priority: 0
+            ttl: 6400
+            weight: 100
+
+          - name: _chrony._udp
+            value: ntp.kemo.labs.
+            port: 323
+            priority: 0
+            ttl: 6400
+            weight: 100
+
+        TXT:
+          - name: _kerberos
+            value: "KEMO.LABS"
+
+    - name: mgmt-kemo-labs
+      zone: mgmt.kemo.labs
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+        ## Lab rack OOBM
+          - name: raza
+            value: 192.168.46.40/24
+          - name: avalon
+            value: 192.168.46.43/24
+          - name: serenity
+            value: 192.168.46.44/24
+          - name: maximus
+            value: 192.168.46.45/24
+          - name: suki
+            value: 192.168.46.46/24
+          - name: endurance
+            value: 192.168.46.49/24
+
+    - name: kemo-network
+      zone: kemo.network
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: can.vpn
+            value: 51.161.11.55/24
+          - name: can-ca.vpn
+            value: 51.161.11.55/24
+
+    - name: lab-kemo-network
+      zone: lab.kemo.network
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: vcenter
+            value: 192.168.42.30/23
+          - name: ansible
+            value: 192.168.42.31/23
+          - name: jfrog
+            value: 192.168.42.32/23
+          - name: harbor
+            value: 192.168.42.33/23
+
+          - name: api.3-node-prime
+            value: 192.168.60.71
+          - name: "*.apps.3-node-prime"
+            value: 192.168.60.72
+
+    - name: d70-lab-kemo-network
+      zone: d70.lab.kemo.network
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+
+          - name: raza
+            value: 192.168.70.40/23
+          - name: serenity
+            value: 192.168.70.44/23
+          - name: suki
+            value: 192.168.70.46/23
+          - name: endurance
+            value: 192.168.70.49/23
+
+          # mega-sno.d70.lab.kemo.network
+          - name: mega-sno
+            value: 192.168.70.70/23
+          - name: api.mega-sno
+            value: 192.168.70.70
+          - name: "*.apps.mega-sno"
+            value: 192.168.70.70
+
+          - name: api.3-node-prime
+            value: 192.168.70.71
+          - name: "*.apps.3-node-prime"
+            value: 192.168.70.72
+
+          # dual-ocp.d70.lab.kemo.network
+          - name: api.dual-ocp
+            value: 192.168.70.73
+          - name: "*.apps.dual-ocp"
+            value: 192.168.70.74

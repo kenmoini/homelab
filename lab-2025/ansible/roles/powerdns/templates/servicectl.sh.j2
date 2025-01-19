@@ -11,31 +11,74 @@ POD_NAME="{{ pdns_service_name }}"
 POD_NETWORK="{{ podman_bridge_name | default('host') }}"
 POD_IP="{{ pdns_ip_address }}"
 
+DB_CONTAINER_SOURCE="{{ pdns_db_image }}"
 AUTH_CONTAINER_SOURCE="{{ pdns_auth_image }}"
 RECURSOR_CONTAINER_SOURCE="{{ pdns_recursor_image }}"
-DB_CONTAINER_SOURCE="{{ pdns_db_image }}"
 UI_CONTAINER_SOURCE="{{ pdns_ui_image }}"
 
-## ENVIRONMENTAL VARIABLES
-ENV_VARS="-e TZ={{ pihole_timezone | default('America/New_York') }}"
-ENV_VARS="${ENV_VARS} -e WEBPASSWORD={{ pihole_admin_password | default('Password123') }}"
-ENV_VARS="${ENV_VARS} -e VIRTUAL_HOST=pihole"
-ENV_VARS="${ENV_VARS} -e TEMPERATUREUNIT={{ pihole_temperature_unit | default('f') }}"
-ENV_VARS="${ENV_VARS} -e ADMIN_EMAIL={{ pihole_admin_email | default('me@you.us') }}"
-ENV_VARS="${ENV_VARS} -e PIHOLE_DNS_={{ pihole_upstream_dns_servers | join(';') }}"
-ENV_VARS="${ENV_VARS} -e PIHOLE_UID=0"
-ENV_VARS="${ENV_VARS} -e DNSMASQ_USER=root"
+DB_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/db:/var/lib/mysql/data:Z"
+AUTH_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/auth:/etc/pdns:Z"
+RECURSOR_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/recursor:/etc/pdns-recursor:Z"
+UI_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/ui:/data:Z"
 
-NETWORK="--network {{ podman_bridge_name | default('host') }}"
+###################################################################################
+# EXECUTION PREFLIGHT
+###################################################################################
 
-CONTAINER_PORTS="-p 53/tcp -p 53/udp -p 80/tcp"
-NETWORK="${NETWORK} ${CONTAINER_PORTS}"
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
 
-{% if pihole_ip_address is defined %}
-IP_ADDRESS="{{ pihole_ip_address }}"
-NETWORK="${NETWORK} --ip ${IP_ADDRESS}"
-ENV_VARS="${ENV_VARS} -e ServerIP={{ pihole_ip_address }}"
-{% endif %}
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
 
-VOLUME_MOUNT_ONE="{{ container_root_dir }}/${CONTAINER_NAME}/volumes/etc-pihole:/etc/pihole:z"
-VOLUME_MOUNT_TWO="{{ container_root_dir }}/${CONTAINER_NAME}/volumes/etc-dnsmasq.d:/etc/dnsmasq.d:z"
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Stopping ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+    sleep 3
+
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" -p {{ pdns_auth_port }} -p {{ pdns_recursor_port }} -p {{ pdns_auth_web_port }} -p 3306 -p 80
+
+    echo "Starting container services - DB..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} --name ${POD_NAME}-db --rm ${DB_VOLUME_MOUNTS} ${DB_CONTAINER_SOURCE}
+
+    if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/db/pdns/domains.ibd" ]; then
+      /usr/bin/podman exec -it ${POD_NAME}-db sh -c 'mysql -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE < /var/lib/mysql/data/schema.sql'
+      /usr/bin/podman exec -it ${POD_NAME}-db sh -c 'mysql -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE < /var/lib/mysql/data/enable_fkeys.sql'
+    fi
+
+    /usr/bin/podman exec -it ${POD_NAME}-db sh -c 'mysqlshow -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE'
+
+    echo "Starting container services - Auth..."
+    /usr/bin/podman run -d --pod ${POD_NAME} --name ${POD_NAME}-auth --restart=always ${AUTH_VOLUME_MOUNTS} ${AUTH_CONTAINER_SOURCE}
+
+    echo "Starting container services - Recursor..."
+    /usr/bin/podman run -d --pod ${POD_NAME} --name ${POD_NAME}-recursor --restart=always --sysctl net.ipv4.ip_unprivileged_port_start=53 --cap-add CAP_NET_BIND_SERVICE ${RECURSOR_VOLUME_MOUNTS} ${RECURSOR_CONTAINER_SOURCE}
+
+    echo "Starting container services - UI..."
+    /usr/bin/podman run -d --rm --pod ${POD_NAME} --name ${POD_NAME}-ui ${UI_VOLUME_MOUNTS} ${UI_CONTAINER_SOURCE}
+
+    ;;
+
+esac

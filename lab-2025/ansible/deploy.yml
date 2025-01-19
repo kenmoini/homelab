@@ -22,19 +22,28 @@
     pihole_temperature_unit: f
 
     # =============================================================
-    # Chronyd
+    # PowerDNS
+    deploy_pdns: true
+    pdns_ip_address: 192.168.42.11
+
+    pdns_upstream_servers:
+      - 192.168.42.12
+
+    pdns_forward_zones:
+      - name: kemo.labs
+        server: "{{ pdns_ip_address }}:5300"
+      - name: kemo.network
+        server: "{{ pdns_ip_address }}:5300"
+      - name: kemo.edge
+        server: "192.168.99.2:53"
+
+    # =============================================================
+    # Chronyd - needs host network access
     deploy_chronyd: false
-    chronyd_pools:
-      - time.apple.com
     #chronyd_servers:
     #  - 192.168.42.61
     #  - 192.168.42.62
     #  - 192.168.42.63
-
-    # =============================================================
-    # PowerDNS
-    deploy_pdns: true
-    pdns_ip_address: 192.168.42.
 
   tasks:
     - name: Create Service Containers Directory
@@ -45,7 +54,6 @@
         group: root
       with_items:
         - "{{ container_root_dir }}"
-        - "{{ container_root_dir }}/gozones"
         - "{{ container_root_dir }}/squid"
         - "{{ container_root_dir }}/step-ca"
         - "{{ container_root_dir }}/npm-ingress"
@@ -55,13 +63,15 @@
 
     - name: Deploy PiHole
       when: deploy_pihole|bool
-      include_tasks: tasks/pihole.yml
+      ansible.builtin.include_role:
+        name: pihole
 
     - name: Deploy Chronyd
       when: deploy_chronyd|bool
-      include_tasks: tasks/chronyd.yml
+      ansible.builtin.include_role:
+        name: chronyd
 
     - name: Deploy PowerDNS
       when: deploy_pdns|bool
-      include_role:
+      ansible.builtin.include_role:
         name: powerdns
