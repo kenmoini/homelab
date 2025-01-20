@@ -60,8 +60,17 @@
 
     # =============================================================
     # NGINX Proxy Manager
-    deploy_nginxpm: true
+    deploy_nginxpm: false
     npm_ip_address: 192.168.42.25
+
+    # =============================================================
+    # Shared Pod Setup
+    deploy_shared_pod: true
+    shared_pod_ip_address: 192.168.42.16
+
+    # =============================================================
+    # Shared Pod - Dropbox
+    deploy_shared_dropbox: true
 
   # ===============================================================
   tasks:
@@ -97,6 +106,16 @@
       when: deploy_squid|bool
       ansible.builtin.include_role:
         name: squid
+
+    - name: Deploy Shared Pod Setup
+      when: deploy_shared_pod|bool
+      ansible.builtin.include_role:
+        name: shared_pod_setup
+
+    - name: Deploy Shared Pod - Dropbox
+      when: deploy_shared_dropbox|bool
+      ansible.builtin.include_role:
+        name: shared_dropbox
 
     - name: Deploy JFrog Artifactory
       when: deploy_jfrog|bool

@@ -1,0 +1,9 @@
+---
+# defaults file for shared-dropbox
+shared_pod_name: shared-pod
+
+dropbox_service_name: dropbox
+
+dropbox_container_image: docker.io/nginx:latest
+
+dropbox_port: 6666

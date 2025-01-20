@@ -1,0 +1,16 @@
+[Unit]
+Description=Shared Pod Service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStop={{ container_root_dir }}/{{ shared_pod_name }}/scripts/servicectl.sh stop
+ExecStart={{ container_root_dir }}/{{ shared_pod_name }}/scripts/servicectl.sh start
+ExecReload={{ container_root_dir }}/{{ shared_pod_name }}/scripts/servicectl.sh restart
+
+TimeoutStartSec=30
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

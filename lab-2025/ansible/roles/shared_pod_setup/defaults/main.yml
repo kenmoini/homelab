@@ -1,0 +1,4 @@
+---
+# defaults file for shared-pod-setup
+shared_pod_name: shared-pod
+shared_pod_port_directory: "{{ container_root_dir }}/{{ shared_pod_name }}/volumes/ports"

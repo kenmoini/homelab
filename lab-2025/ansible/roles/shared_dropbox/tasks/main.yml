@@ -1,0 +1,63 @@
+---
+# tasks file for shared-dropbox
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/volumes/"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/volumes/config"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/volumes/dropbox"
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ dropbox_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ shared_pod_name }}-{{ dropbox_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Touch a file for the ports for nginx
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}/volumes/ports/{{ dropbox_port }}-tcp"
+    state: touch
+    owner: root
+    group: root
+
+- name: Template the NGINX configuration
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/volumes/config/nginx-default.conf"
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ dropbox_container_image }}"
+    pull: yes
+    force: yes
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ shared_pod_name }}-{{ dropbox_service_name }}"
+    state: restarted
+    enabled: yes

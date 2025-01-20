@@ -1,0 +1,49 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ dropbox_service_name }}"
+
+DROPBOX_CONTAINER_IMAGE="{{ dropbox_container_image }}"
+DROPBOX_CONTAINER_VOLUMES="-v {{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/volumes/dropbox:/usr/share/nginx/html:Z -v {{ container_root_dir }}/{{ shared_pod_name }}-{{ dropbox_service_name }}/volumes/config/nginx-default.conf:/etc/nginx/conf.d/default.conf:Z"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Dropbox..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      ${DROPBOX_CONTAINER_VOLUMES} \
+      ${DROPBOX_CONTAINER_IMAGE}
+
+    ;;
+
+esac

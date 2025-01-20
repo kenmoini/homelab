@@ -1,0 +1,61 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ shared_pod_ip_address }}"
+
+POD_PORT_DIR="{{ container_root_dir }}/{{ shared_pod_name }}/volumes/ports"
+
+# Loop through the files in that directory, find matching tcp- and udp- files, and build the -p argument
+POD_PORTS=""
+for PORT_FILE in ${POD_PORT_DIR}/*; do
+  if [[ ${PORT_FILE} == *"-tcp"* ]]; then
+    PORT_NUMBER=$(basename ${PORT_FILE} | cut -d'-' -f1)
+    POD_PORTS="${POD_PORTS} -p ${PORT_NUMBER}/tcp"
+  fi
+  if [[ ${PORT_FILE} == *"-udp"* ]]; then
+    PORT_NUMBER=$(basename ${PORT_FILE} | cut -d'-' -f1)
+    POD_PORTS="${POD_PORTS} -p ${PORT_NUMBER}/udp"
+  fi
+done
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    sleep 1
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    ;;
+
+esac
