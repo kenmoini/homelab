@@ -1,2 +1,16 @@
 ---
 # defaults file for nginxpm
+npm_service_name: lab-nginxpm
+
+npm_container_image: docker.io/jc21/nginx-proxy-manager:latest
+db_container_image: docker.io/postgres:latest
+
+npm_db_username: npm
+npm_db_password: npm
+npm_db_name: npm
+
+npm_mount_host_trusted_certs: true
+
+npm_http_port: 80
+npm_https_port: 443
+npm_admin_port: 81

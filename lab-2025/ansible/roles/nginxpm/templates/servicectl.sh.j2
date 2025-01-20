@@ -1,0 +1,94 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ npm_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ npm_ip_address }}"
+POD_PORTS="-p {{ npm_http_port }}/tcp -p {{ npm_https_port }}/tcp -p {{ npm_admin_port }}/tcp"
+
+NPM_CONTAINER_IMAGE="{{ npm_container_image }}"
+DB_CONTAINER_IMAGE="{{ db_container_image }}"
+
+NPM_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/npm-data:/data:Z -v {{ container_root_dir }}/${POD_NAME}/volumes/certs:/etc/letsencrypt:Z"
+DB_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/data:Z"
+
+{% if npm_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+NPM_CONTAINER_VOLUMES="${NPM_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+DB_CONTAINER_VOLUMES="${DB_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+DB_USERNAME="{{ npm_db_username }}"
+DB_PASSWORD="{{ npm_db_password }}"
+DB_NAME="{{ npm_db_name }}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Pulling NGINX Proxy Manager container image..."
+    /usr/bin/podman pull ${NPM_CONTAINER_IMAGE}
+
+    echo "Pulling DB container image..."
+    /usr/bin/podman pull ${DB_CONTAINER_IMAGE}
+
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    echo "Starting container services - DB..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-db \
+      -e POSTGRES_USER=${DB_USERNAME} \
+      -e POSTGRES_PASSWORD=${DB_PASSWORD} \
+      -e POSTGRES_DB=${DB_NAME} \
+      ${DB_CONTAINER_VOLUMES} \
+      ${DB_CONTAINER_IMAGE}
+
+    sleep 5
+
+    echo "Starting container services - NGINX Proxy Manager..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-npm \
+      --restart=always --sysctl net.ipv4.ip_unprivileged_port_start=80 --cap-add CAP_NET_BIND_SERVICE \
+      -e DB_POSTGRES_HOST=localhost \
+      -e DB_POSTGRES_PORT=5432 \
+      -e DB_POSTGRES_USER=${DB_USERNAME} \
+      -e DB_POSTGRES_PASSWORD=${DB_PASSWORD} \
+      -e DB_POSTGRES_NAME=${DB_NAME} \
+      -e DISABLE_IPV6=true \
+      ${NPM_CONTAINER_VOLUMES} \
+      ${NPM_CONTAINER_IMAGE}
+
+    ;;
+
+esac

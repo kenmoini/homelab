@@ -54,9 +54,14 @@
     # =============================================================
     # JFrog Artifactory
     # Need to provide it a hostname, IP, additional wildcard subdomain, and SSL certs
-    deploy_jfrog: true
+    deploy_jfrog: false
     jfrog_ip_address: 192.168.42.32
     jfrog_hostname: jfrog.lab.kemo.network
+
+    # =============================================================
+    # NGINX Proxy Manager
+    deploy_nginxpm: true
+    npm_ip_address: 192.168.42.25
 
   # ===============================================================
   tasks:
@@ -69,7 +74,6 @@
       with_items:
         - "{{ container_root_dir }}"
         - "{{ container_root_dir }}/step-ca"
-        - "{{ container_root_dir }}/npm-ingress"
         - "{{ container_root_dir }}/sso"
         - "{{ container_root_dir }}/vault"
         - "{{ container_root_dir }}/o11y"
@@ -98,3 +102,8 @@
       when: deploy_jfrog|bool
       ansible.builtin.include_role:
         name: jfrog
+
+    - name: Deploy NGINX Proxy Manager
+      when: deploy_nginxpm|bool
+      ansible.builtin.include_role:
+        name: nginxpm
