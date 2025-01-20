@@ -47,9 +47,14 @@
 
     # =============================================================
     # Squid Proxy
-    deploy_squid: true
+    deploy_squid: false
     squid_ip_address: 192.168.42.18
     squid_hostname: proxy.kemo.labs
+
+    # =============================================================
+    # JFrog Artifactory
+    deploy_jfrog: true
+    jfrog_ip_address: 192.168.42.32
 
   # ===============================================================
   tasks:
@@ -61,7 +66,6 @@
         group: root
       with_items:
         - "{{ container_root_dir }}"
-        - "{{ container_root_dir }}/squid"
         - "{{ container_root_dir }}/step-ca"
         - "{{ container_root_dir }}/npm-ingress"
         - "{{ container_root_dir }}/sso"
@@ -87,3 +91,8 @@
       when: deploy_squid|bool
       ansible.builtin.include_role:
         name: squid
+
+    - name: Deploy JFrog Artifactory
+      when: deploy_jfrog|bool
+      ansible.builtin.include_role:
+        name: jfrog

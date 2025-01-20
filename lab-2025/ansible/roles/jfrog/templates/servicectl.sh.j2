@@ -1,0 +1,70 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ jfrog_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ jfrog_ip_address }}"
+POD_PORTS="-p 8081/tcp -p 8082/tcp -p 80/tcp -p 443/tcp"
+
+JFROG_CONTAINER_IMAGE="{{ jfrog_container_image }}"
+HAPROXY_CONTAINER_IMAGE="{{ haproxy_container_image }}"
+JFROG_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/jfrog-opt:/opt/jfrog/artifactory/var:Z -v {{ container_root_dir }}/${POD_NAME}/volumes/jfrog-var:/var/opt/jfrog/artifactory:Z"
+HAPROXY_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/haproxy-config:/usr/local/etc/haproxy:Z -v {{ container_root_dir }}/${POD_NAME}/volumes/certs:/usr/local/etc/certs:ro"
+
+{% if jfrog_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+JFROG_CONTAINER_VOLUMES="${JFROG_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+HAPROXY_CONTAINER_VOLUMES="${HAPROXY_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Pulling JFrog container image..."
+    /usr/bin/podman pull ${JFROG_CONTAINER_IMAGE}
+
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    echo "Starting container services - JFrog..."
+
+    # Deploy JFrog container
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --user 1030:1030 \
+      --name ${POD_NAME}-jfrog \
+      ${JFROG_CONTAINER_VOLUMES} \
+      ${JFROG_CONTAINER_IMAGE}
+
+    ;;
+
+esac

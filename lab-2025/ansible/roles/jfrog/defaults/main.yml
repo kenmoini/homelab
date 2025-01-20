@@ -1,0 +1,8 @@
+---
+# defaults file for jfrog
+jfrog_service_name: lab-artifactory
+jfrog_container_image: releases-docker.jfrog.io/jfrog/artifactory-jcr:latest
+
+jfrog_mount_host_trusted_certs: true
+
+haproxy_container_image: docker.io/library/haproxy:latest
