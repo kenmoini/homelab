@@ -5,7 +5,7 @@
   vars:
     container_root_dir: /opt/caas
 
-    podman_bridge_name: lanBridge
+    podman_bridge_name: bridge0
 
     ghcr_pull_auth_file: /opt/ghcr.io.json
 
