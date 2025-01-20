@@ -1,4 +1,6 @@
 lab-2025/hack/ocp-pull-secret-tools/pull-secret.json
+lab-2025/hack/ocp-pull-secret-tools/combi-pull-secret.json
+lab-2025/hack/ocp-pull-secret-tools/local-pull-secret.json
 lab-2025/hack/ocp-pull-secret-tools/harbor-quay-cred.json
 lab-2025/hack/ocp-pull-secret-tools/harbor-registry-redhat-io-cred.json
 lab-2025/hack/ocp-pull-secret-tools/harbor-registry-connect-redhat-com-cred.json
