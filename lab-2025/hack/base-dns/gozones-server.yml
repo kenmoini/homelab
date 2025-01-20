@@ -298,6 +298,8 @@ dns:
             value: 192.168.42.31/23
           - name: jfrog
             value: 192.168.42.32/23
+          - name: "*.jfrog"
+            value: 192.168.42.32
           - name: harbor
             value: 192.168.42.33/23
 
