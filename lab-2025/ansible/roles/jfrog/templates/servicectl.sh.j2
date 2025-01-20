@@ -6,10 +6,11 @@ POD_NAME="{{ jfrog_service_name }}"
 
 POD_NETWORK="{{ podman_bridge_name | default('host') }}"
 POD_IP="{{ jfrog_ip_address }}"
-POD_PORTS="-p 8081/tcp -p 8082/tcp -p 80/tcp -p 443/tcp"
+POD_PORTS="-p {{ jfrog_registry_port }}/tcp -p {{ jfrog_ui_port }}/tcp -p {{ haproxy_http_port }}/tcp -p {{ haproxy_https_port }}/tcp -p 8040/tcp -p 8046/tcp -p 8047/tcp -p 8049/tcp -p 8080/tcp"
 
 JFROG_CONTAINER_IMAGE="{{ jfrog_container_image }}"
 HAPROXY_CONTAINER_IMAGE="{{ haproxy_container_image }}"
+
 JFROG_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/jfrog-opt:/opt/jfrog/artifactory/var:Z -v {{ container_root_dir }}/${POD_NAME}/volumes/jfrog-var:/var/opt/jfrog/artifactory:Z"
 HAPROXY_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/haproxy-config:/usr/local/etc/haproxy:Z -v {{ container_root_dir }}/${POD_NAME}/volumes/certs:/usr/local/etc/certs:ro"
 
@@ -51,19 +52,28 @@ case $1 in
     echo "Pulling JFrog container image..."
     /usr/bin/podman pull ${JFROG_CONTAINER_IMAGE}
 
+    echo "Pulling HAProxy container image..."
+    /usr/bin/podman pull ${HAPROXY_CONTAINER_IMAGE}
+
     echo "Creating Pod..."
 
     /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
 
     echo "Starting container services - JFrog..."
-
-    # Deploy JFrog container
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
-      --user 1030:1030 \
       --name ${POD_NAME}-jfrog \
+      --user 1030:1030 \
       ${JFROG_CONTAINER_VOLUMES} \
       ${JFROG_CONTAINER_IMAGE}
+
+    echo "Starting container services - HAProxy..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-haproxy \
+      --restart=always --sysctl net.ipv4.ip_unprivileged_port_start=80 --cap-add CAP_NET_BIND_SERVICE \
+      ${HAPROXY_CONTAINER_VOLUMES} \
+      ${HAPROXY_CONTAINER_IMAGE}
 
     ;;
 

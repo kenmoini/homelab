@@ -5,4 +5,11 @@ jfrog_container_image: releases-docker.jfrog.io/jfrog/artifactory-jcr:latest
 
 jfrog_mount_host_trusted_certs: true
 
+jfrog_registry_port: 8081
+jfrog_ui_port: 8082
+
 haproxy_container_image: docker.io/library/haproxy:latest
+haproxy_default_cert_path: /usr/local/etc/certs/default.pem
+
+haproxy_http_port: 80
+haproxy_https_port: 443

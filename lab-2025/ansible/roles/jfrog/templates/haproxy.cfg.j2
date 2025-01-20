@@ -1,0 +1,34 @@
+defaults
+  log        global
+  mode       http
+  option     httplog
+  option     dontlognull
+  timeout    connect         36000s
+  timeout    client          36000s
+  timeout    server          36000s
+
+
+frontend http
+  bind *:{{ haproxy_http_port }}
+  mode http
+  redirect scheme https code 301 if !{ ssl_fc }
+
+frontend https
+  bind *:{{ haproxy_https_port }} ssl crt-list /usr/local/etc/haproxy/crt-list.cfg
+  http-response set-header Strict-Transport-Security "max-age=16000000; includeSubDomains; preload;"
+  option forwardfor
+  option forwardfor header X-Real-IP
+
+  acl host_jfrogui hdr(host) -i {{ jfrog_hostname }}
+
+  use_backend jfrogui if host_jfrogui
+
+  default_backend registry
+
+backend registry
+  server registry1 127.0.0.1:{{ jfrog_registry_port }}
+  http-request add-header X-Forwarded-Proto https if { ssl_fc }
+
+backend jfrogui
+  server jfrog1 127.0.0.1:{{ jfrog_ui_port }}
+  http-request add-header X-Forwarded-Proto https if { ssl_fc }

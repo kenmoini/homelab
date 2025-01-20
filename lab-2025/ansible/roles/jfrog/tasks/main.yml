@@ -13,6 +13,15 @@
     - "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes"
     - "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/certs"
     - "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/haproxy-config"
+
+- name: Create Service Containers Directory for JFrog
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: 1030
+    group: 1030
+    mode: 0775
+  with_items:
     - "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/jfrog-opt"
     - "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/jfrog-var"
 
@@ -32,17 +41,61 @@
     group: root
     mode: 0755
 
+- name: "Template CaaS deployment files - haproxy.cfg"
+  ansible.builtin.template:
+    src: haproxy.cfg.j2
+    dest: "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/haproxy-config/haproxy.cfg"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - crt-list.cfg"
+  ansible.builtin.template:
+    src: crt-list.cfg.j2
+    dest: "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/haproxy-config/crt-list.cfg"
+    owner: root
+    group: root
+    mode: 0755
+
 - name: Reload systemd
   ansible.builtin.systemd:
     daemon_reload: yes
 
-- name: Pre-pull the image
+- name: Pre-pull the images
   containers.podman.podman_image:
-    name: "{{ jfrog_container_image }}"
+    name: "{{ image_item }}"
     pull: yes
     force: yes
+  loop:
+    - "{{ jfrog_container_image }}"
+    - "{{ haproxy_container_image }}"
+  loop_control:
+    loop_var: image_item
 
 - name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ jfrog_service_name }}"
+    state: restarted
+    enabled: yes
+
+- name: Wait for JFrog to start
+  ansible.builtin.wait_for:
+    host: "{{ jfrog_hostname }}"
+    port: "{{ jfrog_registry_port }}"
+    delay: 10
+    timeout: 300
+    state: started
+  delegate_to: localhost
+
+- name: Template JFrog System YAML
+  ansible.builtin.template:
+    src: jfrog-system.yaml.j2
+    dest: "{{ container_root_dir }}/{{ jfrog_service_name }}/volumes/jfrog-var/etc/system.yaml"
+    owner: 1030
+    group: 1030
+    mode: 0644
+
+- name: Restart the JFrog service
   ansible.builtin.service:
     name: "{{ jfrog_service_name }}"
     state: restarted

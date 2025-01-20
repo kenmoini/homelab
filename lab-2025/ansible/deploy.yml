@@ -53,8 +53,10 @@
 
     # =============================================================
     # JFrog Artifactory
+    # Need to provide it a hostname, IP, additional wildcard subdomain, and SSL certs
     deploy_jfrog: true
     jfrog_ip_address: 192.168.42.32
+    jfrog_hostname: jfrog.lab.kemo.network
 
   # ===============================================================
   tasks:
