@@ -95,6 +95,8 @@ dns:
 
           - name: keycloak
             value: 192.168.42.15/23
+          - name: shared-pod
+            value: 192.168.42.16/23
           - name: step-ca
             value: 192.168.42.17/23
           - name: proxy
@@ -139,6 +141,8 @@ dns:
           - name: pdns
             value: 192.168.42.25
           - name: pihole-1
+            value: 192.168.42.25
+          - name: dropbox
             value: 192.168.42.25
 
           - name: raza
