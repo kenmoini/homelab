@@ -49,6 +49,8 @@ dns:
         - d77-kemo-labs
         - d70-kemo-labs
         - d70-lab-kemo-network
+        - endurance-sno-d70-lab-kemo-network
+        - apps-endurance-sno-d70-lab-kemo-network
 
 
   ##########################################################################################
@@ -306,6 +308,8 @@ dns:
             value: 192.168.42.32
           - name: harbor
             value: 192.168.42.33/23
+          - name: gitea
+            value: 192.168.42.34/23
 
           - name: api.3-node-prime
             value: 192.168.60.71
@@ -333,13 +337,25 @@ dns:
           - name: endurance
             value: 192.168.70.49/23
 
-          # mega-sno.d70.lab.kemo.network
-          - name: mega-sno
-            value: 192.168.70.70/23
-          - name: api.mega-sno
-            value: 192.168.70.70
-          - name: "*.apps.mega-sno"
-            value: 192.168.70.70
+          - name: api.raza-sno
+            value: 192.168.70.40
+          - name: "*.apps.raza-sno"
+            value: 192.168.70.40
+
+          - name: api.serenity-sno
+            value: 192.168.70.44
+          - name: "*.apps.serenity-sno"
+            value: 192.168.70.44
+
+          - name: api.suki-sno
+            value: 192.168.70.46
+          - name: "*.apps.suki-sno"
+            value: 192.168.70.46
+
+          - name: api.endurance-sno
+            value: 192.168.70.49
+          - name: "*.apps.endurance-sno"
+            value: 192.168.70.49
 
           - name: api.3-node-prime
             value: 192.168.70.71
@@ -351,3 +367,42 @@ dns:
             value: 192.168.70.73
           - name: "*.apps.dual-ocp"
             value: 192.168.70.74
+
+
+    - name: endurance-sno-d70-lab-kemo-network
+      zone: endurance-sno.d70.lab.kemo.network
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: api
+            value: 192.168.70.49
+
+    - name: apps-endurance-sno-d70-lab-kemo-network
+      zone: apps.endurance-sno.d70.lab.kemo.network
+      primary_dns_server: ns1.kemo.labs
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: kemo.labs.
+            anchor: '@'
+        A:
+          - name: "*"
+            value: 192.168.70.49
+
+          - name: "api.hypershift-virt"
+            value: 192.168.70.109
+          - name: "*.apps.hypershift-virt"
+            value: 192.168.70.49
+
+          - name: "api.hypershift-bmh"
+            value: 192.168.70.110
+          - name: "*.apps.hypershift-bmh"
+            value: 192.168.70.111

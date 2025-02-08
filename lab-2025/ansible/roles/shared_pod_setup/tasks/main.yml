@@ -11,8 +11,9 @@
     - "{{ container_root_dir }}"
     - "{{ container_root_dir }}/{{ shared_pod_name }}"
     - "{{ container_root_dir }}/{{ shared_pod_name }}/scripts"
-    - "{{ container_root_dir }}/{{ shared_pod_name }}/volumes"
-    - "{{ container_root_dir }}/{{ shared_pod_name }}/volumes/ports"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports"
 
 - name: Template CaaS deployment files - servicectl.sh.j2
   ansible.builtin.template:

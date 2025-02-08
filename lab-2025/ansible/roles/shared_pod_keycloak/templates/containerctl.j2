@@ -1,0 +1,72 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ keycloak_service_name }}"
+
+KEYCLOAK_CONTAINER_IMAGE="{{ keycloak_container_image | default('quay.io/keycloak/keycloak:latest') }}"
+POSTGRES_CONTAINER_IMAGE="{{ keycloak_db_container_image | default('docker.io/postgres:latest') }}"
+POSTGRES_CONTAINER_VOLUMES="-v {{ container_root_dir }}/{{ shared_pod_name }}-{{ keycloak_service_name }}/volumes/db:/var/lib/postgresql/data:Z"
+
+DB_USERNAME="{{ keycloak_db_username }}"
+DB_PASSWORD="{{ keycloak_db_password }}"
+DB_NAME="{{ keycloak_db_name }}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}-db
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}-db
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Keycloak DB..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME}-db \
+      -e POSTGRES_USER=${DB_USERNAME} \
+      -e POSTGRES_PASSWORD=${DB_PASSWORD} \
+      -e POSTGRES_DB=${DB_NAME} \
+      ${POSTGRES_CONTAINER_VOLUMES} \
+      ${POSTGRES_CONTAINER_IMAGE}
+
+    echo "Starting container services - Keycloak..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      --healthcheck-command 'CMD-SHELL curl -k https://localhost:9000/health || exit 1' \
+      --healthcheck-interval=15s \
+      -e KC_DB_URL=jdbc:postgresql://${POD_NAME}-${SERVICE_NAME}-db:5432/${DB_NAME} \
+      -e KC_DB_USERNAME=${DB_USERNAME} \
+      -e KC_DB_PASSWORD=${DB_PASSWORD} \
+      -e KC_BOOTSTRAP_ADMIN_USERNAME=admin -e KC_BOOTSTRAP_ADMIN_PASSWORD=change_me \
+      ${KEYCLOAK_CONTAINER_IMAGE} \
+      start --optimized {{ keycloak_extra_args | default('') }}
+
+    ;;
+
+esac

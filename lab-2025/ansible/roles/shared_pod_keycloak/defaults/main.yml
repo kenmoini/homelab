@@ -1,0 +1,15 @@
+---
+# defaults file for shared_pod_keycloak
+
+shared_pod_name: shared-pod
+
+keycloak_service_name: keycloak
+
+keycloak_container_image: kemokeycloak
+keycloak_db_container_image: docker.io/postgres:latest
+
+keycloak_db_username: keycloak
+keycloak_db_password: keycloak
+keycloak_db_name: keycloak
+
+keycloak_extra_args: "--proxy-headers xforwarded --proxy-trusted-addresses=192.168.42.25 --hostname=https://sso.kemo.labs --http-enabled true"

@@ -1,0 +1,2 @@
+{{ keycloak_container_image }}
+{{ keycloak_db_container_image }}

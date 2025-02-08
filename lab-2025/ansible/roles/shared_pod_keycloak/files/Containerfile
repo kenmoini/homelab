@@ -1,0 +1,51 @@
+##########################################################
+# Add custom Root CA
+FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
+COPY kemolabs.crt /etc/pki/ca-trust/source/anchors/kemolabs.crt
+RUN update-ca-trust
+
+##########################################################
+# Build optimized keycloak
+FROM quay.io/keycloak/keycloak:latest AS builder
+COPY --from=ubi-micro-build /etc/pki /etc/pki
+
+# Enable health and metrics support
+ENV KC_HEALTH_ENABLED=true
+ENV KC_METRICS_ENABLED=true
+
+# Configure a database vendor
+ENV KC_DB=postgres
+
+WORKDIR /opt/keycloak
+# for demonstration purposes only, please make sure to use proper certificates in production instead
+#RUN keytool -genkeypair -storepass password -storetype PKCS12 -keyalg RSA -keysize 2048 -dname "CN=server" -alias server -ext "SAN:c=DNS:localhost,IP:127.0.0.1" -keystore conf/server.keystore
+COPY sso.kemo.labs/cert.p12 conf/server.keystore
+RUN /opt/keycloak/bin/kc.sh build \
+ && /opt/keycloak/bin/kc.sh show-config
+
+##########################################################
+# Add curl for healthchecks
+FROM registry.access.redhat.com/ubi9 AS ubi-micro-build
+RUN mkdir -p /mnt/rootfs
+RUN dnf install --installroot /mnt/rootfs curl --releasever 9 --setopt install_weak_deps=false --nodocs -y && \
+    dnf --installroot /mnt/rootfs clean all && \
+    rpm --root /mnt/rootfs -e --nodeps setup
+
+##########################################################
+# Package optimized keycloak
+FROM quay.io/keycloak/keycloak:latest
+COPY --from=ubi-micro-build /mnt/rootfs /
+COPY --from=ubi-micro-build /etc/pki /etc/pki
+COPY --from=builder /opt/keycloak/ /opt/keycloak/
+
+# change these values to point to a running postgres instance
+ENV KC_DB=postgres
+ENV KC_DB_URL=localhost:5432
+ENV KC_DB_USERNAME=keycloak
+ENV KC_DB_PASSWORD=keycloak
+ENV KC_HOSTNAME=localhost
+ENV KC_HTTPS_KEY_STORE_PASSWORD=supersecretpassword
+
+HEALTHCHECK CMD curl -f http://localhost:9000/health || exit 1
+
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]

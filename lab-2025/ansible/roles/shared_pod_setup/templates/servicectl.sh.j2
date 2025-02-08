@@ -7,7 +7,9 @@ POD_NAME="{{ shared_pod_name }}"
 POD_NETWORK="{{ podman_bridge_name | default('host') }}"
 POD_IP="{{ shared_pod_ip_address }}"
 
-POD_PORT_DIR="{{ container_root_dir }}/{{ shared_pod_name }}/volumes/ports"
+POD_PORT_DIR="{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports"
+POD_IMAGE_DIR="{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images"
+POD_CONTAINER_DIR="{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers"
 
 # Loop through the files in that directory, find matching tcp- and udp- files, and build the -p argument
 POD_PORTS=""
@@ -37,6 +39,10 @@ case $1 in
   "restart" | "stop" | "start")
     echo "Stopping container services if running..."
 
+    for CONTAINER_FILE in ${POD_CONTAINER_DIR}/*; do
+      source ${CONTAINER_FILE} stop
+    done
+
     echo "Killing ${POD_NAME} pod..."
     /usr/bin/podman pod kill ${POD_NAME}
 
@@ -51,10 +57,21 @@ case $1 in
   ################################################################################# RESTART/START SERVICE
   "restart" | "start")
 
+    for IMAGE_FILE in ${POD_IMAGE_DIR}/*; do
+      IMAGES=$(cat $IMAGE_FILE)
+      while read IMG; do
+        podman pull ${IMG}
+      done <${IMAGE_FILE}
+    done
+
     sleep 1
     echo "Creating Pod..."
 
     /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    for CONTAINER_FILE in ${POD_CONTAINER_DIR}/*; do
+      source ${CONTAINER_FILE} ${1}
+    done
 
     ;;
 
