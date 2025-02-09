@@ -83,6 +83,7 @@
 
     # =============================================================
     # Netbox
+    # Create user with podman exec -it lab-netbox-netbox /opt/netbox/netbox/manage.py createsuperuser
     deploy_netbox: false
     netbox_ip_address: 192.168.42.22
 
