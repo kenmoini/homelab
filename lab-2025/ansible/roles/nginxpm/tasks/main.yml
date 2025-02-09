@@ -15,6 +15,13 @@
     - "{{ container_root_dir }}/{{ npm_service_name }}/volumes/npm-data"
     - "{{ container_root_dir }}/{{ npm_service_name }}/volumes/db-data"
 
+- name: Create Service Containers Directory - DB
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ npm_service_name }}/volumes/db-data"
+    state: directory
+    owner: 999
+    group: 999
+
 - name: Template CaaS deployment files - servicectl.sh.j2
   ansible.builtin.template:
     src: servicectl.sh.j2

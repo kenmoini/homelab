@@ -12,7 +12,7 @@ NPM_CONTAINER_IMAGE="{{ npm_container_image }}"
 DB_CONTAINER_IMAGE="{{ db_container_image }}"
 
 NPM_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/npm-data:/data:Z -v {{ container_root_dir }}/${POD_NAME}/volumes/certs:/etc/letsencrypt:Z"
-DB_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/data:Z"
+DB_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/var/lib/postgresql/data:Z"
 
 {% if npm_mount_host_trusted_certs %}
 HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
@@ -70,6 +70,10 @@ case $1 in
       -e POSTGRES_USER=${DB_USERNAME} \
       -e POSTGRES_PASSWORD=${DB_PASSWORD} \
       -e POSTGRES_DB=${DB_NAME} \
+      --label homepage.group=Databases \
+      --label homepage.name=NGINX Proxy Manager \
+      --label homepage.icon=postgres.png \
+      --label homepage.description='PostgreSQL DB for NGINX Proxy Manager' \
       ${DB_CONTAINER_VOLUMES} \
       ${DB_CONTAINER_IMAGE}
 
@@ -86,6 +90,11 @@ case $1 in
       -e DB_POSTGRES_PASSWORD=${DB_PASSWORD} \
       -e DB_POSTGRES_NAME=${DB_NAME} \
       -e DISABLE_IPV6=true \
+      --label homepage.group=Networking \
+      --label homepage.name="NGINX Proxy Manager" \
+      --label homepage.icon=nginxproxymanager.png \
+      --label homepage.href=http://npm-ingress.kemo.labs:81/ \
+      --label homepage.description='Default Multi-Service Ingress with Edge TLS' \
       ${NPM_CONTAINER_VOLUMES} \
       ${NPM_CONTAINER_IMAGE}
 
