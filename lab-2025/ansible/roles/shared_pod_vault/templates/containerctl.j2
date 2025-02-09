@@ -44,6 +44,11 @@ case $1 in
       --cap-add=IPC_LOCK \
       --healthcheck-command 'CMD-SHELL wget -O /dev/null -Sq --no-check-certificate https://127.0.0.1:{{ vault_container_port }}/sys/health || exit 1' \
       --healthcheck-interval=15s \
+      --label homepage.group=Services \
+      --label homepage.name=Vault \
+      --label homepage.icon=vault.png \
+      --label homepage.href=https://vault.kemo.labs/ \
+      --label homepage.description='Secrets Management' \
       ${VAULT_CONTAINER_VOLUMES} \
       ${VAULT_CONTAINER_IMAGE} \
       server -config=/vault/config.d/config.hcl
