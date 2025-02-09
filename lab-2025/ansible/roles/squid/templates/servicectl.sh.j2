@@ -52,11 +52,16 @@ case $1 in
     # Deploy container
     echo -e "Deploying ${CONTAINER_NAME}...\n"
     podman run -dt \
-    --name ${CONTAINER_NAME} \
-    --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
-    ${CONTAINER_RESOURCE_LIMITS} \
-    ${CONTAINER_VOLUMES} \
-    ${CONTAINER_IMAGE}
+      --name ${CONTAINER_NAME} \
+      --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
+      --label homepage.group=Networking \
+      --label homepage.name="Squid Proxy" \
+      --label homepage.icon=squid.png \
+      --label homepage.href=http://proxy.kemo.labs:3128/ \
+      --label homepage.description='http://proxy.kemo.labs - MiTM 3128, Passthrough 3129' \
+      ${CONTAINER_RESOURCE_LIMITS} \
+      ${CONTAINER_VOLUMES} \
+      ${CONTAINER_IMAGE}
 
     ;;
 
