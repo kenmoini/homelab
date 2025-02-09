@@ -43,6 +43,11 @@ case $1 in
       --name ${POD_NAME}-${SERVICE_NAME} \
       --healthcheck-command 'CMD-SHELL curl http://127.0.0.1:{{ dropbox_port }} || exit 1' \
       --healthcheck-interval=15s \
+      --label homepage.group=Containers \
+      --label homepage.name=Dropbox \
+      --label homepage.icon=nginx.png \
+      --label homepage.href=https://dropbox.kemo.labs/ \
+      --label homepage.description='Plain HTTP(s) server' \
       ${DROPBOX_CONTAINER_VOLUMES} \
       ${DROPBOX_CONTAINER_IMAGE}
 
