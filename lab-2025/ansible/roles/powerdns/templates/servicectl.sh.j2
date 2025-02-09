@@ -61,7 +61,14 @@ case $1 in
 
     echo "Starting container services - DB..."
 
-    /usr/bin/podman run -d --pod ${POD_NAME} --name ${POD_NAME}-db --rm ${DB_VOLUME_MOUNTS} ${DB_CONTAINER_SOURCE}
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-db \
+      --label homepage.group=PowerDNS \
+      --label homepage.name="DB" \
+      --label homepage.icon=mysql.png \
+      --label homepage.description='MySQL DB for PowerDNS Auth Server' \
+      ${DB_VOLUME_MOUNTS} \
+      ${DB_CONTAINER_SOURCE}
 
     if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/db/pdns/domains.ibd" ]; then
       /usr/bin/podman exec -it ${POD_NAME}-db sh -c 'mysql -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE < /var/lib/mysql/data/schema.sql'
@@ -71,13 +78,41 @@ case $1 in
     /usr/bin/podman exec -it ${POD_NAME}-db sh -c 'mysqlshow -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE'
 
     echo "Starting container services - Auth..."
-    /usr/bin/podman run -d --pod ${POD_NAME} --name ${POD_NAME}-auth --restart=always ${AUTH_VOLUME_MOUNTS} ${AUTH_CONTAINER_SOURCE}
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-auth \
+      --restart=always \
+      --label homepage.group=PowerDNS \
+      --label homepage.name="Authoritative API" \
+      --label homepage.icon=pdns.png \
+      --label homepage.href=http://ns1.kemo.labs:8081/ \
+      --label homepage.description='PowerDNS Authoritative API Endpoint' \
+      ${AUTH_VOLUME_MOUNTS} \
+      ${AUTH_CONTAINER_SOURCE}
 
     echo "Starting container services - Recursor..."
-    /usr/bin/podman run -d --pod ${POD_NAME} --name ${POD_NAME}-recursor --restart=always --sysctl net.ipv4.ip_unprivileged_port_start=53 --cap-add CAP_NET_BIND_SERVICE ${RECURSOR_VOLUME_MOUNTS} ${RECURSOR_CONTAINER_SOURCE}
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-recursor \
+      --restart=always \
+      --sysctl net.ipv4.ip_unprivileged_port_start=53 \
+      --cap-add CAP_NET_BIND_SERVICE \
+      --label homepage.group=PowerDNS \
+      --label homepage.name="Recursive DNS Server" \
+      --label homepage.icon=pdns.png \
+      --label homepage.description='PowerDNS Recursive DNS Server on port 53,5353' \
+      ${RECURSOR_VOLUME_MOUNTS} \
+      ${RECURSOR_CONTAINER_SOURCE}
 
     echo "Starting container services - UI..."
-    /usr/bin/podman run -d --rm --pod ${POD_NAME} --name ${POD_NAME}-ui ${UI_VOLUME_MOUNTS} ${UI_CONTAINER_SOURCE}
+    /usr/bin/podman run -d --rm \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-ui \
+      --label homepage.group=PowerDNS \
+      --label homepage.name="Web UI" \
+      --label homepage.icon=pdns.png \
+      --label homepage.href=https://pdns.kemo.labs/ \
+      --label homepage.description='PowerDNS Web UI' \
+      ${UI_VOLUME_MOUNTS} \
+      ${UI_CONTAINER_SOURCE}
 
     ;;
 

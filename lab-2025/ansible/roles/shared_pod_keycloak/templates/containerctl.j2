@@ -51,6 +51,10 @@ case $1 in
       -e POSTGRES_USER=${DB_USERNAME} \
       -e POSTGRES_PASSWORD=${DB_PASSWORD} \
       -e POSTGRES_DB=${DB_NAME} \
+      --label homepage.group=Databases \
+      --label homepage.name=Vault \
+      --label homepage.icon=postgres.png \
+      --label homepage.description='Vault PostgreSQL DB' \
       ${POSTGRES_CONTAINER_VOLUMES} \
       ${POSTGRES_CONTAINER_IMAGE}
 
@@ -60,6 +64,11 @@ case $1 in
       --name ${POD_NAME}-${SERVICE_NAME} \
       --healthcheck-command 'CMD-SHELL curl -k https://localhost:9000/health || exit 1' \
       --healthcheck-interval=15s \
+      --label homepage.group=Services \
+      --label homepage.name="Keycloak SSO" \
+      --label homepage.icon=keycloak.png \
+      --label homepage.href=https://sso.kemo.labs/ \
+      --label homepage.description='Single Sign On' \
       -e KC_DB_URL=jdbc:postgresql://${POD_NAME}-${SERVICE_NAME}-db:5432/${DB_NAME} \
       -e KC_DB_USERNAME=${DB_USERNAME} \
       -e KC_DB_PASSWORD=${DB_PASSWORD} \

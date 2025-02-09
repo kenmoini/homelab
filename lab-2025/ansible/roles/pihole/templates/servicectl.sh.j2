@@ -77,6 +77,11 @@ case $1 in
       --hostname "${CONTAINER_NAME}" \
       -m 1g --cpus 0.500 \
       ${ENV_VARS} \
+      --label homepage.group=Networking \
+      --label homepage.name=PiHole \
+      --label homepage.icon=pihole.png \
+      --label homepage.href=https://pihole.kemo.labs/ \
+      --label homepage.description='PiHole Ad Blocker' \
       ${NETWORK} \
       -v ${VOLUME_MOUNT_ONE} \
       -v ${VOLUME_MOUNT_TWO} \
