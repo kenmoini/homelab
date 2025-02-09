@@ -71,7 +71,7 @@ case $1 in
       -e POSTGRES_PASSWORD=${DB_PASSWORD} \
       -e POSTGRES_DB=${DB_NAME} \
       --label homepage.group=Databases \
-      --label homepage.name=NGINX Proxy Manager \
+      --label homepage.name="NGINX Proxy Manager" \
       --label homepage.icon=postgres.png \
       --label homepage.description='PostgreSQL DB for NGINX Proxy Manager' \
       ${DB_CONTAINER_VOLUMES} \
@@ -92,9 +92,12 @@ case $1 in
       -e DISABLE_IPV6=true \
       --label homepage.group=Networking \
       --label homepage.name="NGINX Proxy Manager" \
-      --label homepage.icon=nginxproxymanager.png \
-      --label homepage.href=http://npm-ingress.kemo.labs:81/ \
-      --label homepage.description='Default Multi-Service Ingress with Edge TLS' \
+      --label homepage.icon=npm.png \
+      --label homepage.description="Default Multi-Service Ingress with Edge TLS" \
+      --label homepage.widget.type=npm \
+      --label homepage.widget.url=http://npm-ingress.kemo.labs:81/ \
+      --label homepage.widget.username="readonly@kemo.labs" \
+      --label homepage.widget.password=supersecurepassword \
       ${NPM_CONTAINER_VOLUMES} \
       ${NPM_CONTAINER_IMAGE}
 

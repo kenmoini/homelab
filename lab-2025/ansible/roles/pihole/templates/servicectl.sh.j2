@@ -80,8 +80,11 @@ case $1 in
       --label homepage.group=Networking \
       --label homepage.name=PiHole \
       --label homepage.icon=pihole.png \
-      --label homepage.href=https://pihole.kemo.labs/ \
-      --label homepage.description='PiHole Ad Blocker' \
+      --label homepage.description="DNS-based Ad Blocking" \
+      --label homepage.widget.type=pihole \
+      --label homepage.widget.url=http://pihole.kemo.labs \
+      --label homepage.widget.version=5 \
+      --label homepage.widget.key=$(cat {{ container_root_dir }}/${CONTAINER_NAME}/volumes/.apikey) \
       ${NETWORK} \
       -v ${VOLUME_MOUNT_ONE} \
       -v ${VOLUME_MOUNT_TWO} \
