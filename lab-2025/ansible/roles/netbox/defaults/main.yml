@@ -1,2 +1,23 @@
 ---
 # defaults file for netbox
+
+netbox_service_name: lab-netbox
+
+netbox_port: 8000
+netbox_nginx_status_port: 8001
+netbox_redis_port: 6379
+netbox_cache_port: 6380
+
+netbox_container_image: quay.io/netboxcommunity/netbox:latest
+netbox_db_container_image: docker.io/postgres:17-alpine
+netbox_redis_container_image: docker.io/valkey/valkey:8.0-alpine
+netbox_cache_container_image: docker.io/valkey/valkey:8.0-alpine
+
+netbox_db_username: netbox
+netbox_db_password: notnetbox
+netbox_db_name: netbox
+
+netbox_redis_password: notnetbox
+netbox_cache_password: notredislol
+
+netbox_email_from: netbox@example.com

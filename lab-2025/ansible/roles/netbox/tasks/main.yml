@@ -1,2 +1,112 @@
 ---
 # tasks file for netbox
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/secrets"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/netbox-config"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/netbox-config/ldap"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/netbox-media"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/netbox-reports"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/netbox-scripts"
+  loop_control:
+    loop_var: d_item
+
+- name: Create Service Containers Directory - DB
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/db-data"
+    state: directory
+    # Stupid alpine uses 70:70 instead of 999:999
+    owner: 70
+    group: 70
+
+- name: Create Service Containers Directory - Redis
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: 999
+    group: 1000
+  loop:
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/cache-data"
+    - "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/redis-data"
+  loop_control:
+    loop_var: d_item
+
+- name: Template environmental variable files
+  ansible.builtin.template:
+    src: "{{ env_item }}.j2"
+    dest: "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/secrets/{{ env_item }}"
+    owner: root
+    group: root
+    mode: 0600
+  loop:
+    - env.db
+    - env.netbox
+    - env.redis
+    - env.cache
+  loop_control:
+    loop_var: env_item
+
+- name: Template Netbox Configuration files
+  ansible.builtin.template:
+    src: "configuration/{{ cfg_item }}.j2"
+    dest: "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/netbox-config/{{ cfg_item }}"
+    owner: 999
+    group: 999
+    mode: 0600
+  loop:
+    - ldap/extra.py
+    - ldap/ldap_config.py
+    - configuration.py
+    - extra.py
+    - logging.py
+    - plugins.py
+  loop_control:
+    loop_var: cfg_item
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ netbox_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ netbox_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ netbox_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the images
+  containers.podman.podman_image:
+    name: "{{ image_item }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ netbox_container_image }}"
+    - "{{ netbox_db_container_image }}"
+    - "{{ netbox_redis_container_image }}"
+    - "{{ netbox_cache_container_image }}"
+  loop_control:
+    loop_var: image_item
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ netbox_service_name }}"
+    state: restarted
+    enabled: yes

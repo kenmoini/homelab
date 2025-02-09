@@ -1,0 +1,182 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ netbox_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ netbox_ip_address }}"
+POD_PORTS="-p {{ netbox_port }}/tcp -p {{ netbox_nginx_status_port }}/tcp"
+
+NETBOX_CONTAINER_IMAGE="{{ netbox_container_image }}"
+DB_CONTAINER_IMAGE="{{ netbox_db_container_image }}"
+REDIS_CONTAINER_IMAGE="{{ netbox_redis_container_image }}"
+CACHE_CONTAINER_IMAGE="{{ netbox_cache_container_image }}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Pulling Netbox container image..."
+    /usr/bin/podman pull ${NETBOX_CONTAINER_IMAGE}
+
+    echo "Pulling DB container image..."
+    /usr/bin/podman pull ${DB_CONTAINER_IMAGE}
+
+    echo "Pulling Redis container image..."
+    /usr/bin/podman pull ${REDIS_CONTAINER_IMAGE}
+
+    echo "Pulling Cache container image..."
+    /usr/bin/podman pull ${CACHE_CONTAINER_IMAGE}
+
+    echo "Checking for secret key generation..."
+    if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key" ]; then
+      echo "Generating secret key..."
+      SECRET_KEY=$(/usr/bin/podman run -q --rm -it ${NETBOX_CONTAINER_IMAGE} /opt/netbox/netbox/generate_secret_key.py)
+      echo "SECRET_KEY=${SECRET_KEY}" > "{{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key"
+    fi
+
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    echo "Starting container services - DB..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-db \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.db \
+      --healthcheck-command 'CMD-SHELL pg_isready -q -t 2 -d \$POSTGRES_DB -U \$POSTGRES_USER' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Databases \
+      --label homepage.name="Netbox" \
+      --label homepage.icon=postgres.png \
+      --label homepage.description='PostgreSQL DB for Netbox' \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/var/lib/postgresql/data:Z \
+      ${DB_CONTAINER_IMAGE}
+
+    sleep 2
+
+    echo "Starting container services - Redis..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-redis \
+      --restart always \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.redis \
+      --healthcheck-command 'CMD-SHELL sh -c "valkey-cli -p {{ netbox_redis_port }} --pass $REDIS_PASSWORD ping | grep PONG || exit 1"' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Redis \
+      --label homepage.name="Netbox Redis K/V" \
+      --label homepage.icon=redis.png \
+      --label homepage.description="Netbox Redis Key Value Store" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/redis-data:/data:Z \
+      ${REDIS_CONTAINER_IMAGE} \
+      sh -c 'valkey-server --port {{ netbox_redis_port }} --appendonly yes --requirepass $REDIS_PASSWORD'
+
+    echo "Starting container services - Redis Cache lol..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-cache \
+      --restart always \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.cache \
+      --healthcheck-command 'CMD-SHELL sh -c "valkey-cli -p {{ netbox_cache_port }} --pass $REDIS_PASSWORD ping | grep PONG || exit 1"' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Redis \
+      --label homepage.name="Netbox Redis Cache" \
+      --label homepage.icon=redis.png \
+      --label homepage.description="Netbox Redis Key Value Store for Caching" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/cache-data:/data:Z \
+      ${CACHE_CONTAINER_IMAGE} \
+      sh -c 'valkey-server --port {{ netbox_cache_port }} --requirepass $REDIS_PASSWORD'
+
+    echo "Starting container services - Netbox..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-netbox \
+      --restart always \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.netbox \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key \
+      --healthcheck-command 'CMD-SHELL curl -f http://localhost:8080/login/ || exit 1' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Networking \
+      --label homepage.name="Netbox DDI" \
+      --label homepage.icon=netbox.png \
+      --label homepage.description="Netbox DDI/IPAM" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-config:/etc/netbox/config:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-media:/opt/netbox/netbox/media:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-reports:/opt/netbox/netbox/reports:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-scripts:/opt/netbox/netbox/scripts:Z \
+      --read-only-tmpfs=true \
+      ${NETBOX_CONTAINER_IMAGE}
+
+    sleep 10
+
+    echo "Starting container services - Netbox Worker..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-netbox-worker \
+      --restart always \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.netbox \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key \
+      --healthcheck-command 'CMD-SHELL ps -aux | grep -v grep | grep -q rqworker || exit 1' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Misc \
+      --label homepage.name="Netbox Worker" \
+      --label homepage.icon=netbox.png \
+      --label homepage.description="Netbox DDI/IPAM Worker Container" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-config:/etc/netbox/config:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-media:/opt/netbox/netbox/media:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-reports:/opt/netbox/netbox/reports:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-scripts:/opt/netbox/netbox/scripts:Z \
+      --read-only-tmpfs=true \
+      ${NETBOX_CONTAINER_IMAGE} \
+      sh -c '/opt/netbox/venv/bin/python /opt/netbox/netbox/manage.py rqworker'
+
+    echo "Starting container services - Netbox Housekeeping lol..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-netbox-housekeeper \
+      --restart always \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.netbox \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key \
+      --healthcheck-command 'CMD-SHELL ps -aux | grep -v grep | grep -q housekeeping || exit 1' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Misc \
+      --label homepage.name="Netbox Housekeeper" \
+      --label homepage.icon=netbox.png \
+      --label homepage.description="Netbox DDI/IPAM Housekeeping Container" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-config:/etc/netbox/config:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-media:/opt/netbox/netbox/media:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-reports:/opt/netbox/netbox/reports:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-scripts:/opt/netbox/netbox/scripts:Z \
+      --read-only-tmpfs=true \
+      ${NETBOX_CONTAINER_IMAGE} \
+      sh -c '/opt/netbox/housekeeping.sh'
+
+    ;;
+
+esac

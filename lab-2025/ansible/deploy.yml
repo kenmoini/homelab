@@ -11,7 +11,7 @@
 
     # =============================================================
     # Pihole
-    deploy_pihole: true
+    deploy_pihole: false
     pihole_ip_address: 192.168.42.12
     pihole_admin_password: notpassword
     pihole_timezone: America/New_York
@@ -60,7 +60,7 @@
 
     # =============================================================
     # NGINX Proxy Manager
-    deploy_nginxpm: true
+    deploy_nginxpm: false
     npm_ip_address: 192.168.42.25
 
     # =============================================================
@@ -79,7 +79,12 @@
 
     # =============================================================
     # Shared Pod - Homepage
-    deploy_shared_homepage: true
+    deploy_shared_homepage: false
+
+    # =============================================================
+    # Netbox
+    deploy_netbox: false
+    netbox_ip_address: 192.168.42.22
 
   # ===============================================================
   tasks:
@@ -143,3 +148,8 @@
       when: deploy_nginxpm|bool
       ansible.builtin.include_role:
         name: nginxpm
+
+    - name: Deploy Netbox
+      when: deploy_netbox|bool
+      ansible.builtin.include_role:
+        name: netbox
