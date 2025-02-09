@@ -79,8 +79,6 @@ case $1 in
       -v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/var/lib/postgresql/data:Z \
       ${DB_CONTAINER_IMAGE}
 
-    sleep 2
-
     echo "Starting container services - Redis..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -113,17 +111,23 @@ case $1 in
       ${CACHE_CONTAINER_IMAGE} \
       sh -c 'valkey-server --port {{ netbox_cache_port }} --requirepass $REDIS_PASSWORD'
 
+    until $(podman healthcheck run ${POD_NAME}-cache); do echo "Waiting for healthy cache container..." && sleep 1; done
+    until $(podman healthcheck run ${POD_NAME}-redis); do echo "Waiting for healthy redis container..." && sleep 1; done
+    until $(podman healthcheck run ${POD_NAME}-db); do echo "Waiting for healthy db container..." && sleep 1; done
+
     echo "Starting container services - Netbox..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
       --name ${POD_NAME}-netbox \
       --restart always \
       --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.netbox \
-      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key{% if netbox_skip_superuser == "false" %} --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/superuser{% endif %} \
       --healthcheck-command 'CMD-SHELL curl -f http://localhost:8080/login/ || exit 1' \
       --healthcheck-interval=15s \
+      --health-start-period=5s \
       --label homepage.group=Networking \
       --label homepage.name="Netbox DDI" \
+      --label homepage.href="https://netbox.apps.kemo.labs" \
       --label homepage.icon=netbox.png \
       --label homepage.description="Netbox DDI/IPAM" \
       -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-config:/etc/netbox/config:Z \
@@ -133,12 +137,12 @@ case $1 in
       --read-only-tmpfs=true \
       ${NETBOX_CONTAINER_IMAGE}
 
-    sleep 10
+    until $(podman healthcheck run ${POD_NAME}-netbox); do echo "Waiting for healthy netbox container..." && sleep 1; done
 
     echo "Starting container services - Netbox Worker..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
-      --name ${POD_NAME}-netbox-worker \
+      --name ${POD_NAME}-worker \
       --restart always \
       --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.netbox \
       --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key \
@@ -159,7 +163,7 @@ case $1 in
     echo "Starting container services - Netbox Housekeeping lol..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
-      --name ${POD_NAME}-netbox-housekeeper \
+      --name ${POD_NAME}-housekeeper \
       --restart always \
       --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.netbox \
       --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key \

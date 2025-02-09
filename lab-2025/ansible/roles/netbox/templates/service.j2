@@ -8,7 +8,8 @@ ExecStop={{ container_root_dir }}/{{ netbox_service_name }}/scripts/servicectl.s
 ExecStart={{ container_root_dir }}/{{ netbox_service_name }}/scripts/servicectl.sh start
 ExecReload={{ container_root_dir }}/{{ netbox_service_name }}/scripts/servicectl.sh restart
 
-TimeoutStartSec=60
+TimeoutStart=120
+RestartSec=30
 Type=forking
 Restart=on-failure
 

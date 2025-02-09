@@ -3,7 +3,7 @@
 
 netbox_service_name: lab-netbox
 
-netbox_port: 8000
+netbox_port: 8080
 netbox_nginx_status_port: 8001
 netbox_redis_port: 6379
 netbox_cache_port: 6380
@@ -21,3 +21,5 @@ netbox_redis_password: notnetbox
 netbox_cache_password: notredislol
 
 netbox_email_from: netbox@example.com
+
+netbox_skip_superuser: "true"

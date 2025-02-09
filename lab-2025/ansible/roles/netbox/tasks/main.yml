@@ -72,6 +72,15 @@
   loop_control:
     loop_var: cfg_item
 
+- name: Create the NetBox super user credential files
+  when: netbox_skip_superuser == "false"
+  ansible.builtin.template:
+    src: superuser.j2
+    dest: "{{ container_root_dir }}/{{ netbox_service_name }}/volumes/secrets/superuser"
+    owner: root
+    group: root
+    mode: 0600
+
 - name: Template CaaS deployment files - servicectl.sh.j2
   ansible.builtin.template:
     src: servicectl.sh.j2
