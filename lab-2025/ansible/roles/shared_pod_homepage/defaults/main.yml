@@ -1,0 +1,15 @@
+---
+# defaults file for shared_pod_homepage
+shared_pod_name: shared-pod
+
+homepage_service_name: homepage
+
+homepage_container_image: ghcr.io/gethomepage/homepage:latest
+homepage_container_port: 3000
+
+homepage_volume_mounts:
+  - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ homepage_service_name }}/volumes/config:/app/config:Z"
+  - /var/run/podman/podman.sock:/var/run/docker.sock:ro
+
+# This is defaulted to false since the container isn't UBI based and there needs to be some careful mapping done
+homepage_mount_host_trusted_certs: false

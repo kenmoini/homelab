@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ homepage_service_name }}"
+
+HOMEPAGE_CONTAINER_IMAGE="{{ homepage_container_image | default('ghcr.io/gethomepage/homepage:latest') }}"
+HOMEPAGE_CONTAINER_VOLUMES="{% for mount in homepage_volume_mounts %}-v {{ mount }} {% endfor %}"
+
+{% if homepage_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+HOMEPAGE_CONTAINER_VOLUMES="${HOMEPAGE_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Homepage..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      --healthcheck-command 'CMD-SHELL wget -O /dev/null -Sq --no-check-certificate http://127.0.0.1:{{ homepage_container_port }} || exit 1' \
+      --healthcheck-interval=15s \
+      ${HOMEPAGE_CONTAINER_VOLUMES} \
+      ${HOMEPAGE_CONTAINER_IMAGE}
+
+    ;;
+
+esac

@@ -1,0 +1,71 @@
+---
+# tasks file for shared_pod_homepage
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ i_path }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ homepage_service_name }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ homepage_service_name }}/volumes/"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ homepage_service_name }}/volumes/config"
+  loop_control:
+    loop_var: i_path
+
+- name: Template Homepage Config files
+  ansible.builtin.template:
+    src: "{{ i_file }}.j2"
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ homepage_service_name }}/volumes/config/{{ i_file }}"
+    owner: root
+    group: root
+    mode: 0755
+  loop:
+    - settings.yaml
+    - services.yaml
+    - docker.yaml
+  loop_control:
+    loop_var: i_file
+
+- name: Template Shared Pod deployment files - containerctl.j2
+  ansible.builtin.template:
+    src: containerctl.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ homepage_service_name }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template Shared Pod Images
+  ansible.builtin.template:
+    src: images
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images/{{ homepage_service_name }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Touch a file for the container ports
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports/{{ i_port }}"
+    state: touch
+    owner: root
+    group: root
+  loop:
+    - "{{ homepage_container_port }}-tcp"
+  loop_control:
+    loop_var: i_port
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ i_image }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ homepage_container_image }}"
+  loop_control:
+    loop_var: i_image
+
+- name: Restart Shared Pod
+  ansible.builtin.shell:
+    cmd: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ homepage_service_name }}.sh restart"
