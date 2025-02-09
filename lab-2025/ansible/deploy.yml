@@ -79,7 +79,7 @@
 
     # =============================================================
     # Shared Pod - Homepage
-    deploy_shared_homepage: false
+    deploy_shared_homepage: true
 
     # =============================================================
     # Netbox

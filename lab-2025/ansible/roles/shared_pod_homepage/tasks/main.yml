@@ -23,9 +23,10 @@
     group: root
     mode: 0755
   loop:
-    - settings.yaml
-    - services.yaml
+    - bookmarks.yaml
     - docker.yaml
+    - services.yaml
+    - settings.yaml
     #- widgets.yaml
   loop_control:
     loop_var: i_file

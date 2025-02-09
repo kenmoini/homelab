@@ -1,4 +1,12 @@
 - Entertainment:
+  - Deluge:
+      icon: deluge.png
+      href: https://deluge.apps.kemo.labs/
+      description: Torrent downloader
+      widget:
+        type: deluge
+        url: https://deluge.apps.kemo.labs
+        key: apikeyapikeyapikeyapikeyapikey
   - Sonarr:
       icon: sonarr.png
       href: https://sonarr.kemo.labs/
@@ -15,6 +23,30 @@
         type: radarr
         url: http://radarr.kemo.labs
         key: apikeyapikeyapikeyapikeyapikey
+  - Jackett:
+      icon: jackett.png
+      href: http://jackett.kemo.labs/
+      description: Source Aggrigator
+      widget:
+        type: jackett
+        url: http://jackett.kemo.labs
+        key: apikeyapikeyapikeyapikeyapikey
+  - Overseerr:
+      icon: overseerr.png
+      href: http://overseerr.kemo.labs/
+      description: Media request form
+      widget:
+        type: overseerr
+        url: http://overseerr.kemo.labs
+        key: apikeyapikeyapikeyapikeyapikey
+  - sabnzbd:
+      icon: sabnzbd.png
+      href: http://sabnzbd.kemo.labs/
+      description: Usenet downloader
+      widget:
+        type: sabnzbd
+        url: http://sabnzbd.kemo.labs
+        key: apikeyapikeyapikeyapikeyapikey
   - Plex:
       icon: plex.png
       href: http://plex.kemo.labs/
@@ -23,14 +55,20 @@
         type: plex
         url: http://plex.kemo.labs
         key: apikeyapikeyapikeyapikeyapikey
+  - Tautulli:
+      icon: tautulli.png
+      href: http://tautulli.kemo.labs/
+      description: Media consumption statistics
+      widget:
+        type: tautulli
+        url: http://tautulli.kemo.labs
+        key: apikeyapikeyapikeyapikeyapikey
 
-- Infrastructure:
+- Management:
   - Normandy:
       href: https://normandy.kemo.labs:9090/
       description: MS-01 Core Server, Cockpit
       icon: cockpit.png
-
-- Management:
   - Raza:
       href: https://raza.mgmt.kemo.labs/
       description: Raza Supermicro BMC
@@ -48,9 +86,17 @@
       description: Serenity Dell R730 iDRAC
       icon: dell.png
 
-#- Networking:
+- Networking:
+  - Unifi:
+      href: https://unifi.kemo.labs/
+      description: Ubiquiti Unifi Controller
+      icon: unifi.png
 
 - Services:
+  - Home Assistant:
+      href: https://home-assistant.apps.kemo.labs/
+      description: Home Automation and Integration Platform
+      icon: home-assistant.png
   - Identity Management:
       href: https://idm.kemo.labs/
       description: Red Hat IDM/FreeIPA Identity Management
