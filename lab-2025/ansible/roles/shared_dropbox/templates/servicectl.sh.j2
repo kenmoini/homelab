@@ -41,6 +41,8 @@ case $1 in
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
       --name ${POD_NAME}-${SERVICE_NAME} \
+      --healthcheck-command 'CMD-SHELL curl http://127.0.0.1:{{ dropbox_port }} || exit 1' \
+      --healthcheck-interval=15s \
       ${DROPBOX_CONTAINER_VOLUMES} \
       ${DROPBOX_CONTAINER_IMAGE}
 
