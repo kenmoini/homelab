@@ -13,7 +13,6 @@
     - "{{ container_root_dir }}/{{ npm_service_name }}/volumes"
     - "{{ container_root_dir }}/{{ npm_service_name }}/volumes/certs"
     - "{{ container_root_dir }}/{{ npm_service_name }}/volumes/npm-data"
-    - "{{ container_root_dir }}/{{ npm_service_name }}/volumes/db-data"
 
 - name: Create Service Containers Directory - DB
   ansible.builtin.file:

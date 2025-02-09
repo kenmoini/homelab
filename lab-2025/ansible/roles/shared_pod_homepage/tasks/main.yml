@@ -26,6 +26,7 @@
     - settings.yaml
     - services.yaml
     - docker.yaml
+    #- widgets.yaml
   loop_control:
     loop_var: i_file
 

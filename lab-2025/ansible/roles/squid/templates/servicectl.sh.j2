@@ -50,13 +50,14 @@ case $1 in
     echo "Starting container services..."
 
     # Deploy container
+    # I know that's not the real image for squid, but it is a squid and I'll take it
     echo -e "Deploying ${CONTAINER_NAME}...\n"
     podman run -dt \
       --name ${CONTAINER_NAME} \
       --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
       --label homepage.group=Networking \
       --label homepage.name="Squid Proxy" \
-      --label homepage.icon=squid.png \
+      --label homepage.icon=squidex.png \
       --label homepage.href=http://proxy.kemo.labs:3128/ \
       --label homepage.description='http://proxy.kemo.labs - MiTM 3128, Passthrough 3129' \
       ${CONTAINER_RESOURCE_LIMITS} \

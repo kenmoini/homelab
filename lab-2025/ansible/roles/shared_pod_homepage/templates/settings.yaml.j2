@@ -4,6 +4,10 @@ language: en
 hideVersion: true
 showStats: true
 
+color: neutral
+useEqualHeights: true
+headerStyle: boxed
+
 logpath: /data/logs
 
 startUrl: https://kemo.labs
@@ -16,3 +20,43 @@ quicklaunch:
   showSearchSuggestions: true
   hideVisitURL: false
   provider: duckduckgo
+
+layout:
+  Networking:
+    style: row
+    columns: 5
+    fiveColumns: true
+  Services:
+    style: row
+    columns: 5
+    fiveColumns: true
+  Infrastructure:
+    style: row
+    columns: 5
+    fiveColumns: true
+  Management:
+    style: row
+    columns: 5
+    fiveColumns: true
+  Entertainment:
+    style: row
+    columns: 5
+    fiveColumns: true
+  Containers:
+    style: column
+    columns: 5
+    fiveColumns: true
+  Databases:
+    #initiallyCollapsed: true
+    style: column
+    columns: 5
+    fiveColumns: true
+  Redis:
+    #initiallyCollapsed: true
+    style: column
+    columns: 5
+    fiveColumns: true
+  Misc:
+    #initiallyCollapsed: true
+    columns: 5
+    fiveColumns: true
