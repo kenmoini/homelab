@@ -110,7 +110,7 @@ dns:
           - name: lb
             value: 192.168.42.21/23
           - name: vault
-            value: 192.168.42.22/23
+            value: 192.168.42.16
           - name: o11y
             value: 192.168.42.23/23
           - name: deluge
@@ -131,8 +131,6 @@ dns:
           - name: deluge-web
             value: 192.168.42.25
           - name: sso
-            value: 192.168.42.25
-          - name: dashy
             value: 192.168.42.25
           - name: '@'
             value: 192.168.42.25
