@@ -1,0 +1,11 @@
+---
+# defaults file for shared_pod_vault
+shared_pod_name: shared-pod
+
+vault_service_name: vault
+
+vault_container_image: docker.io/hashicorp/vault:latest
+vault_container_port: 8200
+vault_container_cluster_port: 8201
+
+vault_data_mount_path: /vault

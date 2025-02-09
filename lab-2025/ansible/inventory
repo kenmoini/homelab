@@ -1,5 +1,5 @@
 labcore:
   hosts:
     normandy:
-      ansible_host: 192.168.42.42
+      ansible_host: normandy.kemo.labs
       ansible_user: root

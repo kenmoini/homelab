@@ -1,0 +1,83 @@
+---
+# tasks file for shared_pod_vault
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ i_path }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/"
+  loop_control:
+    loop_var: i_path
+
+- name: Create Service Containers Directory - Owned by vault user
+  ansible.builtin.file:
+    path: "{{ i_path }}"
+    state: directory
+    owner: 100
+    group: 1000
+  loop:
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/file"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/config"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/config.d"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/logs"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/raft"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/raft/data"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/ssl"
+  loop_control:
+    loop_var: i_path
+
+- name: Template Shared Pod deployment files - containerctl.j2
+  ansible.builtin.template:
+    src: containerctl.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ vault_service_name }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template Vault config
+  ansible.builtin.template:
+    src: config.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault/config.d/config.hcl"
+    owner: 100
+    group: 1000
+    mode: 0755
+
+- name: Template Shared Pod Images
+  ansible.builtin.template:
+    src: images
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images/{{ vault_service_name }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Touch a file for the ports for Vault
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports/{{ i_port }}"
+    state: touch
+    owner: root
+    group: root
+  loop:
+    - "{{ vault_container_port }}-tcp"
+    - "{{ vault_container_cluster_port }}-tcp"
+  loop_control:
+    loop_var: i_port
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ i_image }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ vault_container_image }}"
+  loop_control:
+    loop_var: i_image
+
+- name: Restart Shared Pod
+  ansible.builtin.shell:
+    cmd: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ vault_service_name }}.sh restart"

@@ -1,0 +1,20 @@
+ui            = true
+api_addr      = "https://{{ vault_ip_address }}:{{ vault_container_port }}"
+cluster_addr      = "https://{{ vault_ip_address }}:{{ vault_container_cluster_port }}"
+disable_mlock = true
+
+storage "raft" {
+  path        = "/vault/raft/data"
+  node_id     = "kl-vault0"
+}
+
+listener "tcp" {
+  address     = "0.0.0.0:{{ vault_container_port }}"
+  tls_cert_file = "/vault/ssl/full-chain.pem"
+  tls_key_file  = "/vault/ssl/private-key.pem"
+}
+
+telemetry {
+  prometheus_retention_time = "12h"
+  disable_hostname = true
+}

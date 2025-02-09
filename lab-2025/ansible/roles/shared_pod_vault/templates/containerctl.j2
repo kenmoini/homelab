@@ -1,0 +1,62 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ vault_service_name }}"
+
+VAULT_CONTAINER_IMAGE="{{ vault_container_image | default('docker.io/hashicorp/vault:latest') }}"
+VAULT_CONTAINER_VOLUMES="-v {{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/vault:/vault:Z"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Vault..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      --cap-add=IPC_LOCK \
+      --healthcheck-command 'CMD-SHELL wget -O /dev/null -Sq --no-check-certificate https://127.0.0.1:{{ vault_container_port }}/sys/health || exit 1' \
+      --healthcheck-interval=15s \
+      ${VAULT_CONTAINER_VOLUMES} \
+      ${VAULT_CONTAINER_IMAGE} \
+      server -config=/vault/config.d/config.hcl
+
+    if [ -f "{{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/.unseal-token" ]; then
+      sleep 3
+      echo "Unsealing Vault..."
+      set +x
+      UNSEAL_TOKEN=$(cat {{ container_root_dir }}/{{ shared_pod_name }}-{{ vault_service_name }}/volumes/.unseal-token)
+      /usr/bin/podman exec -e VAULT_SKIP_VERIFY=true ${POD_NAME}-${SERVICE_NAME} vault operator unseal ${UNSEAL_TOKEN}
+      set -x
+    fi
+
+    ;;
+
+esac

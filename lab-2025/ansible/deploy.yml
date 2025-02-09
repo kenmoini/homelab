@@ -65,12 +65,17 @@
 
     # =============================================================
     # Shared Pod Setup
-    deploy_shared_pod: true
+    deploy_shared_pod: false
     shared_pod_ip_address: 192.168.42.16
 
     # =============================================================
     # Shared Pod - Dropbox
-    deploy_shared_dropbox: true
+    deploy_shared_dropbox: false
+
+    # =============================================================
+    # Shared Pod - Vault
+    deploy_shared_vault: true
+    vault_ip_address: "{{ shared_pod_ip_address }}"
 
   # ===============================================================
   tasks:
@@ -116,6 +121,11 @@
       when: deploy_shared_dropbox|bool
       ansible.builtin.include_role:
         name: shared_dropbox
+
+    - name: Deploy Shared Pod - Vault
+      when: deploy_shared_vault|bool
+      ansible.builtin.include_role:
+        name: shared_pod_vault
 
     - name: Deploy JFrog Artifactory
       when: deploy_jfrog|bool
