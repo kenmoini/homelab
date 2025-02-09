@@ -64,6 +64,11 @@ case $1 in
       --pod ${POD_NAME} \
       --name ${POD_NAME}-jfrog \
       --user 1030:1030 \
+      --label homepage.group=Services \
+      --label homepage.name="JFrog Artifactory" \
+      --label homepage.icon=jfrog.png \
+      --label homepage.href=https://jfrog.lab.kemo.network/ \
+      --label homepage.description='Private and Proxied Container Image Registry' \
       ${JFROG_CONTAINER_VOLUMES} \
       ${JFROG_CONTAINER_IMAGE}
 
