@@ -1,0 +1,11 @@
+---
+# defaults file for shared_pod_stepca
+
+shared_pod_name: shared-pod
+
+stepca_service_name: stepca
+
+stepca_container_image: docker.io/smallstep/step-ca:latest
+stepca_container_port: 9100
+
+stepca_data_mount_path: /home/step

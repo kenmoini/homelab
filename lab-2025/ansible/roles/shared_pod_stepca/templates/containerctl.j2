@@ -1,0 +1,73 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ stepca_service_name }}"
+
+STEPCA_CONTAINER_IMAGE="{{ stepca_container_image | default('docker.io/smallstep/step-ca:latest') }}"
+STEPCA_CONTAINER_VOLUMES="-v {{ container_root_dir }}/{{ shared_pod_name }}-{{ stepca_service_name }}/volumes/step-home:{{ stepca_data_mount_path }}:Z"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start" | "init")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    # Check to see if the StepCA has been initialized first
+    if [ -f "{{ container_root_dir }}/{{ shared_pod_name }}-{{ stepca_service_name }}/volumes/step-home/certs/root_ca.crt" ]; then
+
+      echo "Starting container services - StepCA..."
+      /usr/bin/podman run -dt \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-${SERVICE_NAME} \
+        --healthcheck-command 'CMD-SHELL curl -k https://127.0.0.1:{{ stepca_container_port }}/health || exit 1' \
+        --healthcheck-interval=15s \
+        --label homepage.group=Services \
+        --label homepage.name=StepCA \
+        --label homepage.icon=step-ca.png \
+        --label homepage.href=https://step-ca.apps.kemo.labs/ \
+        --label homepage.description='ACME and Dynamic Credential Provider' \
+        ${STEPCA_CONTAINER_VOLUMES} \
+        ${STEPCA_CONTAINER_IMAGE}
+
+    fi
+
+    ;;
+
+  ################################################################################# INIT SERVICE
+  "init")
+
+      echo "Starting live container services for initialization - StepCA..."
+      /usr/bin/podman run --rm -it \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-${SERVICE_NAME} \
+        ${STEPCA_CONTAINER_VOLUMES} \
+        ${STEPCA_CONTAINER_IMAGE} /bin/bash
+
+    ;;
+
+esac

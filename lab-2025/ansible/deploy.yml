@@ -79,13 +79,17 @@
 
     # =============================================================
     # Shared Pod - Homepage
-    deploy_shared_homepage: true
+    deploy_shared_homepage: false
 
     # =============================================================
     # Netbox
     # Create user with podman exec -it lab-netbox-netbox /opt/netbox/netbox/manage.py createsuperuser
     deploy_netbox: false
     netbox_ip_address: 192.168.42.22
+
+    # =============================================================
+    # StepCA
+    deploy_shared_stepca: false
 
   # ===============================================================
   tasks:
@@ -154,3 +158,8 @@
       when: deploy_netbox|bool
       ansible.builtin.include_role:
         name: netbox
+
+    - name: Deploy StepCA
+      when: deploy_shared_stepca|bool
+      ansible.builtin.include_role:
+        name: shared_pod_stepca
