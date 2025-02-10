@@ -55,6 +55,8 @@ case $1 in
     podman run -dt \
       --name ${CONTAINER_NAME} \
       --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
+      --healthcheck-command 'CMD-SHELL curl http://localhost:{{ squid_mitm_port }} || exit 1' \
+      --healthcheck-interval=15s \
       --label homepage.group=Networking \
       --label homepage.name="Squid Proxy" \
       --label homepage.icon=squidex.png \
