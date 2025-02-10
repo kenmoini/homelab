@@ -84,6 +84,8 @@ case $1 in
       --pod ${POD_NAME} \
       --name ${POD_NAME}-npm \
       --restart=always --sysctl net.ipv4.ip_unprivileged_port_start=80 --cap-add CAP_NET_BIND_SERVICE \
+      --healthcheck-command 'CMD-SHELL /usr/bin/check-health' \
+      --healthcheck-interval=15s \
       -e DB_POSTGRES_HOST=localhost \
       -e DB_POSTGRES_PORT=5432 \
       -e DB_POSTGRES_USER=${DB_USERNAME} \
