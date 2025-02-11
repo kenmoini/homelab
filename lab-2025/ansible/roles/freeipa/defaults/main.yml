@@ -1,0 +1,43 @@
+---
+# defaults file for freeipa
+freeipa_service_name: lab-freeipa
+
+freeipa_container_image: quay.io/freeipa/freeipa-server:fedora-41
+
+freeipa_container_ports:
+  - 53/udp # DNS
+  - 53/tcp # DNS
+  - 80/tcp # HTTP
+  - 443/tcp #HTTPS
+  - 389/tcp # LDAP
+  - 636/tcp # LDAPS
+  - 88/tcp # Kerberos
+  - 88/udp # Kerberos
+  - 464/tcp # Kerberos
+  - 464/udp # Kerberos
+  - 123/udp # NTP
+
+freeipa_unattended_install: true # -U
+
+# freeipa_ip_address: 1.2.3.4 # --ip-address
+freeipa_domain: example.com # -n
+
+# -r EXAMPLE.COM
+freeipa_realm: "{{ freeipa_domain | upper }}"
+
+# --hostname=ipa.example.com
+freeipa_hostname: ipa.example.com
+
+# --ds-password --admin-password
+freeipa_password: notpassword
+
+# --setup-dns
+freeipa_internal_dns: false
+# --setup-ca
+freeipa_internal_ca: true
+
+# --no-ntp
+freeipa_internal_ntp: false
+freeipa_ntp_pool: time.apple.com # --ntp-pool
+
+freeipa_mount_host_trusted_certs: true

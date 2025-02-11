@@ -79,7 +79,7 @@
 
     # =============================================================
     # Shared Pod - Homepage
-    deploy_shared_homepage: false
+    deploy_shared_homepage: true
 
     # =============================================================
     # Netbox
@@ -91,6 +91,17 @@
     # StepCA
     deploy_shared_stepca: false
 
+    # =============================================================
+    # FreeIPA
+    deploy_freeipa: true
+    freeipa_ip_address: 192.168.42.13
+    freeipa_hostname: idm.kemo.labs
+
+    # =============================================================
+    # Observability
+    deploy_o11y: false
+    o11y_ip_address: 192.168.42.23
+
   # ===============================================================
   tasks:
     - name: Create Service Containers Directory
@@ -101,8 +112,6 @@
         group: root
       with_items:
         - "{{ container_root_dir }}"
-        - "{{ container_root_dir }}/step-ca"
-        - "{{ container_root_dir }}/o11y"
 
     - name: Deploy PiHole
       when: deploy_pihole|bool
@@ -163,3 +172,13 @@
       when: deploy_shared_stepca|bool
       ansible.builtin.include_role:
         name: shared_pod_stepca
+
+    - name: Deploy Observability
+      when: deploy_o11y|bool
+      ansible.builtin.include_role:
+        name: o11y
+
+    - name: Deploy FreeIPA
+      when: deploy_freeipa|bool
+      ansible.builtin.include_role:
+        name: freeipa

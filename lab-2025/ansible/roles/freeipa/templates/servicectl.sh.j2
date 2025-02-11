@@ -1,0 +1,85 @@
+#!/bin/bash
+
+set -x
+
+CONTAINER_NAME="{{ freeipa_service_name }}"
+CONTAINER_IMAGE="{{ freeipa_container_image }}"
+
+CONTAINER_NETWORK_NAME="{{ podman_bridge_name }}"
+CONTAINER_IP="{{ freeipa_ip_address }}"
+CONTAINER_PORTS="-p {{ freeipa_container_ports | join(' -p ') }}"
+
+CONTAINER_RESOURCE_LIMITS="-m 4096m"
+CONTAINER_VOLUMES="-v {{ container_root_dir }}/${CONTAINER_NAME}/volumes/data:/data:Z"
+
+{% if freeipa_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+CONTAINER_VOLUMES="${CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start" | "init")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${CONTAINER_NAME} container..."
+    /usr/bin/podman kill ${CONTAINER_NAME}
+
+    echo "Removing ${CONTAINER_NAME} container..."
+    /usr/bin/podman rm -f -i ${CONTAINER_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Pulling container image..."
+    podman pull ${CONTAINER_IMAGE}
+
+    if [ -f {{ container_root_dir }}/${CONTAINER_NAME}/volumes/data/build-id ]; then
+      echo "Starting container services..."
+
+      # Deploy container
+      echo -e "Deploying ${CONTAINER_NAME}...\n"
+      podman run -dt --read-only \
+        --name ${CONTAINER_NAME} \
+        -h {{ freeipa_hostname }} \
+        --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
+        --healthcheck-command 'CMD-SHELL curl http://localhost:80 || exit 1' \
+        --healthcheck-interval=15s \
+        --label homepage.group=Services \
+        --label homepage.name="FreeIPA" \
+        --label homepage.icon=freeipa.png \
+        --label homepage.href=https://idm.kemo.labs/ \
+        --label homepage.description='LDAP Identity Management' \
+        ${CONTAINER_RESOURCE_LIMITS} \
+        ${CONTAINER_VOLUMES} \
+        ${CONTAINER_IMAGE}
+    fi
+
+    ;;
+    "init")
+      echo "Initializing container service interface..."
+      podman run -it --rm --read-only \
+        --name ${CONTAINER_NAME} \
+        -h {{ freeipa_hostname }} \
+        --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
+        ${CONTAINER_RESOURCE_LIMITS} \
+        ${CONTAINER_VOLUMES} \
+        ${CONTAINER_IMAGE}
+    ;;
+
+esac
