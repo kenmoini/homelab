@@ -57,6 +57,7 @@ case $1 in
       podman run -dt --read-only \
         --name ${CONTAINER_NAME} \
         -h {{ freeipa_hostname }} \
+        --sysctl net.ipv4.ip_unprivileged_port_start=53 \
         --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
         --healthcheck-command 'CMD-SHELL curl http://localhost:80 || exit 1' \
         --healthcheck-interval=15s \
@@ -76,6 +77,7 @@ case $1 in
       podman run -it --rm --read-only \
         --name ${CONTAINER_NAME} \
         -h {{ freeipa_hostname }} \
+        --sysctl net.ipv4.ip_unprivileged_port_start=53 \
         --network "${CONTAINER_NETWORK_NAME}" --ip "${CONTAINER_IP}" ${CONTAINER_PORTS} \
         ${CONTAINER_RESOURCE_LIMITS} \
         ${CONTAINER_VOLUMES} \
