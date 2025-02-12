@@ -1,0 +1,97 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ pgsql_service_name }}"
+
+PGADMIN_CONTAINER_IMAGE="{{ pgadmin_container_image }}"
+DB_CONTAINER_IMAGE="{{ pgsql_db_container_image }}"
+
+PGADMIN_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}-${SERVICE_NAME}/volumes/pgadmin:/var/lib/pgadmin:Z"
+
+{% if pgadmin_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+#PGADMIN_CONTAINER_VOLUMES="${PGADMIN_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start" | "init")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}-db
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}-db
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Shared PostgreSQL Database..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME}-db \
+      --env-file {{ container_root_dir }}/${POD_NAME}-${SERVICE_NAME}/volumes/secrets/env.db \
+      --healthcheck-command 'CMD-SHELL pg_isready -q -t 2 -p {{ pgsql_db_port }} -d \$POSTGRES_DB -U \$POSTGRES_USER' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Databases \
+      --label homepage.name="Shared Database" \
+      --label homepage.icon=postgres.png \
+      --label homepage.href=https://postgres.apps.kemo.labs \
+      --label homepage.description='Shared PostgreSQL DB' \
+      -v {{ container_root_dir }}/${POD_NAME}-${SERVICE_NAME}/volumes/db-data:/var/lib/postgresql/data:Z \
+      -v {{ container_root_dir }}/{{ shared_pod_name }}-{{ pgsql_service_name }}/volumes/postgresql.conf:/etc/postgresql/postgresql.conf:Z \
+      ${DB_CONTAINER_IMAGE} \
+      postgres -c 'config_file=/etc/postgresql/postgresql.conf'
+
+    if [ -f {{ container_root_dir }}/${POD_NAME}-${SERVICE_NAME}/volumes/pgadmin/pgadmin4.db ]; then
+
+      echo "Starting container services - Shared PostgreSQL Web UI..."
+      /usr/bin/podman run -dt \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-${SERVICE_NAME} \
+        -e PGADMIN_LISTEN_PORT={{ pgadmin_container_port }} \
+        --label homepage.group=Services \
+        --label homepage.name="Shared PostgreSQL" \
+        --label homepage.icon=postgres.png \
+        --label homepage.description='Shared PostgreSQL DB' \
+        ${PGADMIN_CONTAINER_VOLUMES} \
+        ${PGADMIN_CONTAINER_IMAGE}
+    fi
+
+    ;;
+
+  "init")
+      echo "Initializing container services - Shared PostgreSQL Web UI..."
+      read -p 'Initial User Email: ' INITIAL_EMAIL
+      read -sp 'Initial User Password: ' INITIAL_PASSWORD
+      /usr/bin/podman run --rm -it \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-${SERVICE_NAME} \
+        -e PGADMIN_LISTEN_PORT={{ pgadmin_container_port }} \
+        -e PGADMIN_DEFAULT_EMAIL="${INITIAL_EMAIL}" \
+        -e PGADMIN_DEFAULT_PASSWORD="${INITIAL_PASSWORD}" \
+        ${PGADMIN_CONTAINER_VOLUMES} \
+        ${PGADMIN_CONTAINER_IMAGE}
+    ;;
+
+esac

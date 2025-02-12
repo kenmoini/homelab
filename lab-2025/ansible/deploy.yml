@@ -104,7 +104,12 @@
 
     # =============================================================
     # OpenObserve
-    deploy_shared_openobserve: true
+    deploy_shared_openobserve: false
+
+    # =============================================================
+    # Shared DB PGSQL - Change to shared DB services (Adminer, MySQL, PGSQL)
+    deploy_shared_db_pgsql: false
+
 
   # ===============================================================
   tasks:
@@ -191,3 +196,8 @@
       when: deploy_shared_openobserve|bool
       ansible.builtin.include_role:
         name: shared_pod_openobserve
+
+    - name: Deploy Shared DB PGSQL
+      when: deploy_shared_db_pgsql|bool
+      ansible.builtin.include_role:
+        name: shared_db_pgsql

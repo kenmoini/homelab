@@ -1,0 +1,2 @@
+{{ pgadmin_container_image }}
+{{ pgsql_db_container_image }}
