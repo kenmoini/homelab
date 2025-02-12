@@ -79,7 +79,7 @@
 
     # =============================================================
     # Shared Pod - Homepage
-    deploy_shared_homepage: true
+    deploy_shared_homepage: false
 
     # =============================================================
     # Netbox
@@ -93,7 +93,7 @@
 
     # =============================================================
     # FreeIPA
-    deploy_freeipa: true
+    deploy_freeipa: false
     freeipa_ip_address: 192.168.42.13
     freeipa_hostname: idm.kemo.labs
 
@@ -101,6 +101,10 @@
     # Observability
     deploy_o11y: false
     o11y_ip_address: 192.168.42.23
+
+    # =============================================================
+    # OpenObserve
+    deploy_shared_openobserve: true
 
   # ===============================================================
   tasks:
@@ -182,3 +186,8 @@
       when: deploy_freeipa|bool
       ansible.builtin.include_role:
         name: freeipa
+
+    - name: Deploy Shared Pod - OpenObserve
+      when: deploy_shared_openobserve|bool
+      ansible.builtin.include_role:
+        name: shared_pod_openobserve

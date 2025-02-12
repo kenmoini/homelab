@@ -1,0 +1,15 @@
+---
+# defaults file for shared_pod_openobserve
+shared_pod_name: shared-pod
+
+openobserve_service_name: openobserve
+
+openobserve_container_image: public.ecr.aws/zinclabs/openobserve:latest
+
+openobserve_container_port: 5080
+
+openobserve_volume_mounts:
+  - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ openobserve_service_name }}/volumes/data:/data:Z"
+
+# This is defaulted to false since the container isn't UBI based and there needs to be some careful mapping done
+openobserve_mount_host_trusted_certs: false

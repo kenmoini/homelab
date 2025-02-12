@@ -1,0 +1,75 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ openobserve_service_name }}"
+
+OPENOBSERVE_CONTAINER_IMAGE="{{ openobserve_container_image }}"
+OPENOBSERVE_CONTAINER_VOLUMES="{% for mount in openobserve_volume_mounts %}-v {{ mount }} {% endfor %}"
+
+{% if openobserve_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+#OPENOBSERVE_CONTAINER_VOLUMES="${OPENOBSERVE_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start" | "init")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    if [ -f {{ container_root_dir }}/{{ shared_pod_name }}-{{ openobserve_service_name }}/volumes/data/db/metadata.sqlite ]; then
+      echo "Starting container services - OpenObserve..."
+      /usr/bin/podman run -dt \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-${SERVICE_NAME} \
+        -e ZO_DATA_DIR="/data" \
+        --label homepage.group=Services \
+        --label homepage.name="OpenObserve" \
+        --label homepage.icon=openobserve.png \
+        --label homepage.href=https://openobserve.apps.kemo.labs/ \
+        --label homepage.description='Logging and Observability' \
+        ${OPENOBSERVE_CONTAINER_VOLUMES} \
+        ${OPENOBSERVE_CONTAINER_IMAGE}
+    fi
+
+    ;;
+  "init")
+      echo "Initializing container services - OpenObserve..."
+      read -p 'Root User Email: ' ZO_ROOT_USER_EMAIL
+      read -sp 'Root User Password: ' ZO_ROOT_USER_PASSWORD
+      /usr/bin/podman run -dt \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-${SERVICE_NAME} \
+        -e ZO_DATA_DIR="/data" \
+        -e ZO_ROOT_USER_PASSWORD="${ZO_ROOT_USER_PASSWORD}" \
+        -e ZO_ROOT_USER_EMAIL="${ZO_ROOT_USER_EMAIL}" \
+        ${OPENOBSERVE_CONTAINER_VOLUMES} \
+        ${OPENOBSERVE_CONTAINER_IMAGE}
+    ;;
+
+esac
