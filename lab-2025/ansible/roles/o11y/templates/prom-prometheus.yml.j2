@@ -20,6 +20,12 @@ scrape_configs:
 - job_name: alertmanager
   static_configs:
   - targets: ['127.0.0.1:{{ o11y_alertmanager_port }}']
+- job_name: keycloak
+  static_configs:
+  - targets: ['192.168.42.16:9000']
+  scheme: https
+  tls_config:
+    insecure_skip_verify: true
 - job_name: nodeExporter
   static_configs:
   - targets: ['normandy.kemo.labs:9100']
