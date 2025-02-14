@@ -8,7 +8,7 @@ ExecStop={{ container_root_dir }}/{{ shared_pod_name }}/scripts/servicectl.sh st
 ExecStart={{ container_root_dir }}/{{ shared_pod_name }}/scripts/servicectl.sh start
 ExecReload={{ container_root_dir }}/{{ shared_pod_name }}/scripts/servicectl.sh restart
 
-TimeoutStartSec=60
+TimeoutStartSec=120
 Type=forking
 Restart=on-failure
 
