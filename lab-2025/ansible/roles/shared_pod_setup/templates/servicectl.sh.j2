@@ -55,7 +55,7 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
-  "restart" | "start")
+  "pull")
 
     for IMAGE_FILE in ${POD_IMAGE_DIR}/*; do
       IMAGES=$(cat $IMAGE_FILE)
@@ -64,7 +64,9 @@ case $1 in
       done <${IMAGE_FILE}
     done
 
-    sleep 1
+    ;;
+
+  "restart" | "start")
     echo "Creating Pod..."
 
     /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
