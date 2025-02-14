@@ -13,6 +13,7 @@
     # Pihole
     deploy_pihole: false
     pihole_ip_address: 192.168.42.12
+    pihole_container_image: docker-ptc.jfrog.lab.kemo.network/pihole/pihole:latest
     pihole_admin_password: notpassword
     pihole_timezone: America/New_York
     pihole_admin_email: ken@kenmoini.com
@@ -25,6 +26,10 @@
     # PowerDNS
     deploy_pdns: false
     pdns_ip_address: 192.168.42.11
+    pdns_auth_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-auth:latest
+    pdns_recursor_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-recursor:latest
+    pdns_db_image: ghcr.io/kenmoini/lab-powerdns:mysql-latest
+    pdns_ui_image: docker-ptc.jfrog.lab.kemo.network/powerdnsadmin/pda-legacy:latest
 
     pdns_upstream_servers:
       - 192.168.42.12
@@ -40,6 +45,7 @@
     # =============================================================
     # Chronyd - needs host network access
     deploy_chronyd: false
+    chronyd_container_image: docker-ptc.jfrog.lab.kemo.network/publicarray/chrony:latest
     #chronyd_servers:
     #  - 192.168.42.61
     #  - 192.168.42.62
@@ -50,6 +56,7 @@
     deploy_squid: false
     squid_ip_address: 192.168.42.18
     squid_hostname: proxy.kemo.labs
+    squid_container_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/squid-proxy:latest
 
     # =============================================================
     # JFrog Artifactory
@@ -57,11 +64,14 @@
     deploy_jfrog: false
     jfrog_ip_address: 192.168.42.32
     jfrog_hostname: jfrog.lab.kemo.network
+    #haproxy_container_image: docker-ptc.jfrog.lab.kemo.network/library/haproxy:latest
 
     # =============================================================
     # NGINX Proxy Manager
     deploy_nginxpm: false
     npm_ip_address: 192.168.42.25
+    npm_container_image: docker-ptc.jfrog.lab.kemo.network/jc21/nginx-proxy-manager:latest
+    db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
 
     # =============================================================
     # Shared Pod Setup
@@ -71,11 +81,13 @@
     # =============================================================
     # Shared Pod - Dropbox
     deploy_shared_dropbox: false
+    dropbox_container_image: docker-ptc.jfrog.lab.kemo.network/nginx:latest
 
     # =============================================================
     # Shared Pod - Vault
     deploy_shared_vault: false
     vault_ip_address: "{{ shared_pod_ip_address }}"
+    vault_container_image: docker-ptc.jfrog.lab.kemo.network/hashicorp/vault:latest
 
     # =============================================================
     # Shared Pod - Homepage
@@ -86,21 +98,38 @@
     # Create user with podman exec -it lab-netbox-netbox /opt/netbox/netbox/manage.py createsuperuser
     deploy_netbox: false
     netbox_ip_address: 192.168.42.22
+    netbox_container_image: quay-ptc.jfrog.lab.kemo.network/netboxcommunity/netbox:latest
+    netbox_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+    netbox_redis_container_image: docker-ptc.jfrog.lab.kemo.network/valkey/valkey:8.0-alpine
+    netbox_cache_container_image: docker-ptc.jfrog.lab.kemo.network/valkey/valkey:8.0-alpine
 
     # =============================================================
     # StepCA
     deploy_shared_stepca: false
+    stepca_container_image: docker-ptc.jfrog.lab.kemo.network/smallstep/step-ca:latest
 
     # =============================================================
     # FreeIPA
     deploy_freeipa: false
     freeipa_ip_address: 192.168.42.13
     freeipa_hostname: idm.kemo.labs
+    freeipa_container_image: quay-ptc.jfrog.lab.kemo.network/freeipa/freeipa-server:fedora-41
+
+    # =============================================================
+    # Keycloak
+    deploy_shared_keycloak: false
+    keycloak_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
 
     # =============================================================
     # Observability
-    deploy_o11y: false
+    deploy_o11y: true
     o11y_ip_address: 192.168.42.23
+    o11y_grafana_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana:latest
+    o11y_grafana_image_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana-image-renderer:latest
+    o11y_grafana_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+    o11y_alertmanager_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/alertmanager:latest
+    o11y_prometheus_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/prometheus:latest
+    o11y_node_exporter_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/node-exporter:latest
 
     # =============================================================
     # OpenObserve
@@ -109,6 +138,8 @@
     # =============================================================
     # Shared DB PGSQL - Change to shared DB services (Adminer, MySQL, PGSQL)
     deploy_shared_db_pgsql: false
+    pgadmin_container_image: docker-ptc.jfrog.lab.kemo.network/dpage/pgadmin4:latest
+    pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
 
 
   # ===============================================================
@@ -191,6 +222,11 @@
       when: deploy_freeipa|bool
       ansible.builtin.include_role:
         name: freeipa
+
+    - name: Deploy Shared Keycloak
+      when: deploy_shared_keycloak|bool
+      ansible.builtin.include_role:
+        name: shared_pod_keycloak
 
     - name: Deploy Shared Pod - OpenObserve
       when: deploy_shared_openobserve|bool
