@@ -1,0 +1,17 @@
+[Unit]
+Description=Observability Pod
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStop={{ container_root_dir }}/{{ o11y_service_name }}/scripts/servicectl.sh stop
+ExecStart={{ container_root_dir }}/{{ o11y_service_name }}/scripts/servicectl.sh start
+ExecReload={{ container_root_dir }}/{{ o11y_service_name }}/scripts/servicectl.sh restart
+
+TimeoutStart=120
+RestartSec=30
+Type=forking
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

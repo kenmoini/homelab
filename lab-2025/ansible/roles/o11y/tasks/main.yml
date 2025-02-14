@@ -1,0 +1,108 @@
+---
+# tasks file for o11y
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/secrets"
+
+- name: Create Service Containers Directory - Grafana
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: 65534
+    group: 65534
+  with_items:
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/alertmanager-data"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/prom-config"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/prom-data"
+
+- name: Create Service Containers Directory - Grafana
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: 1001
+    group: 0
+    mode: 0775
+  with_items:
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/grafana-config"
+    - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/grafana-data"
+
+- name: Create Service Containers Directory - DB
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/db-data"
+    state: directory
+    owner: 77
+    group: 77
+
+- name: Template prometheus files
+  ansible.builtin.template:
+    src: "{{ t_item }}.j2"
+    dest: "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/prom-config/{{ t_item | replace('prom-', '') }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - "prom-prometheus.yml"
+    - "prom-web.yml"
+  loop_control:
+    loop_var: t_item
+
+- name: Template env files
+  ansible.builtin.template:
+    src: "{{ t_item }}.j2"
+    dest: "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/secrets/{{ t_item }}"
+    owner: root
+    group: root
+    mode: 0644
+  loop:
+    - "env.db"
+  loop_control:
+    loop_var: t_item
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ o11y_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ o11y_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ o11y_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the images
+  containers.podman.podman_image:
+    name: "{{ image_item }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ o11y_grafana_container_image }}"
+    - "{{ o11y_grafana_image_container_image }}"
+    - "{{ o11y_grafana_db_container_image }}"
+    - "{{ o11y_alertmanager_container_image }}"
+    - "{{ o11y_prometheus_container_image }}"
+  loop_control:
+    loop_var: image_item
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ o11y_service_name }}"
+    state: restarted
+    enabled: yes

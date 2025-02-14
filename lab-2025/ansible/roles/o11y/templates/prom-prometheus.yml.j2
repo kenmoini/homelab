@@ -1,0 +1,27 @@
+global:
+  scrape_interval: 10s
+  scrape_timeout: 5s
+  evaluation_interval: 30s
+alerting:
+  alertmanagers:
+  - static_configs:
+    - targets: 
+      - 127.0.0.1:{{ o11y_alertmanager_port }}
+    scheme: http
+    timeout: 10s
+    api_version: v2
+scrape_configs:
+- job_name: prometheus
+  basic_auth:
+    username: '{{ o11y_prometheus_username }}'
+    password: '{{ o11y_prometheus_password }}'
+  static_configs:
+  - targets: ['localhost:9999']
+- job_name: alertmanager
+  static_configs:
+  - targets: ['127.0.0.1:{{ o11y_alertmanager_port }}']
+- job_name: nodeExporter
+  static_configs:
+  - targets: ['normandy.kemo.labs:9100']
+#  - targets: ['suki.kemo.labs:9100']
+#  - targets: ['endurance.kemo.labs:9100']

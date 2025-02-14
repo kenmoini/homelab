@@ -1,0 +1,168 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ o11y_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ o11y_ip_address }}"
+POD_PORTS="-p {{ o11y_grafana_port }} -p {{ o11y_grafana_image_port }} -p {{ o11y_db_port }} -p {{ o11y_alertmanager_port }} -p {{ o11y_prometheus_port }}"
+
+GRAFANA_IMAGE="{{ o11y_grafana_container_image }}"
+GRAFANA_IMAGE_IMAGE="{{ o11y_grafana_image_container_image }}"
+DB_IMAGE="{{ o11y_grafana_db_container_image }}"
+ALERTMANAGER_IMAGE="{{ o11y_alertmanager_container_image }}"
+PROMETHEUS_IMAGE="{{ o11y_prometheus_container_image }}"
+NODE_EXPORTER_IMAGE="{{ o11y_node_exporter_container_image }}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "pull")
+    echo "Pulling container images..."
+    /usr/bin/podman pull ${DB_IMAGE}
+    /usr/bin/podman pull ${PROMETHEUS_IMAGE}
+    /usr/bin/podman pull ${GRAFANA_IMAGE_IMAGE}
+    /usr/bin/podman pull ${GRAFANA_IMAGE}
+    /usr/bin/podman pull ${ALERTMANAGER_IMAGE}
+    /usr/bin/podman pull ${NODE_EXPORTER_IMAGE}
+  ;;
+
+  "restart" | "start")
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    echo "Starting container services - Prometheus..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-prom \
+      --label homepage.group=Observability \
+      --label homepage.name="Prometheus" \
+      --label homepage.icon=prometheus.png \
+      --label homepage.description='Prometheus Metrics TSDB' \
+      --healthcheck-command 'CMD-SHELL wget -q --spider http://{{ o11y_prometheus_username }}:{{ o11y_prometheus_password }}@localhost:9999/-/healthy || exit 1' \
+      --healthcheck-interval=15s \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/prom-config:/etc/prometheus:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/prom-data:/prometheus:Z \
+      ${PROMETHEUS_IMAGE} \
+      --config.file=/etc/prometheus/prometheus.yml \
+      --web.config.file=/etc/prometheus/web.yml \
+      --web.listen-address=0.0.0.0:9999 \
+      --web.console.libraries=/usr/share/prometheus/console_libraries \
+      --web.console.templates=/usr/share/prometheus/consoles \
+      --web.enable-lifecycle \
+      --web.enable-remote-write-receiver \
+      --storage.tsdb.path=/prometheus
+
+    echo "Starting container services - DB..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-db \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.db \
+      --healthcheck-command 'CMD-SHELL pg_isready -q -t 2 -d \$POSTGRES_DB -U \$POSTGRES_USER' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Databases \
+      --label homepage.name="Grafana" \
+      --label homepage.icon=postgres.png \
+      --label homepage.description='PostgreSQL DB for Grafana' \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/var/lib/postgresql/data:Z \
+      ${DB_IMAGE}
+
+    until $(podman healthcheck run ${POD_NAME}-db); do echo "Waiting for healthy db container..." && sleep 1; done
+
+    echo "Starting container services - Grafana Image Renderer..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-grafana-img \
+      --restart always \
+      --healthcheck-command 'CMD-SHELL wget --spider http://127.0.0.1:{{ o11y_grafana_image_port }}/' \
+      --healthcheck-interval=15s \
+      -e HTTP_PORT={{ o11y_grafana_image_port }} \
+      -e ENABLE_METRICS="true" \
+      --label homepage.group=Containers \
+      --label homepage.name="Grafana Image Renderer" \
+      --label homepage.icon=grafana.png \
+      --label homepage.description="Utility container for Grafana" \
+      ${GRAFANA_IMAGE_IMAGE}
+
+    until $(podman healthcheck run ${POD_NAME}-prom); do echo "Waiting for healthy prometheus container..." && sleep 1; done
+    until $(podman healthcheck run ${POD_NAME}-grafana-img); do echo "Waiting for healthy Grafana image renderer container..." && sleep 1; done
+
+    echo "Starting container services - Grafana..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-grafana \
+      --restart always \
+      --healthcheck-command 'CMD-SHELL curl http://127.0.0.1:{{ o11y_grafana_port }}/healthz' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Observability \
+      --label homepage.name="Grafana" \
+      --label homepage.icon=grafana.png \
+      --label homepage.description="Obligatory observability dashboards" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/grafana-config:/opt/bitnami/grafana/conf:Z \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/grafana-data:/opt/bitnami/grafana/data:Z \
+      -e GF_SECURITY_ADMIN_USER={{ o11y_grafana_admin_user }} \
+      -e GF_SECURITY_ADMIN_PASSWORD={{ o11y_grafana_admin_password }} \
+      -e GF_RENDERING_SERVER_URL=http://${POD_NAME}-grafana-img:{{ o11y_grafana_image_port }}/render \
+      -e GF_RENDERING_CALLBACK_URL=http://${POD_NAME}-grafana:{{ o11y_grafana_port }} \
+      ${GRAFANA_IMAGE}
+
+    until $(podman healthcheck run ${POD_NAME}-grafana); do echo "Waiting for healthy Grafana container..." && sleep 1; done
+
+    echo "Starting container services - Alertmanager..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-alertmgr \
+      --restart always \
+      --healthcheck-command 'CMD-SHELL wget --spider http://127.0.0.1:{{ o11y_alertmanager_port }}/' \
+      --healthcheck-interval=15s \
+      --label homepage.group=Observability \
+      --label homepage.name="Alertmanager" \
+      --label homepage.icon=alertmanager.png \
+      --label homepage.description="Pager beeping madness" \
+      -v {{ container_root_dir }}/${POD_NAME}/volumes/alertmanager-data:/alertmanager:Z \
+      ${ALERTMANAGER_IMAGE}
+
+    echo "Starting container services - Node Exporter..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-node-xprtr \
+      --restart always \
+      --net="host" \
+      --pid="host" \
+      --label homepage.group=Containers \
+      --label homepage.name="Node Exporter" \
+      --label homepage.icon=alertmanager.png \
+      --label homepage.description="Normandy Node Exporter" \
+      -v "/:/host:ro,rslave" \
+      ${NODE_EXPORTER_IMAGE} \
+      --path.rootfs=/host
+
+    ;;
+
+esac
