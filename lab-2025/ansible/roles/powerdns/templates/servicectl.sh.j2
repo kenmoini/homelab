@@ -11,12 +11,15 @@ POD_NAME="{{ pdns_service_name }}"
 POD_NETWORK="{{ podman_bridge_name | default('host') }}"
 POD_IP="{{ pdns_ip_address }}"
 
+{% if pdns_enable_db %}
 DB_CONTAINER_SOURCE="{{ pdns_db_image }}"
+DB_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/db:/var/lib/mysql/data:Z"
+{% endif %}
+
 AUTH_CONTAINER_SOURCE="{{ pdns_auth_image }}"
 RECURSOR_CONTAINER_SOURCE="{{ pdns_recursor_image }}"
 UI_CONTAINER_SOURCE="{{ pdns_ui_image }}"
 
-DB_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/db:/var/lib/mysql/data:Z"
 AUTH_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/auth:/etc/pdns:Z"
 RECURSOR_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/recursor:/etc/pdns-recursor:Z"
 UI_VOLUME_MOUNTS="-v {{ container_root_dir }}/${POD_NAME}/volumes/ui:/data:Z"
@@ -57,8 +60,9 @@ case $1 in
 
     echo "Creating Pod..."
 
-    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" -p {{ pdns_auth_port }} -p {{ pdns_recursor_port }} -p {{ pdns_auth_web_port }} -p 3306 -p 80
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" -p {{ pdns_auth_port }} -p {{ pdns_recursor_port }} -p {{ pdns_auth_web_port }}{% if pdns_enable_db %} -p 3306{% endif %} -p 80
 
+{% if pdns_enable_db %}
     echo "Starting container services - DB..."
 
     /usr/bin/podman run -d --pod ${POD_NAME} \
@@ -76,6 +80,7 @@ case $1 in
     fi
 
     /usr/bin/podman exec -it ${POD_NAME}-db sh -c 'mysqlshow -u $MYSQL_USER --password=$MYSQL_PASSWORD $MYSQL_DATABASE'
+{% endif %}
 
     echo "Starting container services - Auth..."
     /usr/bin/podman run -d --pod ${POD_NAME} \

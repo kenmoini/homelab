@@ -10,6 +10,14 @@
     ghcr_pull_auth_file: /opt/ghcr.io.json
 
     # =============================================================
+    # Database Services
+    deploy_db_services: true
+    db_service_ip_address: 192.168.42.14
+    pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+    mysql_db_container_image: docker-ptc.jfrog.lab.kemo.network/mariadb:11-ubi
+    adminer_container_image: docker-ptc.jfrog.lab.kemo.network/adminer:latest
+
+    # =============================================================
     # Pihole
     deploy_pihole: false
     pihole_ip_address: 192.168.42.12
@@ -30,6 +38,10 @@
     pdns_recursor_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-recursor:latest
     pdns_db_image: ghcr.io/kenmoini/lab-powerdns:mysql-latest
     pdns_ui_image: docker-ptc.jfrog.lab.kemo.network/powerdnsadmin/pda-legacy:latest
+
+    pdns_enable_db: false
+    pdns_mysql_host: 192.168.42.14 # db.kemo.labs
+    pdns_mysql_db: pdnsadmin
 
     pdns_upstream_servers:
       - 192.168.42.12
@@ -137,14 +149,14 @@
 
     # =============================================================
     # Shared Pod - Lego Bridge
-    deploy_shared_lego_bridge: true
+    deploy_shared_lego_bridge: false
     legobridge_container_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/lego-bridge:latest
 
     # =============================================================
     # Shared DB PGSQL - Change to shared DB services (Adminer, MySQL, PGSQL)
     deploy_shared_db_pgsql: false
     pgadmin_container_image: docker-ptc.jfrog.lab.kemo.network/dpage/pgadmin4:latest
-    pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+    #pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
 
 
   # ===============================================================
@@ -157,6 +169,11 @@
         group: root
       with_items:
         - "{{ container_root_dir }}"
+
+    - name: Deploy Database Services
+      when: deploy_db_services|bool
+      ansible.builtin.include_role:
+        name: db
 
     - name: Deploy PiHole
       when: deploy_pihole|bool
