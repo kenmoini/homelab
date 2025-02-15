@@ -122,7 +122,7 @@
 
     # =============================================================
     # Observability
-    deploy_o11y: true
+    deploy_o11y: false
     o11y_ip_address: 192.168.42.23
     o11y_grafana_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana:latest
     o11y_grafana_image_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana-image-renderer:latest
@@ -134,6 +134,11 @@
     # =============================================================
     # OpenObserve
     deploy_shared_openobserve: false
+
+    # =============================================================
+    # Shared Pod - Lego Bridge
+    deploy_shared_lego_bridge: true
+    legobridge_container_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/lego-bridge:latest
 
     # =============================================================
     # Shared DB PGSQL - Change to shared DB services (Adminer, MySQL, PGSQL)
@@ -237,3 +242,8 @@
       when: deploy_shared_db_pgsql|bool
       ansible.builtin.include_role:
         name: shared_db_pgsql
+
+    - name: Deploy Shared Pod - Lego Bridge
+      when: deploy_shared_lego_bridge|bool
+      ansible.builtin.include_role:
+        name: shared_pod_lego_bridge

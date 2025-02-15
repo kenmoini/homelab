@@ -1,0 +1,67 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ legobridge_service_name }}"
+
+LEGO_BRIDGE_CONTAINER_IMAGE="{{ legobridge_container_image }}"
+LEGO_BRIDGE_CONTAINER_VOLUMES=""
+
+{% if legobridge_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+LEGO_BRIDGE_CONTAINER_VOLUMES="${LEGO_BRIDGE_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Lego Bridge..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      --healthcheck-command 'CMD-SHELL curl http://localhost:{{ legobridge_container_port }}/healthz || exit 1' \
+      --healthcheck-interval=15s \
+      -e SERVER_PORT="{{ legobridge_container_port }}" \
+      -e PDNS_API_URL="{{ legobridge_pdns_api_uri }}" \
+      -e PDNS_API_KEY="{{ legobridge_pdns_api_key }}" \
+      -e ACME_SERVER_URL="{{ legobridge_acme_server_url }}" \
+      -e EMAIL_ADDRESS="{{ legobridge_acme_email }}" \
+      -e DNS_SERVERS="{{ legobridge_dns_servers | join(',') }}" \
+      -e DNS_SERVER_ONE="{{ legobridge_dns_servers[0] }}"{% if legobridge_dns_servers | length > 1 %} -e DNS_SERVER_TWO="{{ legobridge_dns_servers[1] }}"{% endif %} \
+      --label homepage.group=Services \
+      --label homepage.name="LEGO Bridge" \
+      --label homepage.icon=golang.png \
+      --label homepage.href=https://lego-bridge.apps.kemo.labs/ \
+      --label homepage.description='Bridge between StepCA ACME and PowerDNS' \
+      ${LEGO_BRIDGE_CONTAINER_VOLUMES} ${LEGO_BRIDGE_CONTAINER_IMAGE}
+
+    ;;
+
+esac
