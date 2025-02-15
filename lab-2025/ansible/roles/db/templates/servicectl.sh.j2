@@ -1,0 +1,148 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ db_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ db_service_ip_address }}"
+POD_PORTS="-p {{ db_mysql_port }}/tcp -p {{ db_pgsql_port }}/tcp -p {{ db_adminer_port }}/tcp"
+
+ADMINER_CONTAINER_IMAGE="{{ adminer_container_image }}"
+MYSQL_DB_CONTAINER_IMAGE="{{ mysql_db_container_image }}"
+PGSQL_DB_CONTAINER_IMAGE="{{ pgsql_db_container_image }}"
+
+MYSQL_DB_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/mysql-data:/var/lib/mysql:Z"
+PGSQL_DB_CONTAINER_VOLUMES="-v {{ container_root_dir }}/${POD_NAME}/volumes/pgsql-data:/var/lib/postgresql/data:Z"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start" | "init")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "pull")
+
+      echo "Pulling container images..."
+      /usr/bin/podman pull ${ADMINER_CONTAINER_IMAGE}
+      /usr/bin/podman pull ${MYSQL_DB_CONTAINER_IMAGE}
+      /usr/bin/podman pull ${PGSQL_DB_CONTAINER_IMAGE}
+
+    ;;
+  "init")
+
+      /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+      read -sp 'MySQL Root Password: ' INITIAL_MYSQL_PASS
+      read -sp 'PostgreSQL Root Password: ' INITIAL_PGSQL_PASS
+      read -p 'System Database name: ' SYSTEM_DB_NAME
+
+      if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/mysql-data/mariadb_upgrade_info" ]; then
+        /usr/bin/podman run -dt \
+          --pod ${POD_NAME} \
+          --name ${POD_NAME}-mysql \
+          --healthcheck-command 'CMD-SHELL healthcheck.sh --connect --innodb_initialized' \
+          --healthcheck-interval=15s \
+          --label homepage.group=Databases \
+          --label homepage.name="Shared MySQL (MariaDB) Service" \
+          --label homepage.icon=mysql.png \
+          --label homepage.description='Single Point of Failure' \
+          -e MARIADB_ROOT_PASSWORD=${INITIAL_MYSQL_PASS} \
+          -e MARIADB_DATABASE=${SYSTEM_DB_NAME} \
+          ${MYSQL_DB_CONTAINER_VOLUMES} \
+          ${MYSQL_DB_CONTAINER_IMAGE}
+
+        until $(podman healthcheck run ${POD_NAME}-mysql); do echo "Waiting for healthy MySQL db container..." && sleep 1; done
+      fi
+
+      if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/pgsql-data/PG_VERSION" ]; then
+        /usr/bin/podman run -dt \
+          --pod ${POD_NAME} \
+          --name ${POD_NAME}-pgsql \
+          --healthcheck-command 'CMD-SHELL pg_isready -q -t 2 -d \$POSTGRES_DB -U \$POSTGRES_USER' \
+          --healthcheck-interval=15s \
+          --label homepage.group=Databases \
+          --label homepage.name="Shared PostgreSQL Service" \
+          --label homepage.icon=postgres.png \
+          --label homepage.description='Single Point of Failure' \
+          -e PGUSER=root \
+          -e POSTGRES_DB=${SYSTEM_DB_NAME} \
+          -e POSTGRES_USER=root \
+          -e POSTGRES_PASSWORD=${INITIAL_PGSQL_PASS} \
+          ${PGSQL_DB_CONTAINER_VOLUMES} \
+          ${PGSQL_DB_CONTAINER_IMAGE}
+
+        until $(podman healthcheck run ${POD_NAME}-pgsql); do echo "Waiting for healthy MySQL db container..." && sleep 1; done
+      fi
+
+      $0 restart
+    ;;
+  "restart" | "start")
+
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
+
+    echo "Starting container services - Adminer..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-adminer \
+      --label homepage.group=Services \
+      --label homepage.name="Adminer" \
+      --label homepage.icon=adminer.png \
+      --label homepage.description='Web UI for DBs cause I am noob' \
+      ${ADMINER_CONTAINER_IMAGE}
+
+    if [ -f "{{ container_root_dir }}/${POD_NAME}/volumes/pgsql-data/PG_VERSION" ]; then
+      echo "Starting container services - PostgreSQL..."
+      /usr/bin/podman run -dt \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-pgsql \
+        --label homepage.group=Databases \
+        --label homepage.name="Shared PostgreSQL Service" \
+        --label homepage.icon=postgres.png \
+        --label homepage.description='Single Point of Failure' \
+        --healthcheck-command 'CMD-SHELL pg_isready -q -t 2 -d \$POSTGRES_DB -U \$POSTGRES_USER' \
+        --healthcheck-interval=15s \
+        ${PGSQL_DB_CONTAINER_VOLUMES} \
+        ${PGSQL_DB_CONTAINER_IMAGE}
+    fi
+
+    if [ -f "{{ container_root_dir }}/${POD_NAME}/volumes/mysql-data/mariadb_upgrade_info" ]; then
+      echo "Starting container services - MySQL Database..."
+      /usr/bin/podman run -dt \
+        --pod ${POD_NAME} \
+        --name ${POD_NAME}-mysql \
+        --label homepage.group=Databases \
+        --label homepage.name="Shared MySQL (MariaDB) Service" \
+        --label homepage.icon=mysql.png \
+        --label homepage.description='Single Point of Failure' \
+        --healthcheck-command 'CMD-SHELL healthcheck.sh --connect --innodb_initialized' \
+        --healthcheck-interval=15s \
+        ${MYSQL_DB_CONTAINER_VOLUMES} \
+        ${MYSQL_DB_CONTAINER_IMAGE}
+    fi
+
+    ;;
+
+esac

@@ -1,0 +1,72 @@
+---
+# tasks file for db
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ db_service_name }}"
+    - "{{ container_root_dir }}/{{ db_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ db_service_name }}/volumes"
+  loop_control:
+    loop_var: d_item
+
+- name: Create Service Containers Directory - PGSQL
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ db_service_name }}/volumes/pgsql-data"
+    state: directory
+    # Stupid alpine uses 70:70 instead of 999:999
+    owner: 70
+    group: 70
+
+- name: Create Service Containers Directory - MySQL
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: 999
+    group: 999
+  loop:
+    - "{{ container_root_dir }}/{{ db_service_name }}/volumes/mysql-data"
+  loop_control:
+    loop_var: d_item
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ db_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ db_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ db_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the images
+  containers.podman.podman_image:
+    name: "{{ image_item }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ pgsql_db_container_image }}"
+    - "{{ mysql_db_container_image }}"
+    - "{{ adminer_container_image }}"
+  loop_control:
+    loop_var: image_item
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ db_service_name }}"
+    state: restarted
+    enabled: yes
