@@ -9,9 +9,11 @@ POD_IP="{{ netbox_ip_address }}"
 POD_PORTS="-p {{ netbox_port }}/tcp -p {{ netbox_nginx_status_port }}/tcp"
 
 NETBOX_CONTAINER_IMAGE="{{ netbox_container_image }}"
-DB_CONTAINER_IMAGE="{{ netbox_db_container_image }}"
 REDIS_CONTAINER_IMAGE="{{ netbox_redis_container_image }}"
 CACHE_CONTAINER_IMAGE="{{ netbox_cache_container_image }}"
+{% if netbox_enable_db %}
+DB_CONTAINER_IMAGE="{{ netbox_db_container_image }}"
+{% endif %}
 
 ################################################################################### EXECUTION PREFLIGHT
 ## Ensure there is an action arguement
@@ -42,17 +44,13 @@ case $1 in
   ################################################################################# RESTART/START SERVICE
   "restart" | "start")
 
-    echo "Pulling Netbox container image..."
+    echo "Pulling container images..."
     /usr/bin/podman pull ${NETBOX_CONTAINER_IMAGE}
-
-    echo "Pulling DB container image..."
-    /usr/bin/podman pull ${DB_CONTAINER_IMAGE}
-
-    echo "Pulling Redis container image..."
     /usr/bin/podman pull ${REDIS_CONTAINER_IMAGE}
-
-    echo "Pulling Cache container image..."
     /usr/bin/podman pull ${CACHE_CONTAINER_IMAGE}
+{% if netbox_enable_db %}
+    /usr/bin/podman pull ${DB_CONTAINER_IMAGE}
+{% endif %}
 
     echo "Checking for secret key generation..."
     if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key" ]; then
@@ -64,7 +62,7 @@ case $1 in
     echo "Creating Pod..."
 
     /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}
-
+{% if netbox_enable_db %}
     echo "Starting container services - DB..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -78,7 +76,7 @@ case $1 in
       --label homepage.description='PostgreSQL DB for Netbox' \
       -v {{ container_root_dir }}/${POD_NAME}/volumes/db-data:/var/lib/postgresql/data:Z \
       ${DB_CONTAINER_IMAGE}
-
+{% endif %}
     echo "Starting container services - Redis..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -113,7 +111,9 @@ case $1 in
 
     until $(podman healthcheck run ${POD_NAME}-cache); do echo "Waiting for healthy cache container..." && sleep 1; done
     until $(podman healthcheck run ${POD_NAME}-redis); do echo "Waiting for healthy redis container..." && sleep 1; done
+{% if netbox_enable_db %}
     until $(podman healthcheck run ${POD_NAME}-db); do echo "Waiting for healthy db container..." && sleep 1; done
+{% endif %}
 
     echo "Starting container services - Netbox..."
     /usr/bin/podman run -dt \

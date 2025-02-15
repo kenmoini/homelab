@@ -114,6 +114,9 @@
     netbox_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
     netbox_redis_container_image: docker-ptc.jfrog.lab.kemo.network/valkey/valkey:8.0-alpine
     netbox_cache_container_image: docker-ptc.jfrog.lab.kemo.network/valkey/valkey:8.0-alpine
+    netbox_enable_db: false
+    netbox_db_host: db.kemo.labs
+    netbox_db_password: n0tNetBox
 
     # =============================================================
     # StepCA
