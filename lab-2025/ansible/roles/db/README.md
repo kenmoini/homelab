@@ -10,6 +10,13 @@ GRANT ALL PRIVILEGES ON pdnsadmin.* TO 'pdnsadmin'@'%' WITH GRANT OPTION;
 FLUSH PRIVILEGES;
 ```
 
+```bash
+CREATE DATABASE netbox;
+CREATE USER netbox WITH encrypted password 'n0tNetBox';
+GRANT ALL PRIVILEGES ON DATABASE netbox to netbox;
+ALTER DATABASE netbox OWNER TO netbox;
+```
+
 A brief description of the role goes here.
 
 Requirements
