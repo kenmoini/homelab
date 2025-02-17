@@ -75,6 +75,8 @@ dns:
             value: 192.168.42.3/23
           - name: uap-ac-pro-1
             value: 192.168.42.4/23
+          - name: unas
+            value: 192.168.42.4/23
 
           - name: orbi-router
             value: 192.168.42.7/23
@@ -120,18 +122,6 @@ dns:
 
           - name: npm-ingress
             value: 192.168.42.25/23
-          - name: bazarr
-            value: 192.168.42.25
-          - name: sonarr
-            value: 192.168.42.25
-          - name: radarr
-            value: 192.168.42.25
-          - name: jackett
-            value: 192.168.42.25
-          - name: sabnzbd
-            value: 192.168.42.25
-          - name: deluge-web
-            value: 192.168.42.25
           - name: sso
             value: 192.168.42.25
           - name: '@'
