@@ -1,4 +1,12 @@
 - Entertainment:
+  - Plex:
+      icon: plex.png
+      href: http://plex.kemo.labs:32400/web/
+      description: Media Server
+      widget:
+        type: plex
+        url: http://plex.kemo.labs:32400
+        key: {{ plex_token | default('notplex') }}
   - Deluge:
       icon: deluge.png
       href: https://deluge.apps.kemo.labs/
@@ -6,63 +14,58 @@
       widget:
         type: deluge
         url: https://deluge.apps.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
-  - Sonarr:
-      icon: sonarr.png
-      href: https://sonarr.kemo.labs/
-      description: Series management
-      widget:
-        type: sonarr
-        url: https://sonarr.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
-  - Radarr:
-      icon: radarr.png
-      href: http://radarr.kemo.labs/
-      description: Movie management
-      widget:
-        type: radarr
-        url: http://radarr.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
+        password: {{ deluge_password | default('notdeluge') }}
+        #enableLeechProgress: true
   - Jackett:
       icon: jackett.png
-      href: http://jackett.kemo.labs/
+      href: https://jackett.apps.kemo.labs/
       description: Source Aggrigator
       widget:
         type: jackett
-        url: http://jackett.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
+        url: https://jackett.apps.kemo.labs
+        password: {{ jackett_password | default('notjackett') }}
+  - Sonarr:
+      icon: sonarr.png
+      href: https://sonarr.apps.kemo.labs/
+      description: Series management
+      widget:
+        type: sonarr
+        url: https://sonarr.apps.kemo.labs
+        key: {{ sonarr_key | default('apikeyapikeyapikeyapikeyapikey') }}
+        #enableQueue: true
+  - Radarr:
+      icon: radarr.png
+      href: https://radarr.apps.kemo.labs/
+      description: Movie management
+      widget:
+        type: radarr
+        url: https://radarr.apps.kemo.labs
+        key: {{ radarr_key | default('apikeyapikeyapikeyapikeyapikey') }}
+        #enableQueue: true
   - Overseerr:
       icon: overseerr.png
-      href: http://overseerr.kemo.labs/
+      href: https://overseerr.apps.kemo.labs/
       description: Media request form
       widget:
         type: overseerr
-        url: http://overseerr.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
-  - sabnzbd:
-      icon: sabnzbd.png
-      href: http://sabnzbd.kemo.labs/
-      description: Usenet downloader
-      widget:
-        type: sabnzbd
-        url: http://sabnzbd.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
-  - Plex:
-      icon: plex.png
-      href: http://plex.kemo.labs/
-      description: Media Server
-      widget:
-        type: plex
-        url: http://plex.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
+        url: https://overseerr.apps.kemo.labs
+        key: {{ overseerr_key | default('apikeyapikeyapikeyapikeyapikey') }}
   - Tautulli:
       icon: tautulli.png
-      href: http://tautulli.kemo.labs/
+      href: https://tautulli.apps.kemo.labs/
       description: Media consumption statistics
       widget:
         type: tautulli
-        url: http://tautulli.kemo.labs
-        key: apikeyapikeyapikeyapikeyapikey
+        url: https://tautulli.apps.kemo.labs
+        key: {{ tautulli_key | default('apikeyapikeyapikeyapikeyapikey') }}
+  - sabnzbd:
+      icon: sabnzbd.png
+      href: https://sabnzbd.apps.kemo.labs/
+      description: Usenet downloader
+      widget:
+        type: sabnzbd
+        url: https://sabnzbd.apps.kemo.labs
+        key: {{ sabnzbd_key | default('apikeyapikeyapikeyapikeyapikey') }}
 
 - Management:
   - Normandy:
