@@ -286,9 +286,9 @@ dns:
             anchor: '@'
         A:
           - name: can.vpn
-            value: 51.161.11.55/24
+            value: 51.161.34.76/24
           - name: can-ca.vpn
-            value: 51.161.11.55/24
+            value: 51.161.34.76/24
 
     - name: lab-kemo-network
       zone: lab.kemo.network
