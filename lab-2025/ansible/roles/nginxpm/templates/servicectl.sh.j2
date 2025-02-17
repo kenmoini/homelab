@@ -51,7 +51,7 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
-  "restart" | "start")
+  "pull")
 
     echo "Pulling NGINX Proxy Manager container image..."
     /usr/bin/podman pull ${NPM_CONTAINER_IMAGE}
@@ -59,6 +59,9 @@ case $1 in
     echo "Pulling DB container image..."
     /usr/bin/podman pull ${DB_CONTAINER_IMAGE}
 
+    ;;
+
+  "restart" | "start")
     echo "Creating Pod..."
 
     /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" ${POD_PORTS}

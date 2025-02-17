@@ -42,7 +42,7 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
-  "restart" | "start")
+  "pull")
 
     echo "Pulling container images..."
     /usr/bin/podman pull ${NETBOX_CONTAINER_IMAGE}
@@ -52,6 +52,9 @@ case $1 in
     /usr/bin/podman pull ${DB_CONTAINER_IMAGE}
 {% endif %}
 
+    ;;
+
+  "restart" | "start")
     echo "Checking for secret key generation..."
     if [ ! -f "{{ container_root_dir }}/${POD_NAME}/volumes/secrets/secret_key" ]; then
       echo "Generating secret key..."

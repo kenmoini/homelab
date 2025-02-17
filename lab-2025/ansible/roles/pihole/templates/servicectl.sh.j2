@@ -64,6 +64,13 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
+  "pull")
+
+    echo "Pulling container image..."
+    /usr/bin/podman pull ${CONTAINER_SOURCE}
+
+    ;;
+
   "restart" | "start")
     sleep 3
 

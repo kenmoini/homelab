@@ -47,13 +47,16 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
-  "restart" | "start")
+  "pull")
 
     echo "Pulling JFrog container image..."
     /usr/bin/podman pull ${JFROG_CONTAINER_IMAGE}
 
     echo "Pulling HAProxy container image..."
     /usr/bin/podman pull ${HAPROXY_CONTAINER_IMAGE}
+
+    ;;
+  "restart" | "start")
 
     echo "Creating Pod..."
 

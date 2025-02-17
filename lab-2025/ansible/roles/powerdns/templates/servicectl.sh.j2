@@ -55,6 +55,18 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
+  "pull")
+  
+    echo "Pulling container images..."
+{% if pdns_enable_db %}
+    /usr/bin/podman pull ${DB_CONTAINER_SOURCE}
+{% endif %}
+    /usr/bin/podman pull ${AUTH_CONTAINER_SOURCE}
+    /usr/bin/podman pull ${RECURSOR_CONTAINER_SOURCE}
+    /usr/bin/podman pull ${UI_CONTAINER_SOURCE}
+
+    ;;
+
   "restart" | "start")
     sleep 3
 

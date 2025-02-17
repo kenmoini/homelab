@@ -11,7 +11,7 @@
 
     # =============================================================
     # Database Services
-    deploy_db_services: true
+    deploy_db_services: false
     db_service_ip_address: 192.168.42.14
     pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
     mysql_db_container_image: docker-ptc.jfrog.lab.kemo.network/mariadb:11-ubi

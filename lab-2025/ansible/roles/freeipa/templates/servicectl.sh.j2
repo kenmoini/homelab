@@ -44,11 +44,14 @@ esac
 case $1 in
 
   ################################################################################# RESTART/START SERVICE
-  "restart" | "start")
+  "pull")
 
     echo "Pulling container image..."
     podman pull ${CONTAINER_IMAGE}
 
+    ;;
+
+  "restart" | "start")
     if [ -f {{ container_root_dir }}/${CONTAINER_NAME}/volumes/data/build-id ]; then
       echo "Starting container services..."
 
