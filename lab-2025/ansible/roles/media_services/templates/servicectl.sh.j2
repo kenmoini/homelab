@@ -1,0 +1,239 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ ms_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ ms_ip_address }}"
+
+################################################################################### CONTAINER IMAGES
+PLEX_CONTAINER_IMAGE="{{ ms_plex_container_image }}"
+JACKETT_CONTAINER_IMAGE="{{ ms_jackett_container_image }}"
+FLARESOLVERR_CONTAINER_IMAGE="{{ ms_flaresolverr_container_image }}"
+PROWLARR_CONTAINER_IMAGE="{{ ms_prowlarr_container_image }}"
+RADARR_CONTAINER_IMAGE="{{ ms_radarr_container_image }}"
+SONARR_CONTAINER_IMAGE="{{ ms_sonarr_container_image }}"
+BAZARR_CONTAINER_IMAGE="{{ ms_bazarr_container_image }}"
+OVERSEERR_CONTAINER_IMAGE="{{ ms_overseerr_container_image }}"
+TAUTULLI_CONTAINER_IMAGE="{{ ms_tautulli_container_image }}"
+SABNZBD_CONTAINER_IMAGE="{{ ms_sabnzbd_container_image }}"
+
+################################################################################### CONTAINER ENV/VOLUMES
+SHARED_ENV="-e TZ={{ ms_shared_tz }} -e PUID={{ ms_shared_puid }} -e PGID={{ ms_shared_pgid }}"
+VOLUME_BASE="{{ container_root_dir }}/${POD_NAME}/volumes"
+{% if ms_tv_path %}
+TVSHOWS_VOLUME="-v {{ ms_tv_path }}:/tv:Z"
+{% else %}
+TVSHOWS_VOLUME=""
+{% endif %}
+{% if ms_movie_path %}
+MOVIES_VOLUME="-v /mnt/Media/Movies:/movies:Z"
+{% else %}
+MOVIES_VOLUME=""
+{% endif %}
+{% if ms_music_path %}
+MUSIC_VOLUME="-v /mnt/Media/Music:/music:Z"
+{% else %}
+MUSIC_VOLUME=""
+{% endif %}
+{% if ms_mount_host_certs %}
+CERT_VOLUME="-v /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro"
+{% else %}
+CERT_VOLUME=""
+{% endif %}
+{% if ms_sabnzbd_downloads_path %}
+SABNZBD_DOWNLOADS_VOLUME="-v {{ ms_sabnzbd_downloads_path }}:/downloads:Z"
+{% else %}
+SABNZBD_DOWNLOADS_VOLUME=""
+{% endif %}
+{% if ms_sabnzbd_incomplete_path %}
+SABNZBD_INCOMPLETE_VOLUME="-v {{ ms_sabnzbd_incomplete_path }}:/incomplete-downloads:Z"
+{% else %}
+SABNZBD_INCOMPLETE_VOLUME=""
+{% endif %}
+
+
+PLEX_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/plex-config/config:Z ${TVSHOWS_VOLUME} ${MOVIES_VOLUME} ${MUSIC_VOLUME}"
+JACKETT_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/jackett-config:/config:Z"
+PROWLARR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/prowlarr-config:/config:Z"
+RADARR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/radarr-config:/config:Z ${MOVIES_VOLUME}"
+SONARR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/sonarr-config:/config:Z ${TVSHOWS_VOLUME}"
+BAZARR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/bazarr-config:/config:Z ${MOVIES_VOLUME} ${TVSHOWS_VOLUME}"
+OVERSEERR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/overseerr-config:/config:Z"
+TAUTULLI_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/tautulli-config:/config:Z"
+SABNZBD_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/sabnzbd-config:/config:Z ${SABNZBD_DOWNLOADS_VOLUME} ${SABNZBD_INCOMPLETE_VOLUME}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "pull")
+
+    echo "Pulling container images..."
+    /usr/bin/podman pull ${PLEX_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${JACKETT_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${FLARESOLVERR_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${PROWLARR_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${RADARR_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${SONARR_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${BAZARR_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${OVERSEERR_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${TAUTULLI_CONTAINER_IMAGE}
+    /usr/bin/podman pull ${SABNZBD_CONTAINER_IMAGE}
+
+    ;;
+
+  "restart" | "start")
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} --network ${POD_NETWORK} --ip "${POD_IP}" \
+      {% for port in ms_plex_ports %}-p {{ port }} {% endfor %}\
+      -p {{ ms_jackett_port }} \
+      -p {{ ms_flaresolverr_port }} \
+      -p {{ ms_flaresolverr_metrics_port }} \
+      -p {{ ms_prowlarr_port }} \
+      -p {{ ms_radarr_port }} \
+      -p {{ ms_sonarr_port }} \
+      -p {{ ms_bazarr_port }} \
+      -p {{ ms_overseerr_port }} \
+      -p {{ ms_tautulli_port }} \
+      -p {{ ms_sabnzbd_port }}
+
+    echo "Starting container services - Flaresolverr..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} ${CERT_VOLUME} \
+      --name ${POD_NAME}-flaresolverr \
+      -e LOG_LEVEL=info \
+      -e LOG_HTML=false \
+      -e CAPTCHA_SOLVER=none \
+      -e TZ={{ ms_shared_tz }} \
+      -e PROMETHEUS_ENABLED=true \
+      --label homepage.group=Media \
+      --label homepage.name="Flaresolverr" \
+      --label homepage.icon=postgres.png \
+      --label homepage.description='Proxy for Cloudflare nonsense' \
+      ${FLARESOLVERR_CONTAINER_IMAGE}
+
+    echo "Starting container services - Jackett..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-jackett \
+      --label homepage.group=Media \
+      --label homepage.name="Jackett" \
+      --label homepage.icon=jackett.png \
+      --label homepage.description='RSS Indexer' \
+      ${SHARED_ENV} \
+      ${JACKETT_CONTAINER_VOLUMES} \
+      ${JACKETT_CONTAINER_IMAGE}
+
+    echo "Starting container services - Prowlarr..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-prowlarr \
+      --label homepage.group=Media \
+      --label homepage.name="Prowlarr" \
+      --label homepage.icon=prowlarr.png \
+      --label homepage.description='Also an RSS Indexer' \
+      ${SHARED_ENV} \
+      ${PROWLARR_CONTAINER_VOLUMES} \
+      ${PROWLARR_CONTAINER_IMAGE}
+
+    echo "Starting container services - Overseerr..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-overseerr \
+      --label homepage.group=Media \
+      --label homepage.name="Overseerr" \
+      --label homepage.icon=overseerr.png \
+      --label homepage.description='Media Requests' \
+      ${SHARED_ENV} \
+      ${OVERSEERR_CONTAINER_VOLUMES} \
+      ${OVERSEERR_CONTAINER_IMAGE}
+
+    echo "Starting container services - Tautulli..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-tautulli \
+      --label homepage.group=Media \
+      --label homepage.name="Tautulli" \
+      --label homepage.icon=tautulli.png \
+      --label homepage.description='Media Consumption Statistics' \
+      ${SHARED_ENV} \
+      ${TAUTULLI_CONTAINER_VOLUMES} \
+      ${TAUTULLI_CONTAINER_IMAGE}
+
+    echo "Starting container services - Radarr..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-radarr \
+      --label homepage.group=Media \
+      --label homepage.name="Radarr" \
+      --label homepage.icon=radarr.png \
+      --label homepage.description='Movie library management' \
+      ${SHARED_ENV} \
+      ${RADARR_CONTAINER_VOLUMES} \
+      ${RADARR_CONTAINER_IMAGE}
+
+    echo "Starting container services - Sonarr..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-sonarr \
+      --label homepage.group=Media \
+      --label homepage.name="Sonarr" \
+      --label homepage.icon=sonarr.png \
+      --label homepage.description='TV library management' \
+      ${SHARED_ENV} \
+      ${SONARR_CONTAINER_VOLUMES} \
+      ${SONARR_CONTAINER_IMAGE}
+
+    echo "Starting container services - Bazarr..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-bazarr \
+      --label homepage.group=Media \
+      --label homepage.name="Bazarr" \
+      --label homepage.icon=bazarr.png \
+      --label homepage.description='Subtitle management' \
+      ${SHARED_ENV} \
+      ${BAZARR_CONTAINER_VOLUMES} \
+      ${BAZARR_CONTAINER_IMAGE}
+
+    echo "Starting container services - SABnzbd..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-sabnzbd \
+      --label homepage.group=Media \
+      --label homepage.name="SABnzbd" \
+      --label homepage.icon=sabnzbd.png \
+      --label homepage.description='Usenet downloader' \
+      ${SHARED_ENV} \
+      ${SABNZBD_CONTAINER_VOLUMES} \
+      ${SABNZBD_CONTAINER_IMAGE}
+
+    ;;
+
+esac

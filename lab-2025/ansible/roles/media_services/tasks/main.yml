@@ -1,0 +1,81 @@
+---
+# tasks file for media_services
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ ms_service_name }}"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes"
+  loop_control:
+    loop_var: d_item
+
+- name: Create Service Containers Directory - Shared User
+  ansible.builtin.file:
+    path: "{{ d_item }}"
+    state: directory
+    owner: "{{ ms_shared_puid }}"
+    group: "{{ ms_shared_pgid }}"
+    mode: 0775
+  loop:
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/plex-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/bazarr-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/jackett-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/sonarr-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/radarr-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/overseerr-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/prowlarr-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/tautulli-config"
+    - "{{ container_root_dir }}/{{ ms_service_name }}/volumes/sabnzbd-config"
+  loop_control:
+    loop_var: d_item
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ ms_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ ms_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ ms_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the images
+  containers.podman.podman_image:
+    name: "{{ image_item }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ ms_plex_container_image }}"
+    - "{{ ms_jackett_container_image }}"
+    - "{{ ms_flaresolverr_container_image }}"
+    - "{{ ms_prowlarr_container_image }}"
+    - "{{ ms_radarr_container_image }}"
+    - "{{ ms_sonarr_container_image }}"
+    - "{{ ms_bazarr_container_image }}"
+    - "{{ ms_overseerr_container_image }}"
+    - "{{ ms_tautulli_container_image }}"
+    - "{{ ms_sabnzbd_container_image }}"
+  loop_control:
+    loop_var: image_item
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ ms_service_name }}"
+    state: restarted
+    enabled: yes

@@ -1,0 +1,170 @@
+---
+version: '3'
+services:
+#######################################################################
+# Jackett - https://docs.linuxserver.io/images/docker-jackett/
+  jackett:
+    image: lscr.io/linuxserver/jackett:latest
+    container_name: jackett
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+      - AUTO_UPDATE=true #optional
+      - RUN_OPTS= #optional
+    volumes:
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+      - /opt/media-services/data/jackett-config:/config
+      - /opt/media-services/data/jackett-blackhole:/downloads
+    ports:
+      - 9117:9117
+    restart: unless-stopped
+#######################################################################
+# Flaresolverr
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=America/New_York
+      - PROMETHEUS_ENABLED=true
+    volumes:
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 8191:8191
+      - 8192:8192
+    restart: unless-stopped
+#######################################################################
+# Prowlarr - https://docs.linuxserver.io/images/docker-prowlarr/
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:latest
+    container_name: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/prowlarr-config:/config:Z
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+#######################################################################
+# Radarr - https://docs.linuxserver.io/images/docker-radarr/
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/radarr-config:/config
+      - /mnt/Media/Movies:/movies #optional
+      - /mnt/Media/deluge/complete:/downloads #optional
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+#######################################################################
+# Sonarr - https://docs.linuxserver.io/images/docker-sonarr/
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/sonarr-config:/config
+      - /mnt/Media/TVShows/TVShows:/tv #optional
+      - /mnt/Media/deluge/complete:/downloads #optional
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+#######################################################################
+# Bazarr - https://docs.linuxserver.io/images/docker-bazarr/
+  bazarr:
+    image: lscr.io/linuxserver/bazarr:latest
+    container_name: bazarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/bazarr-config:/config
+      - /mnt/Media/Movies:/movies #optional
+      - /mnt/Media/TVShows/TVShows:/tv #optional
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 6767:6767
+    restart: unless-stopped
+#######################################################################
+# Overseerr - https://docs.linuxserver.io/images/docker-overseerr/
+  overseerr:
+    image: lscr.io/linuxserver/overseerr:latest
+    container_name: overseerr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/overseerr-config:/config
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 5055:5055
+    restart: unless-stopped
+#######################################################################
+# Sabnzbd - https://docs.linuxserver.io/images/docker-sabnzbd/
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/sabnzbd-config:/config
+      - /mnt/Media/sabnzbd/complete:/downloads #optional
+      - /mnt/Media/sabnzbd/incomplete:/incomplete-downloads #optional
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+#######################################################################
+# Tautulli - https://docs.linuxserver.io/images/docker-tautulli/
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/New_York
+    volumes:
+      - /opt/media-services/data/tautulli-config:/config
+      - /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+#######################################################################
+# HAProxy
+#  haproxy:
+#    image: docker.io/haproxy:latest
+#    container_name: haproxy
+##    privileged: true
+#    cap_add:
+#      - NET_BIND_SERVICE
+#      - NET_RAW
+#    environment:
+#      - TZ=America/New_York
+#    volumes:
+#      - /opt/media-services/ingress/config:/usr/local/etc/haproxy
+#      - /opt/media-services/ingress/certs:/usr/local/etc/certs
+#    ports:
+#      - 80:80
+#      - 443:443
+#    restart: unless-stopped

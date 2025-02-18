@@ -1,0 +1,47 @@
+---
+# defaults file for media_services
+# https://hub.docker.com/r/linuxserver/plex
+
+ms_service_name: media-svc
+
+ms_plex_container_image: lscr.io/linuxserver/plex:latest
+ms_jackett_container_image: lscr.io/linuxserver/jackett:latest
+ms_flaresolverr_container_image: ghcr.io/flaresolverr/flaresolverr:latest
+ms_prowlarr_container_image: lscr.io/linuxserver/prowlarr:latest
+ms_radarr_container_image: lscr.io/linuxserver/radarr:latest
+ms_sonarr_container_image: lscr.io/linuxserver/sonarr:latest
+ms_bazarr_container_image: lscr.io/linuxserver/bazarr:latest
+ms_overseerr_container_image: ghcr.io/sct/overseerr:latest
+ms_tautulli_container_image: ghcr.io/linuxserver/tautulli:latest
+ms_sabnzbd_container_image: lscr.io/linuxserver/sabnzbd:latest
+
+ms_shared_puid: 988
+ms_shared_pgid: 988
+ms_shared_tz: "America/New_York"
+
+ms_plex_ports:
+  - 32400:32400
+  - 1900:1900/udp
+  - 5353:5353/udp
+  - 8324:8324
+  - 32410:32410/udp
+  - 32412:32412/udp
+  - 32413:32413/udp
+  - 32414:32414/udp
+  - 32469:32469
+
+ms_jackett_port: 9117
+ms_flaresolverr_port: 8191
+ms_flaresolverr_metrics_port: 8192
+ms_prowlarr_port: 9696
+ms_radarr_port: 7878
+ms_sonarr_port: 8989
+ms_bazarr_port: 6767
+ms_overseerr_port: 5055
+ms_tautulli_port: 8181
+ms_sabnzbd_port: 8080
+
+ms_mount_host_certs: true
+
+ms_plex_attach_dri: true # --device=/dev/dri:/dev/dri
+ms_plex_update_method: docker
