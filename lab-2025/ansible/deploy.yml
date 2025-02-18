@@ -32,7 +32,7 @@
 
     # =============================================================
     # PowerDNS
-    deploy_pdns: false
+    deploy_pdns: true
     pdns_ip_address: 192.168.42.11
     pdns_auth_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-auth:latest
     pdns_recursor_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-recursor:latest
@@ -161,6 +161,16 @@
     pgadmin_container_image: docker-ptc.jfrog.lab.kemo.network/dpage/pgadmin4:latest
     #pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
 
+    # =============================================================
+    # Media Services
+    deploy_media_services: false
+    ms_ip_address: 192.168.42.20
+    ms_tv_path: /mnt/Media/TVShows
+    ms_movie_path: /mnt/Media/Movies
+    ms_music_path: /mnt/Media/Music
+    ms_sabnzbd_downloads_path: /mnt/Media/sabnzbd/complete
+    ms_sabnzbd_incomplete_path: /mnt/Media/sabnzbd/incomplete
+
 
   # ===============================================================
   tasks:
@@ -267,3 +277,8 @@
       when: deploy_shared_lego_bridge|bool
       ansible.builtin.include_role:
         name: shared_pod_lego_bridge
+
+    - name: Deploy Media Services
+      when: deploy_media_services|bool
+      ansible.builtin.include_role:
+        name: media_services
