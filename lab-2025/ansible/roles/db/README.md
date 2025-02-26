@@ -4,6 +4,7 @@ Role Name
 Creating Databases/Users
 
 ```bash
+# mySQL
 CREATE DATABASE pdnsadmin;
 CREATE USER 'pdnsadmin'@'%' IDENTIFIED BY 'pdnsadmin';
 GRANT ALL PRIVILEGES ON pdnsadmin.* TO 'pdnsadmin'@'%' WITH GRANT OPTION;
@@ -11,7 +12,9 @@ FLUSH PRIVILEGES;
 ```
 
 ```bash
+# PGSQL
 CREATE DATABASE netbox;
+# Switch to DB
 CREATE USER netbox WITH encrypted password 'n0tNetBox';
 GRANT ALL PRIVILEGES ON DATABASE netbox to netbox;
 ALTER DATABASE netbox OWNER TO netbox;
