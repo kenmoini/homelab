@@ -1,0 +1,2 @@
+{{ gitea_container_image }}
+{{ gitea_db_container_image }}

@@ -1,0 +1,101 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ gitea_service_name }}"
+
+GITEA_CONTAINER_IMAGE="{{ gitea_container_image }}"
+GITEA_CONTAINER_VOLUMES="-v {{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}/volumes/gitea:/data:Z -v /etc/localtime:/etc/localtime:ro"
+
+{% if gitea_enable_db %}
+DB_CONTAINER_IMAGE="{{ gitea_db_container_image }}"
+DB_CONTAINER_VOLUMES="-v {{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}/volumes/db:/var/lib/postgresql/data:Z"
+{% endif %}
+
+DB_HOST="{{ gitea_db_host }}"
+DB_PORT="{{ gitea_db_port }}"
+DB_USERNAME="{{ gitea_db_username }}"
+DB_PASSWORD="{{ gitea_db_password }}"
+DB_NAME="{{ gitea_db_name }}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+{% if gitea_enable_db %}
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}-db
+{% endif %}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+{% if gitea_enable_db %}
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}-db
+{% endif %}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+{% if gitea_enable_db %}
+    echo "Starting container services - Gitea DB..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME}-db \
+      -e POSTGRES_USER=${DB_USERNAME} \
+      -e POSTGRES_PASSWORD=${DB_PASSWORD} \
+      -e POSTGRES_DB=${DB_NAME} \
+      --label homepage.group=Databases \
+      --label homepage.name=Gitea \
+      --label homepage.icon=postgres.png \
+      --label homepage.description='Gitea PostgreSQL DB' \
+      ${DB_CONTAINER_VOLUMES} \
+      ${DB_CONTAINER_IMAGE}
+{% endif %}
+
+    echo "Starting container services - Gitea..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      --restart=always --cap-add CAP_NET_BIND_SERVICE \
+      -e GITEA__database__DB_TYPE=postgres \
+      -e GITEA__database__HOST=${DB_HOST}:${DB_PORT} \
+      -e GITEA__database__USER=${DB_USERNAME} \
+      -e GITEA__database__PASSWD=${DB_PASSWORD} \
+      -e GITEA__database__NAME=${DB_NAME} \
+      -e GITEA__server__DOMAIN={{ gitea_hostname }} \
+      -e GITEA__server__SSH_DOMAIN={{ gitea_hostname }} \
+      -e GITEA__server__HTTP_PORT={{ gitea_container_port }} \
+      -e GITEA__server__ROOT_URL={{ gitea_protocol }}://{{ gitea_hostname }} \
+      -e GITEA__server__SSH_PORT={{ gitea_ssh_container_port }} \
+      -e GITEA__server__SSH_LISTEN_PORT={{ gitea_ssh_container_port }} \
+      -e USER_UID=1000 \
+      -e USER_GID=1000 \
+      --label homepage.group=Services \
+      --label homepage.name="Gitea" \
+      --label homepage.icon=gitea.png \
+      --label homepage.href={{ gitea_protocol }}://{{ gitea_hostname }} \
+      --label homepage.description="Source Code Management" \
+      ${GITEA_CONTAINER_VOLUMES} \
+      ${GITEA_CONTAINER_IMAGE}
+
+    ;;
+
+esac

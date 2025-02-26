@@ -1,0 +1,24 @@
+---
+# defaults file for shared_pod_gitea
+
+shared_pod_name: shared-pod
+
+gitea_service_name: gitea
+
+gitea_container_image: docker.io/gitea/gitea:1.23.1
+gitea_container_port: 3333
+gitea_ssh_container_port: 2222
+
+gitea_db_container_image: docker.io/postgres:latest
+gitea_db_container_port: 5432
+
+gitea_enable_db: true
+gitea_db_host: "{{ shared_pod_name }}-{{ gitea_service_name }}-db"
+gitea_db_port: "{{ gitea_db_container_port }}"
+gitea_db_username: gitea
+gitea_db_password: notgitea
+gitea_db_name: gitea
+
+gitea_mount_host_trusted_certs: true
+
+gitea_protocol: http

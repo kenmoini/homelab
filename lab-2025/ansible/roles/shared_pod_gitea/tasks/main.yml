@@ -1,0 +1,72 @@
+---
+# tasks file for shared_pod_gitea
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ i_path }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}/volumes/"
+  loop_control:
+    loop_var: i_path
+
+- name: Create Service Containers Directory - DB
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}/volumes/db"
+    state: directory
+    owner: 999
+    group: 999
+
+- name: Create Service Containers Directory - Gitea
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ gitea_service_name }}/volumes/gitea"
+    state: directory
+    owner: 1000
+    group: 1000
+
+- name: Template Shared Pod deployment files - containerctl.j2
+  ansible.builtin.template:
+    src: containerctl.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ gitea_service_name }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template Shared Pod Images
+  ansible.builtin.template:
+    src: images
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images/{{ gitea_service_name }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Touch a file for the ports for containers
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports/{{ i_port }}"
+    state: touch
+    owner: root
+    group: root
+  loop:
+    - "{{ gitea_ssh_container_port }}-tcp"
+    - "{{ gitea_container_port }}-tcp"
+  loop_control:
+    loop_var: i_port
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ i_image }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ gitea_container_image }}"
+  loop_control:
+    loop_var: i_image
+
+- name: Restart Shared Pod Service
+  ansible.builtin.shell:
+    cmd: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ gitea_service_name }}.sh restart"

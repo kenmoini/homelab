@@ -32,7 +32,7 @@
 
     # =============================================================
     # PowerDNS
-    deploy_pdns: true
+    deploy_pdns: false
     pdns_ip_address: 192.168.42.11
     pdns_auth_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-auth:latest
     pdns_recursor_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-recursor:latest
@@ -171,6 +171,15 @@
     ms_sabnzbd_downloads_path: /mnt/Media/sabnzbd/complete
     ms_sabnzbd_incomplete_path: /mnt/Media/sabnzbd/incomplete
 
+    # =============================================================
+    # Shared Pod - Gitea
+    deploy_shared_gitea: false
+    gitea_hostname: gitea.apps.kemo.labs
+    gitea_protocol: https
+    gitea_enable_db: false
+    gitea_db_host: db.kemo.labs
+    gitea_db_password: n0tGitea
+
 
   # ===============================================================
   tasks:
@@ -282,3 +291,8 @@
       when: deploy_media_services|bool
       ansible.builtin.include_role:
         name: media_services
+
+    - name: Deploy Shared Pod - Gitea
+      when: deploy_shared_gitea|bool
+      ansible.builtin.include_role:
+        name: shared_pod_gitea
