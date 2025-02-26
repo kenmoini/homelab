@@ -86,6 +86,7 @@ case $1 in
       -e GITEA__server__ROOT_URL={{ gitea_protocol }}://{{ gitea_hostname }} \
       -e GITEA__server__SSH_PORT={{ gitea_ssh_container_port }} \
       -e GITEA__server__SSH_LISTEN_PORT={{ gitea_ssh_container_port }} \
+      -e GITEA__server__START_SSH_SERVER=true \
       -e USER_UID=1000 \
       -e USER_GID=1000 \
       --label homepage.group=Services \
