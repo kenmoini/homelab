@@ -15,7 +15,7 @@ ms_overseerr_container_image: ghcr.io/sct/overseerr:latest
 ms_tautulli_container_image: ghcr.io/linuxserver/tautulli:latest
 ms_sabnzbd_container_image: lscr.io/linuxserver/sabnzbd:latest
 
-ms_shared_puid: 988
+ms_shared_puid: 1000
 ms_shared_pgid: 988
 ms_shared_tz: "America/New_York"
 
