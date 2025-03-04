@@ -47,7 +47,7 @@ case $1 in
       --label homepage.group=Services \
       --label homepage.name=Vault \
       --label homepage.icon=vault.png \
-      --label homepage.href=https://vault.apps.kemo.labs/ \
+      --label homepage.href=https://vault.{{ app_wildcard_base }}/ \
       --label homepage.description='Secrets Management' \
       ${VAULT_CONTAINER_VOLUMES} \
       ${VAULT_CONTAINER_IMAGE} \

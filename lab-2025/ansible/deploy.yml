@@ -9,6 +9,8 @@
 
     ghcr_pull_auth_file: /opt/ghcr.io.json
 
+    app_wildcard_base: apps.kemo.labs
+
     # =============================================================
     # Database Services
     deploy_db_services: false
@@ -83,7 +85,12 @@
     deploy_nginxpm: false
     npm_ip_address: 192.168.42.25
     npm_container_image: docker-ptc.jfrog.lab.kemo.network/jc21/nginx-proxy-manager:latest
-    db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
+    #db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
+    npm_enable_db: false
+    npm_db_host: db.kemo.labs
+    npm_db_password: n0tNGINXProxyManager
+    npm_db_username: nginxpm
+    npm_db_name: nginxpm
 
     # =============================================================
     # Shared Pod Setup
@@ -137,7 +144,7 @@
 
     # =============================================================
     # Observability
-    deploy_o11y: false
+    deploy_o11y: true
     o11y_ip_address: 192.168.42.23
     o11y_grafana_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana:latest
     o11y_grafana_image_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana-image-renderer:latest
@@ -145,6 +152,12 @@
     o11y_alertmanager_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/alertmanager:latest
     o11y_prometheus_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/prometheus:latest
     o11y_node_exporter_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/node-exporter:latest
+
+    o11y_enable_db: false
+    o11y_db_host: db.kemo.labs
+    o11y_db_username: grafana
+    o11y_db_password: n0tGraf4n4
+    o11y_db_name: grafana
 
     # =============================================================
     # OpenObserve
@@ -157,8 +170,8 @@
 
     # =============================================================
     # Shared DB PGSQL - Change to shared DB services (Adminer, MySQL, PGSQL)
-    deploy_shared_db_pgsql: false
-    pgadmin_container_image: docker-ptc.jfrog.lab.kemo.network/dpage/pgadmin4:latest
+    #deploy_shared_db_pgsql: false
+    #pgadmin_container_image: docker-ptc.jfrog.lab.kemo.network/dpage/pgadmin4:latest
     #pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
 
     # =============================================================
@@ -174,7 +187,7 @@
     # =============================================================
     # Shared Pod - Gitea
     deploy_shared_gitea: false
-    gitea_hostname: gitea.apps.kemo.labs
+    gitea_hostname: "gitea.{{ app_wildcard_base }}"
     gitea_protocol: https
     gitea_enable_db: false
     gitea_db_host: db.kemo.labs
@@ -277,10 +290,10 @@
       ansible.builtin.include_role:
         name: shared_pod_openobserve
 
-    - name: Deploy Shared DB PGSQL
-      when: deploy_shared_db_pgsql|bool
-      ansible.builtin.include_role:
-        name: shared_db_pgsql
+    #- name: Deploy Shared DB PGSQL
+    #  when: deploy_shared_db_pgsql|bool
+    #  ansible.builtin.include_role:
+    #    name: shared_db_pgsql
 
     - name: Deploy Shared Pod - Lego Bridge
       when: deploy_shared_lego_bridge|bool

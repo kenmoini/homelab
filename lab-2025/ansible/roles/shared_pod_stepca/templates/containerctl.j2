@@ -49,7 +49,7 @@ case $1 in
         --label homepage.group=Services \
         --label homepage.name=StepCA \
         --label homepage.icon=step-ca.png \
-        --label homepage.href=https://step-ca.apps.kemo.labs/ \
+        --label homepage.href=https://step-ca.{{ app_wildcard_base }}/ \
         --label homepage.description='ACME and Dynamic Credential Provider' \
         ${STEPCA_CONTAINER_VOLUMES} \
         ${STEPCA_CONTAINER_IMAGE}

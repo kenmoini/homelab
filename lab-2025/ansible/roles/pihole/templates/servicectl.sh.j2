@@ -84,10 +84,10 @@ case $1 in
       --hostname "${CONTAINER_NAME}" \
       -m 1g --cpus 0.500 \
       ${ENV_VARS} \
-      --label homepage.group=Networking \
+      --label homepage.group=DNS \
       --label homepage.name=PiHole \
       --label homepage.icon=pi-hole.png \
-      --label homepage.href=https://pihole.apps.kemo.labs \
+      --label homepage.href=https://pihole.{{ app_wildcard_base }} \
       --label homepage.description="DNS-based Ad Blocking" \
       --label homepage.widget.type=pihole \
       --label homepage.widget.url=http://pihole.kemo.labs \

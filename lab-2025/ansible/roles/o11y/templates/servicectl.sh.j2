@@ -10,10 +10,12 @@ POD_PORTS="-p {{ o11y_grafana_port }} -p {{ o11y_grafana_image_port }} -p {{ o11
 
 GRAFANA_IMAGE="{{ o11y_grafana_container_image }}"
 GRAFANA_IMAGE_IMAGE="{{ o11y_grafana_image_container_image }}"
-DB_IMAGE="{{ o11y_grafana_db_container_image }}"
 ALERTMANAGER_IMAGE="{{ o11y_alertmanager_container_image }}"
 PROMETHEUS_IMAGE="{{ o11y_prometheus_container_image }}"
 NODE_EXPORTER_IMAGE="{{ o11y_node_exporter_container_image }}"
+{% if o11y_enable_db %}
+DB_IMAGE="{{ o11y_grafana_db_container_image }}"
+{% endif %}
 
 ################################################################################### EXECUTION PREFLIGHT
 ## Ensure there is an action arguement
@@ -44,7 +46,9 @@ case $1 in
   ################################################################################# RESTART/START SERVICE
   "pull")
     echo "Pulling container images..."
+{% if o11y_enable_db %}
     /usr/bin/podman pull ${DB_IMAGE}
+{% endif %}
     /usr/bin/podman pull ${PROMETHEUS_IMAGE}
     /usr/bin/podman pull ${GRAFANA_IMAGE_IMAGE}
     /usr/bin/podman pull ${GRAFANA_IMAGE}
@@ -64,6 +68,7 @@ case $1 in
       --label homepage.group=Observability \
       --label homepage.name="Prometheus" \
       --label homepage.icon=prometheus.png \
+      --label homepage.href=https://prometheus.{{ app_wildcard_base }} \
       --label homepage.description='Prometheus Metrics TSDB' \
       --healthcheck-command 'CMD-SHELL wget -q --spider http://{{ o11y_prometheus_username }}:{{ o11y_prometheus_password }}@localhost:9999/-/healthy || exit 1' \
       --healthcheck-interval=15s \
@@ -79,6 +84,7 @@ case $1 in
       --web.enable-remote-write-receiver \
       --storage.tsdb.path=/prometheus
 
+{% if o11y_enable_db %}
     echo "Starting container services - DB..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -94,6 +100,7 @@ case $1 in
       ${DB_IMAGE}
 
     until $(podman healthcheck run ${POD_NAME}-db); do echo "Waiting for healthy db container..." && sleep 1; done
+{% endif %}
 
     echo "Starting container services - Grafana Image Renderer..."
     /usr/bin/podman run -dt \
@@ -104,7 +111,7 @@ case $1 in
       --healthcheck-interval=15s \
       -e HTTP_PORT={{ o11y_grafana_image_port }} \
       -e ENABLE_METRICS="true" \
-      --label homepage.group=Containers \
+      --label homepage.group=Misc \
       --label homepage.name="Grafana Image Renderer" \
       --label homepage.icon=grafana.png \
       --label homepage.description="Utility container for Grafana" \
@@ -123,13 +130,11 @@ case $1 in
       --label homepage.group=Observability \
       --label homepage.name="Grafana" \
       --label homepage.icon=grafana.png \
+      --label homepage.href=https://grafana.{{ app_wildcard_base }} \
       --label homepage.description="Obligatory observability dashboards" \
       -v {{ container_root_dir }}/${POD_NAME}/volumes/grafana-config:/opt/bitnami/grafana/conf:Z \
       -v {{ container_root_dir }}/${POD_NAME}/volumes/grafana-data:/opt/bitnami/grafana/data:Z \
-      -e GF_SECURITY_ADMIN_USER={{ o11y_grafana_admin_user }} \
-      -e GF_SECURITY_ADMIN_PASSWORD={{ o11y_grafana_admin_password }} \
-      -e GF_RENDERING_SERVER_URL=http://${POD_NAME}-grafana-img:{{ o11y_grafana_image_port }}/render \
-      -e GF_RENDERING_CALLBACK_URL=http://${POD_NAME}-grafana:{{ o11y_grafana_port }} \
+      --env-file {{ container_root_dir }}/${POD_NAME}/volumes/secrets/env.grafana \
       ${GRAFANA_IMAGE}
 
     until $(podman healthcheck run ${POD_NAME}-grafana); do echo "Waiting for healthy Grafana container..." && sleep 1; done
@@ -144,6 +149,7 @@ case $1 in
       --label homepage.group=Observability \
       --label homepage.name="Alertmanager" \
       --label homepage.icon=alertmanager.png \
+      --label homepage.href=https://alertmanager.{{ app_wildcard_base }} \
       --label homepage.description="Pager beeping madness" \
       -v {{ container_root_dir }}/${POD_NAME}/volumes/alertmanager-data:/alertmanager:Z \
       ${ALERTMANAGER_IMAGE}

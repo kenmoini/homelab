@@ -56,7 +56,7 @@ case $1 in
       --label homepage.group=Databases \
       --label homepage.name="Shared Database" \
       --label homepage.icon=postgres.png \
-      --label homepage.href=https://postgres.apps.kemo.labs \
+      --label homepage.href=https://postgres.{{ app_wildcard_base }} \
       --label homepage.description='Shared PostgreSQL DB' \
       -v {{ container_root_dir }}/${POD_NAME}-${SERVICE_NAME}/volumes/db-data:/var/lib/postgresql/data:Z \
       -v {{ container_root_dir }}/{{ shared_pod_name }}-{{ pgsql_service_name }}/volumes/postgresql.conf:/etc/postgresql/postgresql.conf:Z \

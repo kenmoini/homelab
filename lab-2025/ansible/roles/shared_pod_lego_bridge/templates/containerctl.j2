@@ -58,7 +58,7 @@ case $1 in
       --label homepage.group=Services \
       --label homepage.name="LEGO Bridge" \
       --label homepage.icon=golang.png \
-      --label homepage.href=https://lego-bridge.apps.kemo.labs/ \
+      --label homepage.href=https://lego-bridge.{{ app_wildcard_base }}/ \
       --label homepage.description='Bridge between StepCA ACME and PowerDNS' \
       ${LEGO_BRIDGE_CONTAINER_VOLUMES} ${LEGO_BRIDGE_CONTAINER_IMAGE}
 

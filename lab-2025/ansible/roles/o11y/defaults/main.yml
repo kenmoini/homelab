@@ -16,6 +16,8 @@ o11y_alertmanager_container_image: quay.io/prometheus/alertmanager:latest
 o11y_prometheus_container_image: quay.io/prometheus/prometheus:latest
 o11y_node_exporter_container_image: quay.io/prometheus/node-exporter:latest
 
+o11y_enable_db: true
+o11y_db_host: localhost
 o11y_db_username: o11y
 o11y_db_password: noto11y
 o11y_db_name: o11y

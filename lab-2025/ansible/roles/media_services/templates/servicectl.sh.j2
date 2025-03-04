@@ -23,17 +23,17 @@ SABNZBD_CONTAINER_IMAGE="{{ ms_sabnzbd_container_image }}"
 SHARED_ENV="-e TZ={{ ms_shared_tz }} -e PUID={{ ms_shared_puid }} -e PGID={{ ms_shared_pgid }}"
 VOLUME_BASE="{{ container_root_dir }}/${POD_NAME}/volumes"
 {% if ms_tv_path %}
-TVSHOWS_VOLUME="-v {{ ms_tv_path }}:/tv:Z"
+TVSHOWS_VOLUME="-v {{ ms_tv_path }}:/tv"
 {% else %}
 TVSHOWS_VOLUME=""
 {% endif %}
 {% if ms_movie_path %}
-MOVIES_VOLUME="-v /mnt/Media/Movies:/movies:Z"
+MOVIES_VOLUME="-v /mnt/Media/Movies:/movies"
 {% else %}
 MOVIES_VOLUME=""
 {% endif %}
 {% if ms_music_path %}
-MUSIC_VOLUME="-v /mnt/Media/Music:/music:Z"
+MUSIC_VOLUME="-v /mnt/Media/Music:/music"
 {% else %}
 MUSIC_VOLUME=""
 {% endif %}
@@ -43,16 +43,15 @@ CERT_VOLUME="-v /etc/pki/tls/cert.pem:/etc/ssl/cert.pem:ro"
 CERT_VOLUME=""
 {% endif %}
 {% if ms_sabnzbd_downloads_path %}
-SABNZBD_DOWNLOADS_VOLUME="-v {{ ms_sabnzbd_downloads_path }}:/downloads:Z"
+SABNZBD_DOWNLOADS_VOLUME="-v {{ ms_sabnzbd_downloads_path }}:/downloads"
 {% else %}
 SABNZBD_DOWNLOADS_VOLUME=""
 {% endif %}
 {% if ms_sabnzbd_incomplete_path %}
-SABNZBD_INCOMPLETE_VOLUME="-v {{ ms_sabnzbd_incomplete_path }}:/incomplete-downloads:Z"
+SABNZBD_INCOMPLETE_VOLUME="-v {{ ms_sabnzbd_incomplete_path }}:/incomplete-downloads"
 {% else %}
 SABNZBD_INCOMPLETE_VOLUME=""
 {% endif %}
-
 
 PLEX_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/plex-config/config:Z ${TVSHOWS_VOLUME} ${MOVIES_VOLUME} ${MUSIC_VOLUME}"
 JACKETT_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/jackett-config:/config:Z"
@@ -134,8 +133,10 @@ case $1 in
       -e PROMETHEUS_ENABLED=true \
       --label homepage.group=Media \
       --label homepage.name="Flaresolverr" \
-      --label homepage.icon=postgres.png \
+      --label homepage.icon=cloudflare.png \
       --label homepage.description='Proxy for Cloudflare nonsense' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_flaresolverr_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${FLARESOLVERR_CONTAINER_IMAGE}
 
     echo "Starting container services - Jackett..."
@@ -145,7 +146,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Jackett" \
       --label homepage.icon=jackett.png \
+      --label homepage.href=https://jackett.{{ app_wildcard_base }} \
       --label homepage.description='RSS Indexer' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_jackett_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${JACKETT_CONTAINER_VOLUMES} \
       ${JACKETT_CONTAINER_IMAGE}
@@ -157,7 +161,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Prowlarr" \
       --label homepage.icon=prowlarr.png \
+      --label homepage.href=https://prowlarr.{{ app_wildcard_base }} \
       --label homepage.description='Also an RSS Indexer' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_prowlarr_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${PROWLARR_CONTAINER_VOLUMES} \
       ${PROWLARR_CONTAINER_IMAGE}
@@ -169,6 +176,7 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Overseerr" \
       --label homepage.icon=overseerr.png \
+      --label homepage.href=https://overseerr.{{ app_wildcard_base }} \
       --label homepage.description='Media Requests' \
       ${SHARED_ENV} \
       ${OVERSEERR_CONTAINER_VOLUMES} \
@@ -181,7 +189,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Tautulli" \
       --label homepage.icon=tautulli.png \
+      --label homepage.href=https://tautulli.{{ app_wildcard_base }} \
       --label homepage.description='Media Consumption Statistics' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_tautulli_port }} || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${TAUTULLI_CONTAINER_VOLUMES} \
       ${TAUTULLI_CONTAINER_IMAGE}
@@ -193,7 +204,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Radarr" \
       --label homepage.icon=radarr.png \
+      --label homepage.href=https://radarr.{{ app_wildcard_base }} \
       --label homepage.description='Movie library management' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_radarr_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${RADARR_CONTAINER_VOLUMES} \
       ${RADARR_CONTAINER_IMAGE}
@@ -205,7 +219,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Sonarr" \
       --label homepage.icon=sonarr.png \
+      --label homepage.href=https://sonarr.{{ app_wildcard_base }} \
       --label homepage.description='TV library management' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_sonarr_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${SONARR_CONTAINER_VOLUMES} \
       ${SONARR_CONTAINER_IMAGE}
@@ -217,7 +234,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="Bazarr" \
       --label homepage.icon=bazarr.png \
+      --label homepage.href=https://bazarr.{{ app_wildcard_base }} \
       --label homepage.description='Subtitle management' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_bazarr_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${BAZARR_CONTAINER_VOLUMES} \
       ${BAZARR_CONTAINER_IMAGE}
@@ -229,7 +249,10 @@ case $1 in
       --label homepage.group=Media \
       --label homepage.name="SABnzbd" \
       --label homepage.icon=sabnzbd.png \
+      --label homepage.href=https://sabnzbd.{{ app_wildcard_base }} \
       --label homepage.description='Usenet downloader' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:{{ ms_sabnzbd_port }}/health || exit 1' \
+      --healthcheck-interval=15s \
       ${SHARED_ENV} \
       ${SABNZBD_CONTAINER_VOLUMES} \
       ${SABNZBD_CONTAINER_IMAGE}

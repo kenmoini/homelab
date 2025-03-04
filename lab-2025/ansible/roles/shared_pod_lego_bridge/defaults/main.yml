@@ -14,7 +14,7 @@ legobridge_mount_host_trusted_certs: true
 
 legobridge_pdns_api_key: supersecretapikey
 legobridge_pdns_api_uri: http://ns1.kemo.labs:8081
-legobridge_acme_server_url: https://step-ca.apps.kemo.labs/acme/acme/directory
+legobridge_acme_server_url: "https://step-ca.{{ app_wildcard_base }}/acme/acme/directory"
 legobridge_acme_email: ken@kenmoini.com
 legobridge_dns_servers:
   - 192.168.42.11

@@ -130,7 +130,7 @@ case $1 in
       --health-start-period=5s \
       --label homepage.group=Networking \
       --label homepage.name="Netbox DDI" \
-      --label homepage.href="https://netbox.apps.kemo.labs" \
+      --label homepage.href="https://netbox.{{ app_wildcard_base }}" \
       --label homepage.icon=netbox.png \
       --label homepage.description="Netbox DDI/IPAM" \
       -v {{ container_root_dir }}/${POD_NAME}/volumes/netbox-config:/etc/netbox/config:Z \

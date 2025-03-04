@@ -9,79 +9,79 @@
 #        key: {{ plex_token | default('notplex') }}
 #  - Deluge:
 #      icon: deluge.png
-#      href: https://deluge.apps.kemo.labs/
+#      href: https://deluge.{{ app_wildcard_base }}/
 #      description: Torrent downloader
 #      widget:
 #        type: deluge
-#        url: https://deluge.apps.kemo.labs
+#        url: https://deluge.{{ app_wildcard_base }}
 #        password: {{ deluge_password | default('notdeluge') }}
 #        #enableLeechProgress: true
 #  - Jackett:
 #      icon: jackett.png
-#      href: https://jackett.apps.kemo.labs/
+#      href: https://jackett.{{ app_wildcard_base }}/
 #      description: Source Aggrigator
 #      widget:
 #        type: jackett
-#        url: https://jackett.apps.kemo.labs
+#        url: https://jackett.{{ app_wildcard_base }}
 #        password: {{ jackett_password | default('notjackett') }}
 #  - Sonarr:
 #      icon: sonarr.png
-#      href: https://sonarr.apps.kemo.labs/
+#      href: https://sonarr.{{ app_wildcard_base }}/
 #      description: Series management
 #      widget:
 #        type: sonarr
-#        url: https://sonarr.apps.kemo.labs
+#        url: https://sonarr.{{ app_wildcard_base }}
 #        key: {{ sonarr_key | default('apikeyapikeyapikeyapikeyapikey') }}
 #        #enableQueue: true
 #  - Radarr:
 #      icon: radarr.png
-#      href: https://radarr.apps.kemo.labs/
+#      href: https://radarr.{{ app_wildcard_base }}/
 #      description: Movie management
 #      widget:
 #        type: radarr
-#        url: https://radarr.apps.kemo.labs
+#        url: https://radarr.{{ app_wildcard_base }}
 #        key: {{ radarr_key | default('apikeyapikeyapikeyapikeyapikey') }}
 #        #enableQueue: true
 #  - Bazarr:
 #      icon: bazarr.png
-#      href: https://bazarr.apps.kemo.labs/
+#      href: https://bazarr.{{ app_wildcard_base }}/
 #      description: Subtitle management
 #      widget:
 #        type: bazarr
-#        url: https://bazarr.apps.kemo.labs
+#        url: https://bazarr.{{ app_wildcard_base }}
 #        key: {{ bazarr_key | default('apikeyapikeyapikeyapikeyapikey') }}
 #        #enableQueue: true
 #  - Overseerr:
 #      icon: overseerr.png
-#      href: https://overseerr.apps.kemo.labs/
+#      href: https://overseerr.{{ app_wildcard_base }}/
 #      description: Media request form
 #      widget:
 #        type: overseerr
-#        url: https://overseerr.apps.kemo.labs
+#        url: https://overseerr.{{ app_wildcard_base }}
 #        key: {{ overseerr_key | default('apikeyapikeyapikeyapikeyapikey') }}
 #  - Prowlarr:
 #      icon: prowlarr.png
-#      href: https://prowlarr.apps.kemo.labs/
+#      href: https://prowlarr.{{ app_wildcard_base }}/
 #      description: Arr indexing
 #      widget:
 #        type: prowlarr
-#        url: https://prowlarr.apps.kemo.labs
+#        url: https://prowlarr.{{ app_wildcard_base }}
 #        key: {{ prowlarr_key | default('apikeyapikeyapikeyapikeyapikey') }}
 #  - Tautulli:
 #      icon: tautulli.png
-#      href: https://tautulli.apps.kemo.labs/
+#      href: https://tautulli.{{ app_wildcard_base }}/
 #      description: Media consumption statistics
 #      widget:
 #        type: tautulli
-#        url: https://tautulli.apps.kemo.labs
+#        url: https://tautulli.{{ app_wildcard_base }}
 #        key: {{ tautulli_key | default('apikeyapikeyapikeyapikeyapikey') }}
 #  - sabnzbd:
 #      icon: sabnzbd.png
-#      href: https://sabnzbd.apps.kemo.labs/
+#      href: https://sabnzbd.{{ app_wildcard_base }}/
 #      description: Usenet downloader
 #      widget:
 #        type: sabnzbd
-#        url: https://sabnzbd.apps.kemo.labs
+#        url: https://sabnzbd.{{ app_wildcard_base }}
 #        key: {{ sabnzbd_key | default('apikeyapikeyapikeyapikeyapikey') }}
 
 - Management:
@@ -114,7 +114,7 @@
 
 - Services:
   - Home Assistant:
-      href: https://home-assistant.apps.kemo.labs/
+      href: https://home-assistant.{{ app_wildcard_base }}/
       description: Home Automation and Integration Platform
       icon: home-assistant.png
   #- Identity Management:

@@ -48,10 +48,10 @@ case $1 in
         --pod ${POD_NAME} \
         --name ${POD_NAME}-${SERVICE_NAME} \
         -e ZO_DATA_DIR="/data" \
-        --label homepage.group=Services \
+        --label homepage.group=Observability \
         --label homepage.name="OpenObserve" \
         --label homepage.icon=openobserve.png \
-        --label homepage.href=https://openobserve.apps.kemo.labs/ \
+        --label homepage.href=https://openobserve.{{ app_wildcard_base }}/ \
         --label homepage.description='Logging and Observability' \
         ${OPENOBSERVE_CONTAINER_VOLUMES} \
         ${OPENOBSERVE_CONTAINER_IMAGE}

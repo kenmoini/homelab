@@ -13,7 +13,7 @@
     - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes"
     - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/secrets"
 
-- name: Create Service Containers Directory - Grafana
+- name: Create Service Containers Directory - Alertmanager and Prometheus
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -36,6 +36,7 @@
     - "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/grafana-data"
 
 - name: Create Service Containers Directory - DB
+  when: o11y_enable_db
   ansible.builtin.file:
     path: "{{ container_root_dir }}/{{ o11y_service_name }}/volumes/db-data"
     state: directory
@@ -64,6 +65,7 @@
     mode: 0644
   loop:
     - "env.db"
+    - "env.grafana"
   loop_control:
     loop_var: t_item
 

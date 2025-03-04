@@ -5,6 +5,8 @@ npm_service_name: lab-nginxpm
 npm_container_image: docker.io/jc21/nginx-proxy-manager:latest
 db_container_image: docker.io/postgres:latest
 
+npm_enable_db: true
+npm_db_host: localhost
 npm_db_username: npm
 npm_db_password: npm
 npm_db_name: npm
