@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ iperf3_service_name }}"
+IPERF3_CONTAINER_IMAGE="{{ iperf3_container_image }}"
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - iPerf3..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      --label homepage.group=Containers \
+      --label homepage.name=iPerf3 \
+      --label homepage.icon=iperf3.png \
+      --label homepage.description='Network Speed Testing on 192.168.42.16:5201' \
+      ${IPERF3_CONTAINER_IMAGE} -s
+
+    ;;
+
+esac

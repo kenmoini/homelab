@@ -1,0 +1,44 @@
+---
+# tasks file for shared_pod_iperf3
+
+- name: Template Shared Pod deployment files - containerctl.j2
+  ansible.builtin.template:
+    src: containerctl.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ iperf3_service_name }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template Shared Pod Images
+  ansible.builtin.template:
+    src: images
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images/{{ iperf3_service_name }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Touch a file for the ports
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports/{{ i_port }}"
+    state: touch
+    owner: root
+    group: root
+  loop:
+    - "{{ iperf3_container_port }}-tcp"
+    - "{{ iperf3_container_port }}-udp"
+  loop_control:
+    loop_var: i_port
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ i_image }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ iperf3_container_image }}"
+  loop_control:
+    loop_var: i_image
+
+- name: Restart Shared Pod
+  ansible.builtin.shell:
+    cmd: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ iperf3_service_name }}.sh restart"

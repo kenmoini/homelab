@@ -1,0 +1,8 @@
+---
+# defaults file for shared_pod_iperf3
+shared_pod_name: shared-pod
+
+iperf3_service_name: iperf3
+
+iperf3_container_image: docker.io/networkstatic/iperf3:latest
+iperf3_container_port: 5201

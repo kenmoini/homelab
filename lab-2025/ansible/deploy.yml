@@ -144,7 +144,7 @@
 
     # =============================================================
     # Observability
-    deploy_o11y: true
+    deploy_o11y: false
     o11y_ip_address: 192.168.42.23
     o11y_grafana_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana:latest
     o11y_grafana_image_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana-image-renderer:latest
@@ -193,6 +193,10 @@
     gitea_db_host: db.kemo.labs
     gitea_db_password: n0tGitea
 
+    # =============================================================
+    # Shared Pod - iPerf3
+    deploy_shared_iperf3: false
+    iperf3_container_image: docker-ptc.jfrog.lab.kemo.network/networkstatic/iperf3:latest
 
   # ===============================================================
   tasks:
@@ -309,3 +313,8 @@
       when: deploy_shared_gitea|bool
       ansible.builtin.include_role:
         name: shared_pod_gitea
+
+    - name: Deploy Shared Pod - iPerf3
+      when: deploy_shared_iperf3|bool
+      ansible.builtin.include_role:
+        name: shared_pod_iperf3
