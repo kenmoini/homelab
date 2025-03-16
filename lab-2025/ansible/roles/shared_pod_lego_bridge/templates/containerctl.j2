@@ -57,7 +57,7 @@ case $1 in
       -e DNS_SERVER_ONE="{{ legobridge_dns_servers[0] }}"{% if legobridge_dns_servers | length > 1 %} -e DNS_SERVER_TWO="{{ legobridge_dns_servers[1] }}"{% endif %} \
       --label homepage.group=Services \
       --label homepage.name="LEGO Bridge" \
-      --label homepage.icon=golang.png \
+      --label homepage.icon='http://cdn-icons-png.flaticon.com/512/1207/1207234.png' \
       --label homepage.href=https://lego-bridge.{{ app_wildcard_base }}/ \
       --label homepage.description='Bridge between StepCA ACME and PowerDNS' \
       ${LEGO_BRIDGE_CONTAINER_VOLUMES} ${LEGO_BRIDGE_CONTAINER_IMAGE}
