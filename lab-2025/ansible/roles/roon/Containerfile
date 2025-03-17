@@ -1,0 +1,17 @@
+FROM quay.io/fedora/fedora:42
+
+ENV ROOT_DATAROOT /var/roon
+
+WORKDIR /opt
+
+RUN dnf update -y \
+ && dnf install -y wget curl tar ffmpeg cifs-utils which alsa-lib glibc libicu-devel \
+ && wget https://download.roonlabs.com/builds/RoonServer_linuxx64.tar.bz2 \
+ && tar -xvf RoonServer_linuxx64.tar.bz2 \
+ && rm -f RoonServer_linuxx64.tar.bz2
+
+CMD "/opt/RoonServer/start.sh"
+
+EXPOSE 9003/udp
+# 9100 - 9200 TCP
+# Multicast and anycast
