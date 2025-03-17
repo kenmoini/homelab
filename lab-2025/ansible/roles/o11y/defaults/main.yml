@@ -8,6 +8,7 @@ o11y_grafana_image_port: 8081
 o11y_db_port: 5432
 o11y_alertmanager_port: 9093
 o11y_prometheus_port: 9999
+o11y_node_exporter_port: 9099
 
 o11y_grafana_container_image: docker.io/bitnami/grafana:latest
 o11y_grafana_image_container_image: docker.io/bitnami/grafana-image-renderer:latest

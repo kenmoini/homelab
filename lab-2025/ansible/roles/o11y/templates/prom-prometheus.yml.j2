@@ -28,6 +28,6 @@ scrape_configs:
     insecure_skip_verify: true
 - job_name: nodeExporter
   static_configs:
-  - targets: ['normandy.kemo.labs:9100']
-#  - targets: ['suki.kemo.labs:9100']
-#  - targets: ['endurance.kemo.labs:9100']
+  - targets: ['normandy.kemo.labs:{{ o11y_node_exporter_port }}']
+#  - targets: ['suki.kemo.labs:{{ o11y_node_exporter_port }}']
+#  - targets: ['endurance.kemo.labs:{{ o11y_node_exporter_port }}']

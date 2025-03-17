@@ -1,0 +1,81 @@
+#!/bin/bash
+
+set -x
+
+###################################################################################
+# VARIABLES
+###################################################################################
+
+CONTAINER_NAME="{{ roon_server_service_name }}"
+CONTAINER_SOURCE="{{ roon_server_container_image }}"
+
+NETWORK="--network {{ podman_bridge_name | default('host') }}"
+
+#CONTAINER_PORTS="-p 9003/udp -p 9100-9200/tcp -p 80/tcp"
+#NETWORK="${NETWORK} ${CONTAINER_PORTS}"
+
+VOLUME_MOUNTS="-v {{ container_root_dir }}/${CONTAINER_NAME}/volumes/roon-data:/var/roon:Z"
+
+###################################################################################
+# EXECUTION PREFLIGHT
+###################################################################################
+
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Stopping ${CONTAINER_NAME} container..."
+    /usr/bin/podman kill ${CONTAINER_NAME}
+
+    echo "Removing ${CONTAINER_NAME} container..."
+    /usr/bin/podman rm -f -i ${CONTAINER_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "pull")
+
+    echo "Pulling container image..."
+    /usr/bin/podman pull ${CONTAINER_SOURCE}
+
+    ;;
+
+  "restart" | "start")
+    sleep 3
+
+    echo "Starting container services..."
+
+    # Deploy ${CONTAINER_NAME} container
+    echo -e "Deploying ${CONTAINER_NAME}...\n"
+
+    /usr/bin/podman create \
+      --name "${CONTAINER_NAME}" \
+      --hostname "${CONTAINER_NAME}" \
+      --label homepage.group=Media \
+      --label homepage.name=Roon \
+      --label homepage.icon=roon.png \
+      --label homepage.href=https://roon.{{ app_wildcard_base }} \
+      --label homepage.description="Music unification" \
+      ${NETWORK} \
+      ${VOLUME_MOUNTS} \
+      ${CONTAINER_SOURCE}
+
+    /usr/bin/podman start ${CONTAINER_NAME}
+
+    ;;
+
+esac

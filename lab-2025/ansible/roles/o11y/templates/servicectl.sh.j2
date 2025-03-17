@@ -167,7 +167,8 @@ case $1 in
       --label homepage.description="Normandy Node Exporter" \
       -v "/:/host:ro,rslave" \
       ${NODE_EXPORTER_IMAGE} \
-      --path.rootfs=/host
+      --path.rootfs=/host \
+      --web.listen-address=:{{ o11y_node_exporter_port }}
 
     ;;
 

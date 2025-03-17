@@ -185,6 +185,11 @@
     ms_sabnzbd_incomplete_path: /mnt/Media/sabnzbd/incomplete
 
     # =============================================================
+    # Roon Server
+    # Doesn't work with homeassistant?!?!?!?!?
+    deploy_roon: false
+
+    # =============================================================
     # Shared Pod - Gitea
     deploy_shared_gitea: false
     gitea_hostname: "gitea.{{ app_wildcard_base }}"
@@ -308,6 +313,14 @@
       when: deploy_media_services|bool
       ansible.builtin.include_role:
         name: media_services
+
+    - name: Deploy Roon Server
+      when: deploy_roon|bool
+      ansible.builtin.include_role:
+        name: roon
+      vars:
+        # Roon needs either host networking or to be stuffed in a VM cause it needs any/multi/unicast
+        podman_bridge_name: host
 
     - name: Deploy Shared Pod - Gitea
       when: deploy_shared_gitea|bool
