@@ -53,7 +53,7 @@ SABNZBD_INCOMPLETE_VOLUME="-v {{ ms_sabnzbd_incomplete_path }}:/incomplete-downl
 SABNZBD_INCOMPLETE_VOLUME=""
 {% endif %}
 
-PLEX_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/plex-config/config:Z ${TVSHOWS_VOLUME} ${MOVIES_VOLUME} ${MUSIC_VOLUME}"
+PLEX_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/plex-config:/config:Z ${TVSHOWS_VOLUME} ${MOVIES_VOLUME} ${MUSIC_VOLUME}"
 JACKETT_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/jackett-config:/config:Z"
 PROWLARR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/prowlarr-config:/config:Z"
 RADARR_CONTAINER_VOLUMES="${CERT_VOLUME} -v ${VOLUME_BASE}/radarr-config:/config:Z ${MOVIES_VOLUME}"
@@ -256,6 +256,23 @@ case $1 in
       ${SHARED_ENV} \
       ${SABNZBD_CONTAINER_VOLUMES} \
       ${SABNZBD_CONTAINER_IMAGE}
+
+    echo "Starting container services - Plex..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-plex \
+      --label homepage.group=Media \
+      --label homepage.name="Plex" \
+      --label homepage.icon=plex.png \
+      --label homepage.href=https://app.plex.tv \
+      --label homepage.description='Media Server of Ultimate Winning' \
+      --healthcheck-command 'CMD-SHELL curl -s http://localhost:32400/web/ || exit 1' \
+      --healthcheck-interval=15s \
+      --device=/dev/dri:/dev/dri \
+      ${SHARED_ENV} \
+      -e VERSION=public \
+      ${PLEX_CONTAINER_VOLUMES} \
+      ${PLEX_CONTAINER_IMAGE}
 
     ;;
 
