@@ -1,0 +1,18 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for shared_pod_sushy
+shared_pod_name: shared-pod
+
+sushy_service_name: sushy
+
+sushy_container_image: quay.io/metal3-io/sushy-tools:latest
+sushy_container_port: 8111
+
+sushy_volume_mounts:
+  - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ sushy_service_name }}/volumes/config:/etc/sushy:Z"
+  - /var/run/libvirt:/var/run/libvirt:Z
+
+sushy_container_cmd: "sushy-emulator -i :: -p {{ sushy_container_port }} --config /etc/sushy/sushy-emulator.conf"
+
+# This is defaulted to false since the container isn't UBI based and there needs to be some careful mapping done
+sushy_mount_host_trusted_certs: true

@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -x
+
+POD_NAME="{{ shared_pod_name }}"
+SERVICE_NAME="{{ sushy_service_name }}"
+
+SUSHY_CONTAINER_IMAGE="{{ sushy_container_image | default('quay.io/metal3-io/sushy-tools:latest') }}"
+SUSHY_CONTAINER_VOLUMES="{% for mount in sushy_volume_mounts %}-v {{ mount }} {% endfor %}"
+SUSHY_CONTAINER_COMMAND="sushy-emulator -i :: -p {{ sushy_container_port }} --config /etc/sushy/sushy-emulator.conf"
+
+{% if sushy_mount_host_trusted_certs %}
+HOST_TRUSTED_CERTS="-v /etc/pki/ca-trust/extracted:/etc/pki/ca-trust/extracted:ro"
+SUSHY_CONTAINER_VOLUMES="${SUSHY_CONTAINER_VOLUMES} ${HOST_TRUSTED_CERTS}"
+{% endif %}
+
+################################################################################### EXECUTION PREFLIGHT
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Killing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman kill ${POD_NAME}-${SERVICE_NAME}
+
+    echo "Removing ${POD_NAME}-${SERVICE_NAME} container..."
+    /usr/bin/podman rm -f -i ${POD_NAME}-${SERVICE_NAME}
+    ;;
+
+esac
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "restart" | "start")
+
+    echo "Starting container services - Homepage..."
+    /usr/bin/podman run -dt \
+      --pod ${POD_NAME} \
+      --name ${POD_NAME}-${SERVICE_NAME} \
+      ${SUSHY_CONTAINER_VOLUMES} \
+      ${SUSHY_CONTAINER_IMAGE} \
+      ${SUSHY_CONTAINER_COMMAND}
+
+    ;;
+
+esac
