@@ -203,6 +203,10 @@
     deploy_shared_iperf3: false
     iperf3_container_image: docker-ptc.jfrog.lab.kemo.network/networkstatic/iperf3:latest
 
+    # =============================================================
+    # Shared Pod - Sushy Tools
+    deploy_shared_sushy_tools: true
+
   # ===============================================================
   tasks:
     - name: Create Service Containers Directory
@@ -331,3 +335,8 @@
       when: deploy_shared_iperf3|bool
       ansible.builtin.include_role:
         name: shared_pod_iperf3
+
+    - name: Deploy Shared Pod - Sushy Tools
+      when: deploy_shared_sushy_tools|bool
+      ansible.builtin.include_role:
+        name: shared_pod_sushy
