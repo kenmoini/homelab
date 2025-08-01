@@ -1,0 +1,150 @@
+
+dns:
+  ##########################################################################################
+  # acls is a list of named network groups
+  acls:
+    # privatenets can respond to internal client queries with an internal IP
+    - name: privatenets
+      networks:
+        - 10.0.0.0/8
+        - 172.16.0.0/12
+        - 192.168.0.0/16
+        - localhost
+        - localnets
+    # externalwan would match any external network
+    - name: externalwan
+      networks:
+        - any
+        - "!10.0.0.0/8"
+        - "!172.16.0.0/12"
+        - "!192.168.0.0/16"
+        - "!localhost"
+        - "!localnets"
+
+  ##########################################################################################
+  # views is a list of named views that glue together acls and zones
+  views:
+    - name: internalNetworks
+      # acls is a list of the named ACLs from above that this view will be applied to
+      acls:
+        - privatenets
+      # recursion is a boolean that controls whether this view will allow recursive DNS queries
+      recursion: true
+      # if recursion is true, then you can provide forwarders to be used for recursive queries 
+      #  such as a PiHole DNS server or just something like Cloudflare DNS at 1.0.0.1 and 1.1.1.1
+      forwarders:
+        - 192.168.90.12
+      # forwarded_zones is a list of zones and their authoritative nameservers to forward queries to
+      forwarded_zones:
+        - zone: kemo.edge
+          forwarders:
+            - 192.168.99.10
+      # zones is a list of named Zones to associate with this view
+      zones:
+        - moini-mannor
+
+
+  ##########################################################################################
+  ## Assumes two authoritative dns servers at dns-core-1.example.labs and dns-core-2.example.labs serving both zones
+  zones:
+    - name: moini-mannor
+      zone: moini.mannor
+      primary_dns_server: ns1.moini.mannor
+      default_ttl: 3600
+      records:
+        NS:
+          - name: ns1
+            ttl: 86400
+            domain: moini.mannor.
+            anchor: '@'
+        A:
+          - name: udmp
+            value: 192.168.90.1/23
+
+          - name: ns1
+            value: 192.168.90.2/23
+          - name: pihole
+            value: 192.168.90.3/23
+
+          - name: usw-pro-agg
+            value: 192.168.90.5/23
+          - name: usw-24-poe-pro-max
+            value: 192.168.90.6/23
+
+          - name: unifi-rps
+            value: 192.168.90.7/23
+          - name: unifi-nvr
+            value: 192.168.90.8/23
+          - name: unas-pro
+            value: 192.168.90.9/23
+          - name: u7-pro-1
+            value: 192.168.90.10/23
+          - name: u7-pro-2
+            value: 192.168.90.11/23
+          - name: u7-pro-3
+            value: 192.168.90.12/23
+
+          - name: orbi-router
+            value: 192.168.90.15/23
+          - name: orbi-sat-1
+            value: 192.168.90.16/23
+          - name: orbi-sat-2
+            value: 192.168.90.17/23
+          - name: orbi-sat-3
+            value: 192.168.90.18/23
+
+          - name: doorbell
+            value: 192.168.90.20/23
+
+          - name: galactica
+            value: 192.168.90.50/23
+          - name: galactica-jetkvm
+            value: 192.168.90.51/23
+          - name: citadel
+            value: 192.168.90.55/23
+          - name: citadel-jetkvm
+            value: 192.168.90.56/23
+
+          - name: plex
+            value: 192.168.90.60/23
+          - name: db
+            value: 192.168.90.61/23
+          - name: deluge
+            value: 192.168.90.62/23
+          - name: shared-pod
+            value: 192.168.90.66/23
+          - name: metrics
+            value: 192.168.90.67/23
+
+          - name: npm
+            value: 192.168.90.69/23
+          - name: "*.apps"
+            value: 192.168.90.69
+
+          - name: '@'
+            value: 192.168.90.69
+          - name: www
+            value: 192.168.90.69
+          - name: status
+            value: 192.168.90.69
+
+          - name: home-assistant
+            value: 192.168.90.70/23
+          - name: 3cx-sbc
+            value: 192.168.90.71/23
+
+        SRV:
+
+          - name: _ntp._udp
+            value: ntp.moini.mannor.
+            port: 123
+            priority: 0
+            ttl: 6400
+            weight: 100
+
+          - name: _chrony._udp
+            value: ntp.moini.mannor.
+            port: 323
+            priority: 0
+            ttl: 6400
+            weight: 100
