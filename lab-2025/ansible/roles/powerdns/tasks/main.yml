@@ -94,14 +94,21 @@
     name: "{{ ctnr_img }}"
     pull: yes
     force: yes
-    auth_file: "{{ ghcr_pull_auth_file }}"
+    auth_file: "{{ ghcr_pull_auth_file | default(omit) }}"
   loop:
     - "{{ pdns_auth_image }}"
     - "{{ pdns_recursor_image }}"
     - "{{ pdns_ui_image }}"
-    - "{{ pdns_db_image }}"
   loop_control:
     loop_var: ctnr_img
+
+- name: Pre-pull the DB image
+  when: pdns_enable_db | bool
+  containers.podman.podman_image:
+    name: "{{ pdns_db_image }}"
+    pull: yes
+    force: yes
+    auth_file: "{{ ghcr_pull_auth_file | default(omit) }}"
 
 - name: Start CaaS
   ansible.builtin.service:

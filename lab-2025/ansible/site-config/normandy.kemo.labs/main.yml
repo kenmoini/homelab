@@ -1,0 +1,85 @@
+---
+ghcr_pull_auth_file: /opt/ghcr.io.json
+
+db_service_ip_address: 192.168.42.14
+pgsql_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+mysql_db_container_image: docker-ptc.jfrog.lab.kemo.network/mariadb:11-ubi
+adminer_container_image: docker-ptc.jfrog.lab.kemo.network/adminer:latest
+
+pihole_ip_address: 192.168.42.12
+pihole_container_image: docker-ptc.jfrog.lab.kemo.network/pihole/pihole:latest
+pihole_admin_password: notpassword
+pihole_admin_email: ken@kenmoini.com
+
+pdns_ip_address: 192.168.42.11
+pdns_auth_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-auth:latest
+pdns_recursor_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/pdns-recursor:latest
+pdns_db_image: ghcr.io/kenmoini/lab-powerdns:mysql-latest
+pdns_ui_image: docker-ptc.jfrog.lab.kemo.network/powerdnsadmin/pda-legacy:latest
+pdns_enable_db: false
+pdns_mysql_host: 192.168.42.14 # db.kemo.labs
+pdns_mysql_db: pdnsadmin
+pdns_upstream_servers:
+  - 192.168.42.12
+pdns_forward_zones:
+  - name: kemo.labs
+    server: "{{ pdns_ip_address }}:5300"
+  - name: kemo.network
+    server: "{{ pdns_ip_address }}:5300"
+  - name: kemo.edge
+    server: "192.168.99.2:53"
+  - name: moini.mannor
+    server: "192.168.90.2:53"
+
+squid_ip_address: 192.168.42.18
+squid_hostname: proxy.kemo.labs
+squid_container_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/squid-proxy:latest
+
+
+jfrog_ip_address: 192.168.42.32
+jfrog_hostname: jfrog.lab.kemo.network
+
+# =============================================================
+# NGINX Proxy Manager
+npm_ip_address: 192.168.42.25
+npm_container_image: docker-ptc.jfrog.lab.kemo.network/jc21/nginx-proxy-manager:latest
+#db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
+npm_enable_db: false
+npm_db_host: db.kemo.labs
+npm_db_password: n0tNGINXProxyManager
+npm_db_username: nginxpm
+npm_db_name: nginxpm
+
+dropbox_container_image: docker-ptc.jfrog.lab.kemo.network/nginx:latest
+vault_container_image: docker-ptc.jfrog.lab.kemo.network/hashicorp/vault:latest
+stepca_container_image: docker-ptc.jfrog.lab.kemo.network/smallstep/step-ca:latest
+freeipa_container_image: quay-ptc.jfrog.lab.kemo.network/freeipa/freeipa-server:fedora-41
+keycloak_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
+chronyd_container_image: docker-ptc.jfrog.lab.kemo.network/publicarray/chrony:latest
+legobridge_container_image: quay-ptc.jfrog.lab.kemo.network/kenmoini/lego-bridge:latest
+iperf3_container_image: docker-ptc.jfrog.lab.kemo.network/networkstatic/iperf3:latest
+
+netbox_ip_address: 192.168.42.22
+netbox_container_image: quay-ptc.jfrog.lab.kemo.network/netboxcommunity/netbox:latest
+netbox_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+netbox_redis_container_image: docker-ptc.jfrog.lab.kemo.network/valkey/valkey:8.0-alpine
+netbox_cache_container_image: docker-ptc.jfrog.lab.kemo.network/valkey/valkey:8.0-alpine
+netbox_enable_db: false
+netbox_db_host: db.kemo.labs
+netbox_db_password: n0tNetBox
+
+# =============================================================
+# Observability
+o11y_ip_address: 192.168.42.23
+o11y_grafana_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana:latest
+o11y_grafana_image_container_image: docker-ptc.jfrog.lab.kemo.network/bitnami/grafana-image-renderer:latest
+o11y_grafana_db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:17-alpine
+o11y_alertmanager_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/alertmanager:latest
+o11y_prometheus_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/prometheus:latest
+o11y_node_exporter_container_image: quay-ptc.jfrog.lab.kemo.network/prometheus/node-exporter:latest
+
+o11y_enable_db: false
+o11y_db_host: db.kemo.labs
+o11y_db_username: grafana
+o11y_db_password: n0tGraf4n4
+o11y_db_name: grafana

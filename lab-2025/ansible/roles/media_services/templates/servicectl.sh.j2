@@ -122,6 +122,8 @@ case $1 in
       -p {{ ms_tautulli_port }} \
       -p {{ ms_sabnzbd_port }}
 
+    sleep 3
+
     echo "Starting container services - Flaresolverr..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} ${CERT_VOLUME} \
@@ -139,6 +141,8 @@ case $1 in
       --healthcheck-interval=15s \
       ${FLARESOLVERR_CONTAINER_IMAGE}
 
+    sleep 3
+
     echo "Starting container services - Jackett..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -153,6 +157,8 @@ case $1 in
       ${SHARED_ENV} \
       ${JACKETT_CONTAINER_VOLUMES} \
       ${JACKETT_CONTAINER_IMAGE}
+
+    sleep 3
 
     echo "Starting container services - Prowlarr..."
     /usr/bin/podman run -dt \
@@ -169,6 +175,8 @@ case $1 in
       ${PROWLARR_CONTAINER_VOLUMES} \
       ${PROWLARR_CONTAINER_IMAGE}
 
+    sleep 3
+
     echo "Starting container services - Overseerr..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -181,6 +189,8 @@ case $1 in
       ${SHARED_ENV} \
       ${OVERSEERR_CONTAINER_VOLUMES} \
       ${OVERSEERR_CONTAINER_IMAGE}
+
+    sleep 3
 
     echo "Starting container services - Tautulli..."
     /usr/bin/podman run -dt \
@@ -196,6 +206,8 @@ case $1 in
       ${SHARED_ENV} \
       ${TAUTULLI_CONTAINER_VOLUMES} \
       ${TAUTULLI_CONTAINER_IMAGE}
+
+    sleep 3
 
     echo "Starting container services - Radarr..."
     /usr/bin/podman run -dt \
@@ -242,6 +254,8 @@ case $1 in
       ${BAZARR_CONTAINER_VOLUMES} \
       ${BAZARR_CONTAINER_IMAGE}
 
+    sleep 3
+
     echo "Starting container services - SABnzbd..."
     /usr/bin/podman run -dt \
       --pod ${POD_NAME} \
@@ -256,6 +270,8 @@ case $1 in
       ${SHARED_ENV} \
       ${SABNZBD_CONTAINER_VOLUMES} \
       ${SABNZBD_CONTAINER_IMAGE}
+
+    sleep 3
 
     echo "Starting container services - Plex..."
     /usr/bin/podman run -dt \

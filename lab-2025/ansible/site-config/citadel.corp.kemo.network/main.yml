@@ -1,0 +1,46 @@
+---
+container_root_dir: /opt/workvol/caas
+app_wildcard_base: apps.corp.kemo.network
+
+# =============================================================
+# Database Services
+deploy_db_services: false
+db_service_name: corp-kemo-network-db
+db_service_ip_address: 192.168.120.61
+
+# =============================================================
+# PowerDNS
+deploy_pdns: false
+pdns_service_name: corp-kemo-network-pdns
+pdns_ip_address: 192.168.120.2
+
+pdns_enable_db: false
+
+pdns_upstream_servers:
+  - 192.168.120.1
+
+pdns_forward_zones:
+  - name: kemo.network
+    server: "{{ pdns_ip_address }}:5300"
+
+# =============================================================
+# NGINX Proxy Manager
+deploy_nginxpm: false
+
+# =============================================================
+# Shared Pod Setup
+#deploy_shared_pod: true
+# =============================================================
+# Shared Pod - Dropbox
+#deploy_shared_dropbox: true
+# =============================================================
+# Shared Pod - Homepage
+#deploy_shared_homepage: true
+# =============================================================
+# Shared Pod - iPerf3
+#deploy_shared_iperf3: true
+# =============================================================
+
+# =============================================================
+# Observability
+#deploy_o11y: true

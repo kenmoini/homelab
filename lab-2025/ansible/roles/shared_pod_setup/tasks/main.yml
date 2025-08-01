@@ -35,8 +35,8 @@
   ansible.builtin.systemd:
     daemon_reload: yes
 
-- name: Start CaaS
-  ansible.builtin.service:
-    name: "{{ shared_pod_name }}"
-    state: restarted
-    enabled: yes
+# - name: Start CaaS
+  # ansible.builtin.service:
+    # name: "{{ shared_pod_name }}"
+    # state: restarted
+    # enabled: yes

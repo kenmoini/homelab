@@ -1,0 +1,17 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for shared_pod_codimd
+shared_pod_name: shared-pod
+
+codimd_service_name: codimd
+
+codimd_container_image: nabo.codimd.dev/hackmdio/hackmd:2.5.4
+codimd_container_port: 3000
+codimd_container_volume_uid: 1500
+codimd_container_volume_gid: 1500
+
+codimd_volume_mounts:
+  - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ codimd_service_name }}/volumes/uploads:/home/hackmd/app/public/uploads:Z"
+
+# This is defaulted to false since the container isn't UBI based and there needs to be some careful mapping done
+codimd_mount_host_trusted_certs: false

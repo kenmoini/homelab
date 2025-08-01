@@ -90,7 +90,7 @@ case $1 in
       --label homepage.href=https://pihole.{{ app_wildcard_base }} \
       --label homepage.description="DNS-based Ad Blocking" \
       --label homepage.widget.type=pihole \
-      --label homepage.widget.url=http://pihole.kemo.labs \
+      --label homepage.widget.url=https://pihole.{{ app_wildcard_base }} \
       --label homepage.widget.version=5 \
       --label homepage.widget.key=$(cat {{ container_root_dir }}/${CONTAINER_NAME}/volumes/.apikey) \
       ${NETWORK} \

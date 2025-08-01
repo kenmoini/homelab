@@ -1,104 +1,18 @@
-labcore:
-  hosts:
-    normandy:
-      ansible_host: normandy.kemo.labs
-      ansible_user: root
-moinimannor:
-  hosts:
-    galactica:
-      ansible_host: 192.168.90.50
-      ansible_user: root
-      container_root_dir: /opt/workvol/caas
-      app_wildcard_base: apps.moini.mannor
-
-      # =============================================================
-      # Database Services
-      deploy_db_services: false
-      db_service_ip_address: 192.168.90.61
-      pgsql_db_container_image: ''
-      mysql_db_container_image: ''
-      adminer_container_image: ''
-
-      # =============================================================
-      # Pihole
-      deploy_pihole: false
-      pihole_ip_address: 192.168.90.3
-      pihole_container_image: ''
-      pihole_upstream_dns_servers:
-        - 192.168.90.1
-
-      # =============================================================
-      # PowerDNS
-      deploy_pdns: false
-      pdns_ip_address: 192.168.90.2
-      pdns_auth_image: ''
-      pdns_recursor_image: ''
-      pdns_db_image: ''
-      pdns_ui_image: ''
-
-      pdns_enable_db: false
-      pdns_mysql_host: 192.168.90.61 # db.moini.mannor
-      pdns_mysql_db: pdnsadmin
-
-      pdns_upstream_servers:
-        - 192.168.90.3
-
-      pdns_forward_zones:
-        - name: kemo.labs
-          server: "192.168.42.11:5300"
-        - name: moini.mannor
-          server: "{{ pdns_ip_address }}:5300"
-
-      # =============================================================
-      # NGINX Proxy Manager
-      deploy_nginxpm: false
-      npm_ip_address: 192.168.90.69
-      npm_container_image: ''
-      #db_container_image: docker-ptc.jfrog.lab.kemo.network/postgres:latest
-      npm_enable_db: false
-      npm_db_host: db.moini.mannor
-      npm_db_password: n0tNGINXProxyManager
-      npm_db_username: nginxpm
-      npm_db_name: nginxpm
-
-      # =============================================================
-      # Shared Pod Setup
-      deploy_shared_pod: false
-      shared_pod_ip_address: 192.168.90.66
-      # =============================================================
-      # Shared Pod - Dropbox
-      deploy_shared_dropbox: false
-      dropbox_container_image: docker-ptc.jfrog.lab.kemo.network/nginx:latest
-      # =============================================================
-      # Shared Pod - Homepage
-      deploy_shared_homepage: false
-      # =============================================================
-      # Shared Pod - iPerf3
-      deploy_shared_iperf3: false
-      iperf3_container_image: docker-ptc.jfrog.lab.kemo.network/networkstatic/iperf3:latest
-      # =============================================================
-      # Media Services
-      deploy_media_services: false
-      ms_ip_address: 192.168.90.60
-      ms_tv_path: /mnt/Media/TVShows
-      ms_movie_path: /mnt/Media/Movies
-      ms_music_path: /mnt/Media/Music
-      ms_sabnzbd_downloads_path: /mnt/Media/sabnzbd/complete
-      ms_sabnzbd_incomplete_path: /mnt/Media/sabnzbd/incomplete
-
-      # =============================================================
-      # Observability
-      deploy_o11y: false
-      o11y_ip_address: 192.168.90.67
-      o11y_grafana_container_image: ''
-      o11y_grafana_image_container_image: ''
-      o11y_grafana_db_container_image: ''
-      o11y_alertmanager_container_image: ''
-      o11y_prometheus_container_image: ''
-      o11y_node_exporter_container_image: ''
-
-      o11y_enable_db: false
-      o11y_db_host: db.moini.mannor
-      o11y_db_username: grafana
-      o11y_db_password: n0tGraf4n4
-      o11y_db_name: grafana
+all:
+  children:
+    labcore:
+      hosts:
+        normandy:
+          ansible_host: normandy.kemo.labs
+          ansible_user: root
+    moinimannor:
+      hosts:
+        galactica:
+          ansible_host: galactica.moini.mannor
+          ansible_user: root
+    kemonetwork:
+      hosts:
+        citadel.corp.kemo.network:
+          # Add this into /etc/hosts
+          ansible_host: citadel.corp.kemo.network
+          ansible_user: root

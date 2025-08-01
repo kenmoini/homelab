@@ -1,0 +1,79 @@
+---
+container_root_dir: /opt/workvol/caas
+app_wildcard_base: apps.moini.mannor
+
+# =============================================================
+# Pihole
+#deploy_pihole: true
+pihole_service_name: mm-pihole
+pihole_ip_address: 192.168.90.3
+pihole_admin_email: ken@kenmoini.com
+pihole_upstream_dns_servers:
+  - 192.168.90.1
+
+# =============================================================
+# Database Services
+#deploy_db_services: true
+db_service_name: mm-db
+db_service_ip_address: 192.168.90.61
+
+# =============================================================
+# PowerDNS
+#deploy_pdns: true
+pdns_service_name: mm-pdns
+pdns_ip_address: 192.168.90.2
+
+pdns_enable_db: false
+pdns_mysql_host: 192.168.90.61 # db.moini.mannor
+pdns_mysql_db: pdnsadmin
+
+pdns_upstream_servers:
+  - 192.168.90.3
+
+pdns_forward_zones:
+  - name: kemo.labs
+    server: "192.168.42.11:5300"
+  - name: moini.mannor
+    server: "{{ pdns_ip_address }}:5300"
+
+# =============================================================
+# NGINX Proxy Manager
+deploy_nginxpm: true
+npm_ip_address: 192.168.90.69
+npm_enable_db: false
+npm_db_host: db.moini.mannor
+npm_db_username: nginxpm
+npm_db_name: nginxpm
+
+# =============================================================
+# Shared Pod Setup
+#deploy_shared_pod: true
+shared_pod_ip_address: 192.168.90.66
+# =============================================================
+# Shared Pod - Dropbox
+#deploy_shared_dropbox: true
+# =============================================================
+# Shared Pod - Homepage
+deploy_shared_homepage: false
+# =============================================================
+# Shared Pod - iPerf3
+#deploy_shared_iperf3: true
+# =============================================================
+# Media Services
+deploy_media_services: false
+ms_ip_address: 192.168.90.60
+ms_tv_path: /mnt/Media/TVShows
+ms_movie_path: /mnt/Media/Movies
+ms_music_path: /mnt/Media/Music
+ms_sabnzbd_downloads_path: /mnt/Media/sabnzbd/complete
+ms_sabnzbd_incomplete_path: /mnt/Media/sabnzbd/incomplete
+
+# =============================================================
+# Observability
+deploy_o11y: false
+o11y_ip_address: 192.168.90.67
+
+o11y_enable_db: false
+o11y_db_host: db.moini.mannor
+o11y_db_username: grafana
+o11y_db_name: grafana
