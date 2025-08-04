@@ -16,8 +16,8 @@
   ansible.builtin.file:
     path: "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/master"
     state: directory
-    owner: 998
-    group: 998
+    owner: 0
+    group: 0
 
 - name: Template CaaS deployment files - servicectl.sh.j2
   ansible.builtin.template:

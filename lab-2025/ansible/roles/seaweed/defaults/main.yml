@@ -14,7 +14,6 @@ seaweed_master_ports:
 - 9324:9324 # master server metrics port
 seaweed_master_command: "master{{ ' -volumeSizeLimitMB=1024' if seaweed_limit_volume_size }}{{' -defaultReplication=000' if seaweed_disable_replication }} -ip={{ seaweed_service_name }}-master -ip.bind=0.0.0.0 -metricsPort=9324"
 seaweed_master_readiness_endpoint: :9333/cluster/status
-seaweed_master_volume_mounts: ":/data:Z"
 
 seaweed_volume_ports:
 - 8080:8080 # volume server http port
