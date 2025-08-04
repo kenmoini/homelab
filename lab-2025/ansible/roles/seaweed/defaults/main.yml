@@ -5,11 +5,14 @@ seaweed_service_name: seaweedfs
 seaweed_image: docker.io/chrislusf/seaweedfs:3.96
 seaweed_prometheus_image: docker.io/prom/prometheus:v2.21.0
 
+seaweed_disable_replication: true
+seaweed_limit_volume_size: true
+
 seaweed_master_ports:
 - 9333:9333 # master server shared http port
 - 19333:19333 # master server shared grpc port
 - 9324:9324 # master server metrics port
-seaweed_master_command: "master -ip={{ seaweed_service_name }}-master -ip.bind=0.0.0.0 -metricsPort=9324"
+seaweed_master_command: "master{{ ' -volumeSizeLimitMB=1024' if seaweed_limit_volume_size }}{{' -defaultReplication=000' if seaweed_disable_replication }} -ip={{ seaweed_service_name }}-master -ip.bind=0.0.0.0 -metricsPort=9324"
 seaweed_master_readiness_endpoint: :9333/cluster/status
 seaweed_master_volume_mounts: ":/data:Z"
 
@@ -43,3 +46,8 @@ seaweed_enable_prometheus: false
 seaweed_prometheus_ports:
 - 9000:9090 # prometheus server http port
 seaweed_prometheus_command: '--web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml'
+
+seaweed_enable_webui: true
+seaweed_webui_ports:
+- 23646:23646
+seaweed_webui_command: 'admin -masters={{ seaweed_service_name }}-master:9333'

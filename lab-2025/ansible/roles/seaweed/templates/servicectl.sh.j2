@@ -62,6 +62,7 @@ case $1 in
       {% for port in seaweed_volume_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_filer_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_s3_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_webui_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_webdav_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_prometheus_ports %}-p {{ port }} {% endfor %}
 
@@ -124,6 +125,17 @@ case $1 in
       {{ seaweed_s3_command }}
 
     until $(podman healthcheck run ${POD_NAME}-s3); do echo "Waiting for healthy S3 container..." && sleep 1; done
+
+    echo "Starting container services - Web Ui..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-webui \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Web UI" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Web UI on port 23646' \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_webui_command }}
 
     ;;
 
