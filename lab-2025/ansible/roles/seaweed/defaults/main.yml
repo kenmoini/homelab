@@ -36,7 +36,7 @@ seaweed_s3_ports:
 seaweed_s3_command: 's3 -filer="{{ seaweed_service_name }}-filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327'
 seaweed_s3_readiness_endpoint: :8333/status
 
-seaweed_enable_wevdav: false
+seaweed_enable_wevdav: true
 seaweed_webdav_ports:
 - 7333:7333 # webdav server http port
 seaweed_webdav_command: 'webdav -filer="{{ seaweed_service_name }}-filer:8888"'
@@ -50,3 +50,13 @@ seaweed_enable_webui: true
 seaweed_webui_ports:
 - 23646:23646
 seaweed_webui_command: 'admin -masters={{ seaweed_service_name }}-master:9333'
+
+seaweed_enable_mq: true
+seaweed_mq_ports:
+- 17777:17777
+- 16777:16777
+seaweed_mq_broker_command: 'mq.broker -port=17777 -master={{ seaweed_service_name }}-master:9333'
+seaweed_mq_agent_command: 'mq.agent -port=16777 -broker={{ seaweed_service_name }}-mq-broker:17777'
+
+seaweed_enable_worker: true
+seaweed_worker_command: 'worker -admin={{ seaweed_service_name }}-webui:23646 -capabilities=vacuum,ec,replication'

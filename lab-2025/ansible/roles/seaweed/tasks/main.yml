@@ -11,13 +11,11 @@
     - "{{ container_root_dir }}/{{ seaweed_service_name }}"
     - "{{ container_root_dir }}/{{ seaweed_service_name }}/scripts"
     - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes"
-
-- name: Create Service Containers Directory - Master Data
-  ansible.builtin.file:
-    path: "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/master"
-    state: directory
-    owner: 0
-    group: 0
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/master"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/volume"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/filer"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/s3"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/prom"
 
 - name: Template CaaS deployment files - servicectl.sh.j2
   ansible.builtin.template:
@@ -34,6 +32,15 @@
     owner: root
     group: root
     mode: 0755
+
+- name: "Template Prometheus Config"
+  when: seaweed_enable_prometheus | bool
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/prom/prometheus.yml"
+    owner: nobody
+    group: nogroup
+    mode: 0644
 
 - name: Reload systemd
   ansible.builtin.systemd:

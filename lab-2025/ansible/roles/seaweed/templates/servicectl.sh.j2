@@ -12,7 +12,13 @@ POD_NETWORK="{{ podman_bridge_name | default('host') }}"
 POD_IP="{{ seaweed_ip_address }}"
 
 SEAWEED_CONTAINER_SOURCE="{{ seaweed_image }}"
+SEAWEED_PROM_CONTAINER_SOURCE="{{ seaweed_prometheus_image }}"
+
 SEAWEED_MASTER_VOLUME_MOUNTS="-v {{ container_root_dir }}/{{ seaweed_service_name }}/volumes/master:/data:Z"
+SEAWEED_VOLUME_VOLUME_MOUNTS="-v {{ container_root_dir }}/{{ seaweed_service_name }}/volumes/volume:/data:Z"
+SEAWEED_FILER_VOLUME_MOUNTS="-v {{ container_root_dir }}/{{ seaweed_service_name }}/volumes/filer:/data/filerldb2:Z"
+SEAWEED_S3_VOLUME_MOUNTS="-v {{ container_root_dir }}/{{ seaweed_service_name }}/volumes/s3:/data:Z"
+SEAWEED_PROM_VOLUME_MOUNTS="-v {{ container_root_dir }}/{{ seaweed_service_name }}/volumes/prom/prometheus.yml:/etc/prometheus/prometheus.yml:Z"
 
 ###################################################################################
 # EXECUTION PREFLIGHT
@@ -64,6 +70,7 @@ case $1 in
       {% for port in seaweed_filer_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_s3_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_webui_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_mq_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_webdav_ports %}-p {{ port }} {% endfor %}\
       {% for port in seaweed_prometheus_ports %}-p {{ port }} {% endfor %}
 
@@ -93,6 +100,7 @@ case $1 in
       --label homepage.description='SeaweedFS Volume Server' \
       --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_volume_readiness_endpoint }} || exit 1' \
       --healthcheck-interval=15s \
+      ${SEAWEED_VOLUME_VOLUME_MOUNTS} \
       ${SEAWEED_CONTAINER_SOURCE} \
       {{ seaweed_volume_command }}
 
@@ -108,6 +116,7 @@ case $1 in
       --label homepage.description='SeaweedFS Filer Server' \
       --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_filer_readiness_endpoint }} || exit 1' \
       --healthcheck-interval=15s \
+      ${SEAWEED_FILER_VOLUME_MOUNTS} \
       ${SEAWEED_CONTAINER_SOURCE} \
       {{ seaweed_filer_command }}
 
@@ -123,11 +132,13 @@ case $1 in
       --label homepage.description='SeaweedFS S3 Server' \
       --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_s3_readiness_endpoint }} || exit 1' \
       --healthcheck-interval=15s \
+      ${SEAWEED_S3_VOLUME_MOUNTS} \
       ${SEAWEED_CONTAINER_SOURCE} \
       {{ seaweed_s3_command }}
 
     until $(podman healthcheck run ${POD_NAME}-s3); do echo "Waiting for healthy S3 container..." && sleep 1; done
 
+{% if seaweed_enable_webui|bool %}
     echo "Starting container services - Web Ui..."
 
     /usr/bin/podman run -d --pod ${POD_NAME} \
@@ -138,6 +149,67 @@ case $1 in
       --label homepage.description='SeaweedFS Web UI on port 23646' \
       ${SEAWEED_CONTAINER_SOURCE} \
       {{ seaweed_webui_command }}
+{% endif %}
+
+{% if seaweed_enable_worker|bool %}
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-worker \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Worker" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Worker' \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_worker_command }}
+{% endif %}
+
+{% if seaweed_enable_wevdav|bool %}
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-webdav \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="WebDAV Server" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS WebDAV' \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_webdav_command }}
+{% endif %}
+
+{% if seaweed_enable_mq|bool %}
+    echo "Starting container services - Message Queue Broker..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-mq-broker \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Message Queue Broker" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Message Broker on port 17777' \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_mq_broker_command }}
+
+    echo "Starting container services - Message Queue Agent..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-mq-agent \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Message Queue Agent" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Message Agent on port 16777' \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_mq_agent_command }}
+{% endif %}
+
+{% if seaweed_enable_prometheus|bool %}
+    echo "Starting container services - Prometheus Metrics Scraper..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-prom \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Prometheus" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Prometheus' \
+      ${SEAWEED_PROM_VOLUME_MOUNTS} \
+      ${SEAWEED_PROM_CONTAINER_SOURCE} \
+      {{ seaweed_prometheus_command }}
+{% endif %}
 
     ;;
 
