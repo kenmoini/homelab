@@ -1,0 +1,130 @@
+#!/bin/bash
+
+set -x
+
+###################################################################################
+# VARIABLES
+###################################################################################
+
+POD_NAME="{{ seaweed_service_name }}"
+
+POD_NETWORK="{{ podman_bridge_name | default('host') }}"
+POD_IP="{{ seaweed_ip_address }}"
+
+SEAWEED_CONTAINER_SOURCE="{{ seaweed_image }}"
+
+###################################################################################
+# EXECUTION PREFLIGHT
+###################################################################################
+
+## Ensure there is an action arguement
+if [ -z "$1" ]; then
+  echo "Need action arguement of 'start', 'restart', or 'stop'!"
+  echo "${0} start|stop|restart"
+  exit 1
+fi
+
+################################################################################### SERVICE ACTION SWITCH
+case $1 in
+
+  ################################################################################# RESTART/STOP SERVICE
+  "restart" | "stop" | "start")
+    echo "Stopping container services if running..."
+
+    echo "Stopping ${POD_NAME} pod..."
+    /usr/bin/podman pod kill ${POD_NAME}
+
+    echo "Removing ${POD_NAME} pod..."
+    /usr/bin/podman pod rm -f -i ${POD_NAME}
+    ;;
+
+esac
+
+
+case $1 in
+
+  ################################################################################# RESTART/START SERVICE
+  "pull")
+  
+    echo "Pulling container images..."
+    /usr/bin/podman pull ${SEAWEED_CONTAINER_SOURCE}
+
+    ;;
+
+  "restart" | "start")
+    sleep 3
+
+    echo "Creating Pod..."
+
+    /usr/bin/podman pod create --name ${POD_NAME} \
+      --network ${POD_NETWORK} --ip "${POD_IP}" \
+      {% for port in seaweed_master_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_volume_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_filer_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_s3_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_webdav_ports %}-p {{ port }} {% endfor %}\
+      {% for port in seaweed_prometheus_ports %}-p {{ port }} {% endfor %}
+
+    echo "Starting container services - Master..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-master \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Master" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Master Server' \
+      --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_master_readiness_endpoint }} || exit 1' \
+      --healthcheck-interval=15s \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_master_command }}
+
+    until $(podman healthcheck run ${POD_NAME}-master); do echo "Waiting for healthy master container..." && sleep 1; done
+
+    echo "Starting container services - Volume..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-volume \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Volume" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Volume Server' \
+      --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_volume_readiness_endpoint }} || exit 1' \
+      --healthcheck-interval=15s \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_volume_command }}
+
+    until $(podman healthcheck run ${POD_NAME}-volume); do echo "Waiting for healthy volume container..." && sleep 1; done
+
+    echo "Starting container services - Filer..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-filer {{ seaweed_filer_extra_args }} \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="Filer" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS Filer Server' \
+      --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_filer_readiness_endpoint }} || exit 1' \
+      --healthcheck-interval=15s \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_filer_command }}
+
+    until $(podman healthcheck run ${POD_NAME}-filer); do echo "Waiting for healthy filer container..." && sleep 1; done
+
+    echo "Starting container services - S3..."
+
+    /usr/bin/podman run -d --pod ${POD_NAME} \
+      --name ${POD_NAME}-s3 \
+      --label homepage.group=SeaweedFS \
+      --label homepage.name="S3" \
+      --label homepage.icon=seaweedfs.png \
+      --label homepage.description='SeaweedFS S3 Server' \
+      --healthcheck-command 'CMD-SHELL wget -q --spider http://127.0.0.1{{ seaweed_s3_readiness_endpoint }} || exit 1' \
+      --healthcheck-interval=15s \
+      ${SEAWEED_CONTAINER_SOURCE} \
+      {{ seaweed_s3_command }}
+
+    until $(podman healthcheck run ${POD_NAME}-s3); do echo "Waiting for healthy S3 container..." && sleep 1; done
+
+    ;;
+
+esac

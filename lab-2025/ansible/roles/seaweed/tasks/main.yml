@@ -1,0 +1,63 @@
+---
+# tasks file for seaweed
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+  with_items:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/scripts"
+    - "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes"
+
+- name: Create Service Containers Directory - Master Data
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ seaweed_service_name }}/volumes/master"
+    state: directory
+    owner: 998
+    group: 998
+
+- name: Template CaaS deployment files - servicectl.sh.j2
+  ansible.builtin.template:
+    src: servicectl.sh.j2
+    dest: "{{ container_root_dir }}/{{ seaweed_service_name }}/scripts/servicectl.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: "Template CaaS deployment files - {{ seaweed_service_name }}.service"
+  ansible.builtin.template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ seaweed_service_name }}.service"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Pre-pull the images
+  containers.podman.podman_image:
+    name: "{{ ctnr_img }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ seaweed_image }}"
+  loop_control:
+    loop_var: ctnr_img
+
+- name: Pre-pull the Prometheus image
+  when: seaweed_enable_prometheus | bool
+  containers.podman.podman_image:
+    name: "{{ seaweed_prometheus_image }}"
+    pull: yes
+    force: yes
+
+- name: Start CaaS
+  ansible.builtin.service:
+    name: "{{ seaweed_service_name }}"
+    state: restarted
+    enabled: yes

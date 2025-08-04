@@ -44,3 +44,7 @@ deploy_nginxpm: false
 # =============================================================
 # Observability
 #deploy_o11y: true
+
+# =============================================================
+deploy_seaweedfs: true
+seaweed_service_name: corp-kemo-network-seaweed

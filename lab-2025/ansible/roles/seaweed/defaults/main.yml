@@ -1,0 +1,45 @@
+---
+# defaults file for seaweed
+seaweed_service_name: seaweedfs
+
+seaweed_image: docker.io/chrislusf/seaweedfs:3.96
+seaweed_prometheus_image: docker.io/prom/prometheus:v2.21.0
+
+seaweed_master_ports:
+- 9333:9333 # master server shared http port
+- 19333:19333 # master server shared grpc port
+- 9324:9324 # master server metrics port
+seaweed_master_command: "master -ip={{ seaweed_service_name }}-master -ip.bind=0.0.0.0 -metricsPort=9324"
+seaweed_master_readiness_endpoint: :9333/cluster/status
+seaweed_master_volume_mounts: ":/data:Z"
+
+seaweed_volume_ports:
+- 8080:8080 # volume server http port
+- 18080:18080 # volume server grpc port
+- 9325:9325 # volume server metrics port
+seaweed_volume_command: 'volume -mserver="{{ seaweed_service_name }}-master:9333" -ip.bind=0.0.0.0 -port=8080  -metricsPort=9325'
+seaweed_volume_readiness_endpoint: :8080/healthz 
+
+seaweed_filer_ports:
+- 8888:8888 # filer server http port
+- 18888:18888 # filer server grpc port
+- 9326:9326 # filer server metrics port
+seaweed_filer_command: 'filer -master="{{ seaweed_service_name }}-master:9333" -ip.bind=0.0.0.0 -metricsPort=9326'
+seaweed_filer_extra_args: -it
+seaweed_filer_readiness_endpoint: :8888/
+
+seaweed_s3_ports:
+- 8333:8333 # s3 server http port
+- 9327:9327 # s3 server metrics port
+seaweed_s3_command: 's3 -filer="{{ seaweed_service_name }}-filer:8888" -ip.bind=0.0.0.0 -metricsPort=9327'
+seaweed_s3_readiness_endpoint: :8333/status
+
+seaweed_enable_wevdav: false
+seaweed_webdav_ports:
+- 7333:7333 # webdav server http port
+seaweed_webdav_command: 'webdav -filer="{{ seaweed_service_name }}-filer:8888"'
+
+seaweed_enable_prometheus: false
+seaweed_prometheus_ports:
+- 9000:9090 # prometheus server http port
+seaweed_prometheus_command: '--web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml'

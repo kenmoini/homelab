@@ -212,6 +212,11 @@
     # Shared Pod - Sushy Tools
     deploy_shared_sushy_tools: false
 
+    # =============================================================
+    # SeaweedFS
+    deploy_seaweedfs: false
+    seaweed_ip_address: 192.168.42.77
+
   # ===============================================================
   tasks:
 
@@ -358,3 +363,8 @@
       when: deploy_shared_sushy_tools|bool
       ansible.builtin.include_role:
         name: shared_pod_sushy
+
+    - name: Deploy SeaweedFS
+      when: deploy_seaweedfs|bool
+      ansible.builtin.include_role:
+        name: seaweed
