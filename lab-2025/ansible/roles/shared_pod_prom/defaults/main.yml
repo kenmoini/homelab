@@ -1,0 +1,10 @@
+---
+# defaults file for shared_pod_prom
+shared_pod_name: shared-pod
+prometheus_service_name: prometheus
+prometheus_image: quay.io/prometheus/prometheus:latest
+
+prometheus_port: 9090
+prometheus_command: '--web.enable-lifecycle --config.file=/etc/prometheus/prometheus.yml'
+prometheus_readiness_endpoint: :9090/-/ready
+prometheus_volume_mount_path: ':/prometheus:Z'

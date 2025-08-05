@@ -1,0 +1,23 @@
+global:
+  scrape_interval: {{ prometheus_scrape_interval | default('30s') }}
+  scrape_timeout: {{ prometheus_scrape_timeout | default('10s') }}
+
+scrape_configs:
+# The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
+- job_name: 'prometheus'
+  # Override the global default and scrape targets from this job every 5 seconds.
+  scrape_interval: 5s
+  static_configs:
+    - targets: ['localhost:9090']
+{% if prom_scrape_configs is defined %}
+{% if prom_scrape_configs|length > 0 %}
+{{ prom_scrape_configs | to_nice_yaml(indent=2) }}
+{% endif %}
+{% endif %}
+
+{% if prom_remote_writes is defined %}
+{% if prom_remote_writes|length > 0 %}
+remote_write:
+{{ prom_remote_writes | to_nice_yaml(indent=2) }}
+{% endif %}
+{% endif %}

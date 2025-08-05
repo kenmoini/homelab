@@ -1,0 +1,76 @@
+---
+# tasks file for shared_pod_prom
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ i_path }}"
+    state: directory
+    owner: root
+    group: root
+  loop:
+    - "{{ container_root_dir }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ prometheus_service_name }}"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ prometheus_service_name }}/volumes/"
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ prometheus_service_name }}/volumes/config"
+  loop_control:
+    loop_var: i_path
+
+- name: Create Service Containers Directory
+  ansible.builtin.file:
+    path: "{{ i_path }}"
+    state: directory
+    owner: nobody
+    group: nobody
+  loop:
+    - "{{ container_root_dir }}/{{ shared_pod_name }}-{{ prometheus_service_name }}/volumes/data"
+  loop_control:
+    loop_var: i_path
+
+- name: Template prometheus.yml.j2
+  ansible.builtin.template:
+    src: prometheus.yml.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}-{{ prometheus_service_name }}/volumes/config/prometheus.yml"
+    owner: nobody
+    group: nobody
+    mode: 0644
+
+- name: Template Shared Pod deployment files - containerctl.j2
+  ansible.builtin.template:
+    src: containerctl.j2
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ prometheus_service_name }}.sh"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Template Shared Pod Images
+  ansible.builtin.template:
+    src: images
+    dest: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/images/{{ prometheus_service_name }}"
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Touch a file for the container ports
+  ansible.builtin.file:
+    path: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/ports/{{ i_port }}"
+    state: touch
+    owner: root
+    group: root
+  loop:
+    - "{{ prometheus_port }}-tcp"
+  loop_control:
+    loop_var: i_port
+
+- name: Pre-pull the image
+  containers.podman.podman_image:
+    name: "{{ i_image }}"
+    pull: yes
+    force: yes
+  loop:
+    - "{{ prometheus_image }}"
+  loop_control:
+    loop_var: i_image
+
+- name: Restart Shared Pod
+  ansible.builtin.shell:
+    cmd: "{{ container_root_dir }}/{{ shared_pod_name }}/scripts/containers/{{ prometheus_service_name }}.sh restart"
