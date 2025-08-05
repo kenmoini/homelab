@@ -40,11 +40,17 @@ deploy_nginxpm: false
 # Shared Pod - iPerf3
 #deploy_shared_iperf3: true
 # =============================================================
+# Shared Pod - OpenObserve
+deploy_shared_openobserve: true
+
+# =============================================================
+# Shared Pod - Prometheus
+deploy_shared_prometheus: true
 
 # =============================================================
 # Observability
 #deploy_o11y: true
 
 # =============================================================
-deploy_seaweedfs: true
+deploy_seaweedfs: false
 seaweed_service_name: corp-kemo-network-seaweed
