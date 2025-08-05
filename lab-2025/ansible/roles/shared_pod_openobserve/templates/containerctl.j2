@@ -48,6 +48,7 @@ case $1 in
         --pod ${POD_NAME} \
         --name ${POD_NAME}-${SERVICE_NAME} \
         -e ZO_DATA_DIR="/data" \
+        -e ZO_USAGE_REPORTING_ENABLED=true \
         --label homepage.group=Observability \
         --label homepage.name="OpenObserve" \
         --label homepage.icon='https://avatars.githubusercontent.com/u/95867656?s=200&v=4' \
@@ -66,6 +67,7 @@ case $1 in
         --pod ${POD_NAME} \
         --name ${POD_NAME}-${SERVICE_NAME} \
         -e ZO_DATA_DIR="/data" \
+        -e ZO_USAGE_REPORTING_ENABLED=true \
         -e ZO_ROOT_USER_PASSWORD="${ZO_ROOT_USER_PASSWORD}" \
         -e ZO_ROOT_USER_EMAIL="${ZO_ROOT_USER_EMAIL}" \
         ${OPENOBSERVE_CONTAINER_VOLUMES} \
